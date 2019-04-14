@@ -1,1 +1,1 @@
-Source code for employee-recognition API
+Source code for employee-recognition-api 
