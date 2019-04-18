@@ -1,0 +1,308 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*Basic Sytle sheet for the Employee recognition portal*/
+
+#header {
+	width: 90%;
+	height: 200px;
+    background: #087114;
+	align-content: space-around;
+}
+
+ul#main-nav {
+	text-align: middle;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #b4c7e7;
+}
+
+ul#main-nav>li {
+	display: inline-block;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+    background-color: #3EACA8;
+}
+
+#main-title{
+	
+	text-align: center;
+	text-decoration: underline;
+	color: #5A5050;
+	
+}
+
+.reg-title{color: #0E7031}
+
+div.text-section{
+	
+	padding-top:10px;
+	padding-left:10%;
+	padding-Right:10%;
+	
+}
+
+table{
+
+	width: 100%;
+	border: 1px solid;
+	border-radius: 10px;
+
+}
+
+th{
+
+	background-color: #ccffcc;
+	color: white;
+	border-radius: 10px;
+	
+}
+
+tr{
+	
+	text-align:center;
+	
+}
+
+#main-container{
+
+	width:970px;
+
+}
+
+#Congrats{
+	
+	text-align: center;
+	color: #ffff00;
+	size: 30px;
+	
+}
+
+input.MyButton{
+	
+	border-color:#3EACA8;
+	background-color: #3EACA8;
+	color: white;
+	
+}
+
+h2{
+	
+	text-align:center;
+	font-family: calibri;
+	font-size: 22pt;
+	
+}
+
+h3{
+	
+	background-color: #18E73C;
+	color:white;
+	
+}
+
+h3.footer{
+	
+	color: #b4c7e7;
+	
+}
+
+h4{
+	
+	margin:0;
+	padding-bottom:5pt;
+	text-align:center;
+	font-family: calibri;
+	font-size: 16pt;
+	color:#5A5050;
+	
+}
+
+img.img-container{
+
+   max-width:90%;
+   max-height:90%;
+
+}
+
+p{
+	
+	text-align:left;
+	
+}
+
+/* The close button */
+/*.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}*/
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+    color: black;
+}
+
+input.LoginCred{
+	
+	background-color: #ffffff;
+	padding-left: 5px;
+	
+}
+
+input.LoginSubmit{
+	
+	background-color: #008000;
+	border: 1;
+	border-color: black;
+	width: 175px;
+	height: 25px;
+	
+}
+
+
+
+div.ParentDiv{
+	
+	text-align:center;
+
+}
+
+div.ChildDiv{
+	
+	vertical-align:middle;
+	display:inline-block;
+	padding-right: 2pt;
+	height:100%;
+}
+
+div.myHeader{
+	
+	display:flex;
+	justify-content:space-between;
+	
+}
+
+img#HeaderImg{
+	
+	vertical-align:middle;
+	
+}
+
+div#ProfileName{
+	
+	vertical-align:bottom;
+	width:100%;
+	
+}
+
+h1#myName{
+
+	text-align:center;
+	font-family: calibri;
+	font-size: 42pt;
+	color:#5A5050;
+	
+}
+
+div#FooterDiv{
+	
+	position:absolute;
+	bottom:0;
+}
+
+input#FName{
+	
+	padding-left: 5px;
+	background-color: #ededed;
+	width: 25%;
+	
+}
+
+input#LName{
+	
+	padding-left: 5px;
+	background-color: #ededed;
+	width: 25%;
+	
+}
+
+input#UserName{
+	
+	padding-left: 5px;
+	background-color: #ededed;
+	width: 25%;
+	
+}
+input#Password{
+	
+	padding-left: 5px;
+	background-color: #ededed;
+	width: 25%;
+	
+}
+
+input#SigPath{
+	
+	padding-left: 5px;
+	background-color: #ededed;
+	width: 25%;
+	
+}
+
+/*
+div.spacer{
+	
+	display:inline-block;
+	width:10px;
+	
+}
+*/
+.column-wrap{
+	width: 80%;
+	margin: 0;
+}
+
+.column-80pct{
+	width: 80%;
+}
+
+.column-20pct{
+	widows: 20%;
+}
+
+.right{
+	float: right;
+}
+
+.left{
+	float: left;
+}
+
+.border{
+	border:thin;
+	border-color: lightgreen;
+	border-style: solid;
+	width: auto;
+}
