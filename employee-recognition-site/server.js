@@ -6,35 +6,70 @@ Description: Capstone Project
 'use strict';
 
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 const rp = require('request-promise');
 const path = require('path');
 const uuid = require('uuid/v4')
 const session = require('express-session')
-const FileStore = require('session-file-store')(session);
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+var genUser = {
+    username: 'regUser',
+    password: 'wordpass',
+    id: '456'
+};
+
+const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(session({
+    genid: (req) => {
+	return uuid()
+    },
+    secret: 'groupmaia',
+    resave: false,
+    saveUninitialized: true
+}))
+
+passport.use(new LocalStrategy(
+    { usernameField: 'username' },
+    (username, password, done) => {
+	if(username === genUser.username && password === genUser.password) {
+	    console.log('Local strategy returned true')
+	    return done(null, genUser)
+	}
+    }
+));
+
+passport.serializeUser((user, done) => {
+  console.log('Inside serializeUser callback')
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+    console.log('Inside deserializer');
+    console.log(id);
+    var user;
+    if (id == genUser.id) {
+	user = genUser;
+    }
+    else {
+	user = false;
+    }
+    done(null, user);
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 //Using handlebars for rendering pages
 const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
-//Create session ID generator
-app.use(session({
-  genid: (req) => {
-    return uuid() // use UUIDs for session IDs
-  },
-  store: new FileStore(),
-  secret: 'groupmaia',
-  resave: false,
-  saveUninitialized: true
-}))
-
 app.get('/', function (req, res) {
-    //Display a homepage with a link to start the process
-    var context = {};
+    //Redirect straight to home
     res.redirect('/home');
 });
 
@@ -49,22 +84,25 @@ app.get('/home', function (req, res) {
 	context.login = "Login failed";
     }
     else {
-	context.login = "Login not attempted";
+	context.login = req.user;
+	console.log(req.user);
     }
     res.render('homepage', context);
 });
 
-app.post('/login', function(req, res) {
-    //middleware for now for authentication
-    var username = req.body.username;
-    var password = req.body.password;
-    console.log(req.body);
-    if (username == "regUser" && password == "wordpass") {
-	res.redirect('/home?login=success');
-    }
-    else {
-	res.redirect('/home?login=failure');
-    }
+app.post('/login', function(req, res, next) {
+    console.log('Inside POST /login callback');
+    passport.authenticate('local', (err, user, info) => {
+	console.log('Inside passport.authenticate() callback');
+	console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`);
+	console.log(`req.user: ${JSON.stringify(req.user)}`);
+	req.login(user, (err) => {
+	    console.log('Inside req.login() callback');
+	    console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`);
+	    console.log(`req.user: ${JSON.stringify(req.user)}`);
+	    return res.redirect('/home');
+	})
+    })(req, res, next);
 });
 
 const PORT = process.env.PORT || 8080;

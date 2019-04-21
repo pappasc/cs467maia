@@ -10,6 +10,9 @@ const app = express();
 const bodyParser = require('body-parser');
 const rp = require('request-promise');
 const path = require('path');
+const uuid = require('uuid/v4')
+const session = require('express-session')
+const FileStore = require('session-file-store')(session);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -18,10 +21,21 @@ const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
+//Create session ID generator
+app.use(session({
+  genid: (req) => {
+    return uuid() // use UUIDs for session IDs
+  },
+  store: new FileStore(),
+  secret: 'groupmaia',
+  resave: false,
+  saveUninitialized: true
+}))
+
 app.get('/', function (req, res) {
     //Display a homepage with a link to start the process
     var context = {};
-    res.render('homepage', context);
+    res.redirect('/home');
 });
 
 app.get('/home', function (req, res) {
