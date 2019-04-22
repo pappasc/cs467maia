@@ -11,13 +11,15 @@ const rp = require('request-promise');
 const path = require('path');
 const uuid = require('uuid/v4')
 const session = require('express-session')
+const FileStore = require('session-file-store')(session);
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 var genUser = {
     username: 'regUser',
     password: 'wordpass',
-    id: '456'
+    id: '456',
+    userType: 'user'
 };
 
 const app = express();
@@ -25,32 +27,35 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(session({
     genid: (req) => {
-	return uuid()
+	return uuid();
     },
+    store: new FileStore(),
     secret: 'groupmaia',
     resave: false,
     saveUninitialized: true
-}))
+}));
 
 passport.use(new LocalStrategy(
-    { usernameField: 'username' },
     (username, password, done) => {
+	//logic for checking user credentials
+	//make call to DB API to retreive user password and id
 	if(username === genUser.username && password === genUser.password) {
-	    console.log('Local strategy returned true')
 	    return done(null, genUser)
+	}
+	else {
+	    return done(null, false);
 	}
     }
 ));
 
 passport.serializeUser((user, done) => {
-  console.log('Inside serializeUser callback')
-  done(null, user.id);
+    done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
-    console.log('Inside deserializer');
-    console.log(id);
     var user;
+    //logic for checking user id
+    //should make a call to DB API to retreive id info
     if (id == genUser.id) {
 	user = genUser;
     }
@@ -68,6 +73,8 @@ const handlebars = require('express-handlebars').create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
+app.use(express.static(path.join(__dirname, '/public')));
+
 app.get('/', function (req, res) {
     //Redirect straight to home
     res.redirect('/home');
@@ -77,32 +84,30 @@ app.get('/home', function (req, res) {
     //Display a homepage with a link to start the process
     var context = {};
     context.login = "";
-    if (req.query.login == "success") {
+    if (req.isAuthenticated()) {
 	context.login = "Login succeeded";
-    }
-    else if (req.query.login == "failure") {
-	context.login = "Login failed";
+	context.login = req.user.username;
+	if (req.user.userType == 'user') {
+	    context.login += ' regular user';
+	}
+	console.log(req.user);
     }
     else {
-	context.login = req.user;
-	console.log(req.user);
+	context.login = "Need to be logged in";
     }
     res.render('homepage', context);
 });
 
-app.post('/login', function(req, res, next) {
-    console.log('Inside POST /login callback');
+app.get('/test', function (req, res) {
+    res.send("Test page");
+});
+
+app.post('/login', function(req, res) {
     passport.authenticate('local', (err, user, info) => {
-	console.log('Inside passport.authenticate() callback');
-	console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`);
-	console.log(`req.user: ${JSON.stringify(req.user)}`);
 	req.login(user, (err) => {
-	    console.log('Inside req.login() callback');
-	    console.log(`req.session.passport: ${JSON.stringify(req.session.passport)}`);
-	    console.log(`req.user: ${JSON.stringify(req.user)}`);
 	    return res.redirect('/home');
 	})
-    })(req, res, next);
+    })(req, res);
 });
 
 const PORT = process.env.PORT || 8080;
