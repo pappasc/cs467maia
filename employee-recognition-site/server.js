@@ -11,7 +11,8 @@ const rp = require('request-promise');
 const path = require('path');
 const uuid = require('uuid/v4')
 const session = require('express-session')
-const FileStore = require('session-file-store')(session);
+const {Datastore} = require('@google-cloud/datastore');
+
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -23,13 +24,20 @@ var genUser = {
 };
 
 const app = express();
+const DatastoreStore = require('@google-cloud/connect-datastore')(session);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(session({
     genid: (req) => {
 	return uuid();
     },
-    store: new FileStore(),
+    store: new DatastoreStore({
+	dataset: new Datastore({
+	    kind: 'express-sessions',
+	    projectId: 'cs467maia',
+	    keyFilename: 'cs467maia-a21a648c06b7.json'
+	})
+    }),
     secret: 'groupmaia',
     resave: false,
     saveUninitialized: true
