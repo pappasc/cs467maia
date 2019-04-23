@@ -16,13 +16,6 @@ const {Datastore} = require('@google-cloud/datastore');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-var genUser = {
-    username: 'regUser',
-    password: 'wordpass',
-    id: '456',
-    userType: 'user'
-};
-
 const app = express();
 const DatastoreStore = require('@google-cloud/connect-datastore')(session);
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,34 +36,69 @@ app.use(session({
     saveUninitialized: true
 }));
 
-passport.use(new LocalStrategy(
-    (username, password, done) => {
-	//logic for checking user credentials
-	//make call to DB API to retreive user password and id
-	if(username === genUser.username && password === genUser.password) {
-	    return done(null, genUser)
+passport.use(new LocalStrategy((username, password, done) => {
+    //logic for checking user credentials
+    //make call to DB API to retreive user password and id
+    
+    var options1 = {
+	uri: 'http://localhost:8080/users',
+	json: true // Automatically parses the JSON string in the response
+    };
+    
+    return rp(options1).then(function (users) {
+	var i;
+	var userObj = null;
+	for (i = 0; i < users.user_ids.length; i++) {
+	    if (username == users.user_ids[i].email_address) {
+		userObj = users.user_ids[i];
+		break;
+	    }
+	}
+	if (userObj != null) {
+	    var options2 = {
+		uri: 'http://localhost:8080/users/' + userObj.user_id + '/login',
+		json: true
+	    };
+	    
+	    return rp(options2).then(function(passObj) {
+		if (passObj.password == password) {
+		    return done(null, userObj);
+		}
+		else {
+		    return done(null, false);
+		}
+	    });
 	}
 	else {
 	    return done(null, false);
 	}
-    }
-));
+    });
+}));
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user.user_id);
 });
 
-passport.deserializeUser((id, done) => {
-    var user;
+passport.deserializeUser((user_id, done) => {
     //logic for checking user id
     //should make a call to DB API to retreive id info
-    if (id == genUser.id) {
-	user = genUser;
-    }
-    else {
-	user = false;
-    }
-    done(null, user);
+
+    var options = {
+	uri: 'http://localhost:8080/users',
+	json: true // Automatically parses the JSON string in the response
+    };
+    
+    rp(options).then(function (users) {
+	var i;
+	var userObj = false;
+	for (i = 0; i < users.user_ids.length; i++) {
+	    if (user_id == users.user_ids[i].user_id) {
+		userObj = users.user_ids[i];
+		break;
+	    }
+	}
+	done(null, userObj);
+    });
 });
 
 app.use(passport.initialize());
@@ -83,6 +111,8 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(path.join(__dirname, '/public')));
 
+app.use('/users', require('./testCode/dummyBackend.js'));
+
 app.get('/', function (req, res) {
     //Redirect straight to home
     res.redirect('/home');
@@ -93,12 +123,7 @@ app.get('/home', function (req, res) {
     var context = {};
     context.login = "";
     if (req.isAuthenticated()) {
-	context.login = "Login succeeded";
-	context.login = req.user.username;
-	if (req.user.userType == 'user') {
-	    context.login += ' regular user';
-	}
-	console.log(req.user);
+	context.login = req.user.first_name + req.user.last_name;
     }
     else {
 	context.login = "Need to be logged in";
