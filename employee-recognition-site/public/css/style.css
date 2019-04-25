@@ -306,3 +306,7 @@ div.spacer{
 	border-style: solid;
 	width: auto;
 }
+
+.evenSplit{
+	width: "50%";
+}
