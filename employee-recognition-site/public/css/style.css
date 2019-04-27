@@ -4,40 +4,32 @@
 /*Basic Sytle sheet for the Employee recognition portal*/
 
 #header {
-	width: 90%;
+	width: 100%;
 	height: 200px;
     background: #087114;
 	align-content: space-around;
 }
 
-ul#main-nav {
-	text-align: middle;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #b4c7e7;
+nav {
+	float: left;
+	width: 20%;
+	/*background-color: #b4c7e7;*/
 }
 
-ul#main-nav>li {
-	display: inline-block;
+nav ul{
+	list-style-type: none;
+	display:inline;
 }
 
-li {
-    float: left;
+nav li{
+	padding-bottom: 10%;
 }
 
-li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-/* Change the link color to #111 (black) on hover */
-li a:hover {
-    background-color: #3EACA8;
+article{
+	float: right;
+	padding: 15px;
+	width:75%;
+	background-color: #ccffcc;
 }
 
 #main-title{
@@ -57,13 +49,19 @@ div.text-section{
 	padding-Right:10%;
 	
 }
-
+/*
+section:after{
+	content: "";
+	display: table;
+	clear: both;
+}
+*/
 table{
 
 	width: 100%;
-	border: 1px solid;
+	border: 2px solid;
 	border-radius: 10px;
-
+	padding: 20px;
 }
 
 th{
@@ -72,18 +70,6 @@ th{
 	color: white;
 	border-radius: 10px;
 	
-}
-
-tr{
-	
-	text-align:center;
-	
-}
-
-#main-container{
-
-	width:970px;
-
 }
 
 #Congrats{
@@ -280,7 +266,8 @@ div.spacer{
 }
 */
 .column-wrap{
-	width: 80%;
+	align-content: center;
+	width: 100%;
 	margin: 0;
 }
 
@@ -289,7 +276,14 @@ div.spacer{
 }
 
 .column-20pct{
-	widows: 20%;
+	width: 20%;
+}
+
+.colBtn{
+	width: 10%;
+	border-width: thin;
+	border-color: lightgreen;
+	align-content: flex-start;
 }
 
 .right{
@@ -305,4 +299,16 @@ div.spacer{
 	border-color: lightgreen;
 	border-style: solid;
 	width: auto;
+}
+
+.evenSplit{
+	width: "50%";
+}
+
+button{
+	width: 100%;
+	height: 5px;
+	background-color: #09DC14;
+	font-family: baumans;
+	font-size: large;
 }
