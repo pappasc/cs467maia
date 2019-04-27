@@ -38,6 +38,10 @@ app.use(session({
     saveUninitialized: true
 }));
 
+
+//making an attempt to fix callback hell
+
+
 //Enable a local strategy for logging in
 //Sift through users first then admins
 //Adds a "type" attribute to objects to distinguish users from admins
@@ -47,69 +51,93 @@ passport.use(new LocalStrategy((username, password, done) => {
     
     var options1 = {
 	uri: 'http://localhost:8080/users',
-	json: true // Automatically parses the JSON string in the response
+	json: true, // Automatically parses the JSON string in the response
+	resolveWithFullResponse: true
     };
     
     return rp(options1).then(function (users) {
-	var i;
-	var userObj = null;
-	for (i = 0; i < users.user_ids.length; i++) {
-	    if (username == users.user_ids[i].email_address) {
-		userObj = users.user_ids[i];
-		break;
+	if (users.statusCode == 200) {
+	    var i;
+	    var userObj = null;
+	    for (i = 0; i < users.body.user_ids.length; i++) {
+		if (username == users.body.user_ids[i].email_address) {
+		    userObj = users.body.user_ids[i];
+		    break;
+		}
 	    }
-	}
-	if (userObj != null) {
-	    var options2 = {
-		uri: 'http://localhost:8080/users/' + userObj.user_id + '/login',
-		json: true
-	    };
-	    
-	    return rp(options2).then(function(passObj) {
-		if (passObj.password == password) {
-		    userObj.type = 'user';
-		    return done(null, userObj);
-		}
-		else {
-		    return done(null, false);
-		}
-	    });
-	}
-	else {
-	    var options3 = {
-		uri: 'http://localhost:8080/admins',
-		json: true // Automatically parses the JSON string in the response
-	    };
-	    
-	    return rp(options3).then(function (admins) {
-		var j;
-		var adminObj = null;
-		for (j = 0; j < admins.admin_ids.length; j++) {
-		    if (username == admins.admin_ids[j].email_address) {
-			adminObj = admins.admin_ids[j];
-			break;
-		    }
-		}
-		if (adminObj != null) {
-		    var options4 = {
-			uri: 'http://localhost:8080/admins/' + adminObj.admin_id + '/login',
-			json: true
-		    };
-		    
-		    return rp(options4).then(function(passObj) {
-			if (passObj.password == password) {
-			    adminObj.type = 'admin';
-			    return done(null, adminObj);
+	    if (userObj != null) {
+		var options2 = {
+		    uri: 'http://localhost:8080/users/' + userObj.user_id + '/login',
+		    json: true,
+		    resolveWithFullResponse: true
+		};
+		
+		return rp(options2).then(function(passObj) {
+		    if (passObj.statusCode == 200) {
+			if (passObj.body.password == password) {
+			    userObj.type = 'user';
+			    return done(null, userObj);
 			}
 			else {
 			    return done(null, false);
 			}
-		    });
-		}
-		else {
-		    return done(null, false);
-		}
-	    });
+		    }
+		    else {
+			return done(null, false);
+		    }
+		});
+	    }
+	    else {
+		var options3 = {
+		    uri: 'http://localhost:8080/admins',
+		    json: true, // Automatically parses the JSON string in the response
+		    resolveWithFullResponse: true
+		};
+
+		return rp(options3).then(function (admins) {
+		    if (admins.statusCode == 200) {
+			var j;
+			var adminObj = null;
+			for (j = 0; j < admins.body.admin_ids.length; j++) {
+			    if (username == admins.body.admin_ids[j].email_address) {
+				adminObj = admins.body.admin_ids[j];
+				break;
+			    }
+			}
+			if (adminObj != null) {
+			    var options4 = {
+				uri: 'http://localhost:8080/admins/' + adminObj.admin_id + '/login',
+				json: true,
+				resolveWithFullResponse: true
+			    };
+			    
+			    return rp(options4).then(function(passObj) {
+				if (passObj.statusCode == 200) {
+				    if (passObj.body.password == password) {
+					adminObj.type = 'admin';
+					return done(null, adminObj);
+				    }
+				    else {
+					return done(null, false);
+				    }
+				}
+				else {
+				    return done(null, false);
+				}
+			    });
+			}
+			else {
+			    return done(null, false);
+			}
+		    }
+		    else {
+			return done(null, false);
+		    }
+		});
+	    }
+	}
+	else {
+	    return done(null, false);
 	}
     });
 }));
