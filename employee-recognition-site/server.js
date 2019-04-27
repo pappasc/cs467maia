@@ -241,21 +241,58 @@ app.get('/home', function (req, res) {
     var context = {};
     if (req.isAuthenticated()) {
 	context.login = false;
+	context.jsscripts = ["logoutUser.js"];
 	if (req.user.type == 'user') {
 	    context.isUser = true;
 	    context.isAdmin = false;
-	    context.name = 'User ' + req.user.first_name + ' ' + req.user.last_name;
+	    context.jsscripts.push("gotoAccount.js");
 	}
 	else {
 	    context.isUser = false;
 	    context.isAdmin = true;
-	    context.name = 'Admin ' + req.user.first_name + ' ' + req.user.last_name;
 	}
     }
     else {
 	context.login = true;
     }
     res.render('homepage', context);
+});
+
+app.get('/account', function (req, res) {
+    var context = {};
+    if (req.isAuthenticated()) {
+	context.login = false;
+	if (req.user.type == 'user') {
+	    context.email = req.user.email_address;
+	    context.firstName = req.user.first_name;
+	    context.lastName = req.user.last_name;
+	    context.signature = req.user.signature_path;
+	    context.jsscripts = ["logoutUser.js"];
+	    res.render('userpage', context);
+	}
+	else if (req.user.type == 'admin'){
+	    res.status(403).send("Error 403, not allowed to view this page");
+	}
+	else {
+	    res.status(500).send("Error 500, something went wrong");
+	}
+    }
+    else {
+	res.status(401).send("Error 401, need to be authenticated");
+    }
+});
+
+app.get('/logout', function(req, res, next) {
+    if (req.session) {
+	req.session.destroy(function(err) {
+	    if(err) {
+		return next(err);
+	    }
+	    else {
+            return res.redirect('/home');
+	    }
+	});
+    }
 });
 
 app.get('/test', function (req, res) {
