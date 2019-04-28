@@ -38,10 +38,6 @@ app.use(session({
     saveUninitialized: true
 }));
 
-
-//making an attempt to fix callback hell
-
-
 //Enable a local strategy for logging in
 //Sift through users first then admins
 //Adds a "type" attribute to objects to distinguish users from admins
@@ -50,7 +46,7 @@ passport.use(new LocalStrategy((username, password, done) => {
     //make call to DB API to retreive user password and id
     
     var options1 = {
-	uri: 'http://localhost:8080/users',
+	uri: 'https://cs467maia.appspot.com/users',
 	json: true, // Automatically parses the JSON string in the response
 	resolveWithFullResponse: true
     };
@@ -67,7 +63,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 	    }
 	    if (userObj != null) {
 		var options2 = {
-		    uri: 'http://localhost:8080/users/' + userObj.user_id + '/login',
+		    uri: 'https://cs467maia.appspot.com/users/' + userObj.user_id + '/login',
 		    json: true,
 		    resolveWithFullResponse: true
 		};
@@ -89,7 +85,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 	    }
 	    else {
 		var options3 = {
-		    uri: 'http://localhost:8080/admins',
+		    uri: 'https://cs467maia.appspot.com/admins',
 		    json: true, // Automatically parses the JSON string in the response
 		    resolveWithFullResponse: true
 		};
@@ -106,7 +102,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 			}
 			if (adminObj != null) {
 			    var options4 = {
-				uri: 'http://localhost:8080/admins/' + adminObj.admin_id + '/login',
+				uri: 'https://cs467maia.appspot.com/admins/' + adminObj.admin_id + '/login',
 				json: true,
 				resolveWithFullResponse: true
 			    };
@@ -177,7 +173,7 @@ passport.deserializeUser((userIdent, done) => {
     }
     
     var options = {
-	uri: 'http://localhost:8080/' + uriType,
+	uri: 'https://cs467maia.appspot.com/' + uriType,
 	json: true // Automatically parses the JSON string in the response
     };
     
@@ -255,7 +251,7 @@ app.get('/home', function (req, res) {
     else {
 	context.login = true;
     }
-    res.render('homepage', context);
+    res.status(200).render('homepage', context);
 });
 
 app.get('/account', function (req, res) {
@@ -268,13 +264,13 @@ app.get('/account', function (req, res) {
 	    context.lastName = req.user.last_name;
 	    context.signature = req.user.signature_path;
 	    context.jsscripts = ["logoutUser.js"];
-	    res.render('userpage', context);
+	    res.status(200).render('userpage', context);
 	}
 	else if (req.user.type == 'admin'){
 	    res.status(403).send("Error 403, not allowed to view this page");
 	}
 	else {
-	    res.status(500).send("Error 500, something went wrong");
+	    res.status(500).render('500');
 	}
     }
     else {
@@ -305,6 +301,20 @@ app.post('/login', function(req, res) {
 	    return res.redirect('/home');
 	})
     })(req, res);
+});
+
+//If the user tries navigating to a non-supplied page
+app.use(function(req,res){
+  res.status(404);
+  res.render('404');
+});
+
+//Something went wrong
+app.use(function(err, req, res, next){
+  console.error(err.stack);
+  res.type('plain/text');
+  res.status(500);
+  res.render('500');
 });
 
 const PORT = process.env.PORT || 8080;
