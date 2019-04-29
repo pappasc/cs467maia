@@ -46,70 +46,94 @@ passport.use(new LocalStrategy((username, password, done) => {
     //make call to DB API to retreive user password and id
     
     var options1 = {
-	uri: 'http://localhost:8080/users',
-	json: true // Automatically parses the JSON string in the response
+	uri: 'https://cs467maia.appspot.com/users',
+	json: true, // Automatically parses the JSON string in the response
+	resolveWithFullResponse: true
     };
     
     return rp(options1).then(function (users) {
-	var i;
-	var userObj = null;
-	for (i = 0; i < users.user_ids.length; i++) {
-	    if (username == users.user_ids[i].email_address) {
-		userObj = users.user_ids[i];
-		break;
+	if (users.statusCode == 200) {
+	    var i;
+	    var userObj = null;
+	    for (i = 0; i < users.body.user_ids.length; i++) {
+		if (username == users.body.user_ids[i].email_address) {
+		    userObj = users.body.user_ids[i];
+		    break;
+		}
 	    }
-	}
-	if (userObj != null) {
-	    var options2 = {
-		uri: 'http://localhost:8080/users/' + userObj.user_id + '/login',
-		json: true
-	    };
-	    
-	    return rp(options2).then(function(passObj) {
-		if (passObj.password == password) {
-		    userObj.type = 'user';
-		    return done(null, userObj);
-		}
-		else {
-		    return done(null, false);
-		}
-	    });
-	}
-	else {
-	    var options3 = {
-		uri: 'http://localhost:8080/admins',
-		json: true // Automatically parses the JSON string in the response
-	    };
-	    
-	    return rp(options3).then(function (admins) {
-		var j;
-		var adminObj = null;
-		for (j = 0; j < admins.admin_ids.length; j++) {
-		    if (username == admins.admin_ids[j].email_address) {
-			adminObj = admins.admin_ids[j];
-			break;
-		    }
-		}
-		if (adminObj != null) {
-		    var options4 = {
-			uri: 'http://localhost:8080/admins/' + adminObj.admin_id + '/login',
-			json: true
-		    };
-		    
-		    return rp(options4).then(function(passObj) {
-			if (passObj.password == password) {
-			    adminObj.type = 'admin';
-			    return done(null, adminObj);
+	    if (userObj != null) {
+		var options2 = {
+		    uri: 'https://cs467maia.appspot.com/users/' + userObj.user_id + '/login',
+		    json: true,
+		    resolveWithFullResponse: true
+		};
+		
+		return rp(options2).then(function(passObj) {
+		    if (passObj.statusCode == 200) {
+			if (passObj.body.password == password) {
+			    userObj.type = 'user';
+			    return done(null, userObj);
 			}
 			else {
 			    return done(null, false);
 			}
-		    });
-		}
-		else {
-		    return done(null, false);
-		}
-	    });
+		    }
+		    else {
+			return done(null, false);
+		    }
+		});
+	    }
+	    else {
+		var options3 = {
+		    uri: 'https://cs467maia.appspot.com/admins',
+		    json: true, // Automatically parses the JSON string in the response
+		    resolveWithFullResponse: true
+		};
+
+		return rp(options3).then(function (admins) {
+		    if (admins.statusCode == 200) {
+			var j;
+			var adminObj = null;
+			for (j = 0; j < admins.body.admin_ids.length; j++) {
+			    if (username == admins.body.admin_ids[j].email_address) {
+				adminObj = admins.body.admin_ids[j];
+				break;
+			    }
+			}
+			if (adminObj != null) {
+			    var options4 = {
+				uri: 'https://cs467maia.appspot.com/admins/' + adminObj.admin_id + '/login',
+				json: true,
+				resolveWithFullResponse: true
+			    };
+			    
+			    return rp(options4).then(function(passObj) {
+				if (passObj.statusCode == 200) {
+				    if (passObj.body.password == password) {
+					adminObj.type = 'admin';
+					return done(null, adminObj);
+				    }
+				    else {
+					return done(null, false);
+				    }
+				}
+				else {
+				    return done(null, false);
+				}
+			    });
+			}
+			else {
+			    return done(null, false);
+			}
+		    }
+		    else {
+			return done(null, false);
+		    }
+		});
+	    }
+	}
+	else {
+	    return done(null, false);
 	}
     });
 }));
@@ -149,7 +173,7 @@ passport.deserializeUser((userIdent, done) => {
     }
     
     var options = {
-	uri: 'http://localhost:8080/' + uriType,
+	uri: 'https://cs467maia.appspot.com/' + uriType,
 	json: true // Automatically parses the JSON string in the response
     };
     
@@ -213,21 +237,58 @@ app.get('/home', function (req, res) {
     var context = {};
     if (req.isAuthenticated()) {
 	context.login = false;
+	context.jsscripts = ["logoutUser.js"];
 	if (req.user.type == 'user') {
 	    context.isUser = true;
 	    context.isAdmin = false;
-	    context.name = 'User ' + req.user.first_name + ' ' + req.user.last_name;
+	    context.jsscripts.push("gotoAccount.js");
 	}
 	else {
 	    context.isUser = false;
 	    context.isAdmin = true;
-	    context.name = 'Admin ' + req.user.first_name + ' ' + req.user.last_name;
 	}
     }
     else {
 	context.login = true;
     }
-    res.render('homepage', context);
+    res.status(200).render('homepage', context);
+});
+
+app.get('/account', function (req, res) {
+    var context = {};
+    if (req.isAuthenticated()) {
+	context.login = false;
+	if (req.user.type == 'user') {
+	    context.email = req.user.email_address;
+	    context.firstName = req.user.first_name;
+	    context.lastName = req.user.last_name;
+	    context.signature = req.user.signature_path;
+	    context.jsscripts = ["logoutUser.js"];
+	    res.status(200).render('userpage', context);
+	}
+	else if (req.user.type == 'admin'){
+	    res.status(403).send("Error 403, not allowed to view this page");
+	}
+	else {
+	    res.status(500).render('500');
+	}
+    }
+    else {
+	res.status(401).send("Error 401, need to be authenticated");
+    }
+});
+
+app.get('/logout', function(req, res, next) {
+    if (req.session) {
+	req.session.destroy(function(err) {
+	    if(err) {
+		return next(err);
+	    }
+	    else {
+            return res.redirect('/home');
+	    }
+	});
+    }
 });
 
 app.get('/test', function (req, res) {
@@ -240,6 +301,20 @@ app.post('/login', function(req, res) {
 	    return res.redirect('/home');
 	})
     })(req, res);
+});
+
+//If the user tries navigating to a non-supplied page
+app.use(function(req,res){
+  res.status(404);
+  res.render('404');
+});
+
+//Something went wrong
+app.use(function(err, req, res, next){
+  console.error(err.stack);
+  res.type('plain/text');
+  res.status(500);
+  res.render('500');
 });
 
 const PORT = process.env.PORT || 8080;

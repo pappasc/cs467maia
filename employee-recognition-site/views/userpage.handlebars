@@ -11,7 +11,7 @@
                     <li><button>Create Award</button></li>
                     <li><button>Manage Awards</button></li>
                     <li><button>Save</button></li>
-                    <li><button>Logout</button></li>
+                    <li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
                 </ul>
             </nav>
 
@@ -25,7 +25,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="email" name="username" size="100">
+                            <input type="email" name="username" size="100" value={{email}}>
                         </td>
                     </tr>
                     <tr>
@@ -36,9 +36,9 @@
                     </tr>
                     <tr>
                         <td>                        
-                            <input type="text" name="Fname" size="30"> 
+                            <input type="text" name="Fname" size="30" value={{firstName}}> 
                             &nbsp;
-                            <input type="text" name="Lname" size="30">
+                            <input type="text" name="Lname" size="30" value={{lastName}}>
                         </td>
                     </tr>
                     <tr>
@@ -58,7 +58,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="file" name="sigFile" size="100"><br>
+                            <input type="file" name="sigFile" size="100" value={{signature}}><br>
                         </td>
                     </tr>
 

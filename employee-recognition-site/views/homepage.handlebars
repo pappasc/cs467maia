@@ -37,15 +37,20 @@
 						  Username:<br>
 						  <input type="text" name="username"><br>
 						  Password:<br>
-						  <input type="text" name="password"><br><br>
+						  <input type="password" name="password"><br><br>
 						  <input type="submit" value="Login">
 						</form>
 					{{else}}
-						{{#if isUser}}
-						      <div>{{name}}</div>
-						{{else if isAdmin}}
-						       <div>{{name}}</div>
-						{{/if}}
+						<ul>
+							{{#if isUser}}
+							      <li><button id="accountButton" onclick="gotoAccount()">Account</button></li>
+                    				      	      <li><button>Manage Awards</button></li>
+							{{else if isAdmin}}
+							       <li><button>Manage Employees</button></li>
+                    				      	       <li><button>Statistics</button></li>
+							{{/if}}
+							<li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
+							</ul>
 					{{/if}}
 				</td>
 			</table>
