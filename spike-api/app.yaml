@@ -1,0 +1,16 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /.*
+  script: spike.app
+
+libraries: 
+- name: flask
+  version: "0.12"
+
+# references: 
+# [1] https://cloud.google.com/appengine/docs/standard/python/quickstart re: setting up app.yaml
+# [2] https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27
+# [3] https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27
