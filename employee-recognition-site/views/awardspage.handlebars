@@ -35,13 +35,19 @@
 				 		</thead>
 				 		{{#each users}}
 				 	 		<tr>
-								<td><input type="radio" name="employee" value={{user_id}}></td>
+								<td align="center"><input type="radio" name="employee" value={{user_id}}></td>
 								<td align="center">{{first_name}} {{last_name}}</td>
 								<td align="center">{{email_address}}</td>
 								<td align="center">{{created_timestamp}}</td>
                 					 </tr>
 						{{/each}}
 					</table>
+					<div>Award Type:
+					<select>
+						<option value="week">week</option>
+						<option value="month">month</option>
+					</select>
+					</div>
 					<input type="submit" value="Submit">
 				  </form>
 				{{else}}

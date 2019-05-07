@@ -5,7 +5,7 @@ module.exports = function(){
 
     function getUsersExcept(req){
         var options = {
-	    uri: 'https://cs467maia.appspot.com/users',
+	    uri: 'https://maia-backend.appspot.com/users',
 	    json: true, // Automatically parses the JSON string in the response
 	};
 
