@@ -52,6 +52,10 @@ module.exports = function(){
 	});
     }
 
+    router.get('/', function (req, res) {
+	res.redirect('/awards/manage');
+    });
+
     //Page for awards. Calls getAwards for asynchronous functionality
     router.get('/:pageOption', function (req, res) {
 	var context = {};

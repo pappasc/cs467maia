@@ -5,12 +5,13 @@ module.exports = function(){
     router.get('/', function (req, res) {
 	var context = {};
 	if (req.isAuthenticated()) {
-	    context.login = false;
 	    if (req.user.type == 'user') {
+		context.userId = req.user.user_id;
 		context.email = req.user.email_address;
 		context.firstName = req.user.first_name;
-	    context.lastName = req.user.last_name;
+		context.lastName = req.user.last_name;
 		context.signature = req.user.signature_path;
+		context.isUser = true;
 		context.jsscripts = ["logoutUser.js", "gotoAwards.js"];
 		res.status(200).render('userpage', context);
 	    }

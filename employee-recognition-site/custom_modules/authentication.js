@@ -11,7 +11,7 @@ passport.use(new LocalStrategy((username, password, done) => {
     //make call to DB API to retreive user password and id
     
     var options1 = {
-	uri: 'https://cs467maia.appspot.com/users',
+	uri: 'https://maia-backend.appspot.com/users',
 	json: true, // Automatically parses the JSON string in the response
 	resolveWithFullResponse: true
     };
@@ -28,7 +28,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 	    }
 	    if (userObj != null) {
 		var options2 = {
-		    uri: 'https://cs467maia.appspot.com/users/' + userObj.user_id + '/login',
+		    uri: 'https://maia-backend.appspot.com/users/' + userObj.user_id + '/login',
 		    json: true,
 		    resolveWithFullResponse: true
 		};
@@ -50,7 +50,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 	    }
 	    else {
 		var options3 = {
-		    uri: 'https://cs467maia.appspot.com/admins',
+		    uri: 'https://maia-backend.appspot.com/admins',
 		    json: true, // Automatically parses the JSON string in the response
 		    resolveWithFullResponse: true
 		};
@@ -67,7 +67,7 @@ passport.use(new LocalStrategy((username, password, done) => {
 			}
 			if (adminObj != null) {
 			    var options4 = {
-				uri: 'https://cs467maia.appspot.com/admins/' + adminObj.admin_id + '/login',
+				uri: 'https://maia-backend.appspot.com/admins/' + adminObj.admin_id + '/login',
 				json: true,
 				resolveWithFullResponse: true
 			    };
@@ -138,7 +138,7 @@ passport.deserializeUser((userIdent, done) => {
     }
     
     var options = {
-	uri: 'https://cs467maia.appspot.com/' + uriType,
+	uri: 'https://maia-backend.appspot.com/' + uriType,
 	json: true // Automatically parses the JSON string in the response
     };
     
