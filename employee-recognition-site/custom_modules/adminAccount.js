@@ -11,14 +11,11 @@ module.exports = function(){
             context.firstName = req.user.first_name;
             context.lastName = req.user.last_name;
             context.signature = req.user.signature_path;
-            context.isView = true;		
             context.jsscripts = ["logoutUser.js", "gotoAwards.js"];
             res.status(200).render('userpage', context);
         }
 	    else if (req.user.type == 'admin'){
-            context.isView = false;
-            context.jsscripts = ["logoutUser.js"];
-		    res.status(200).render('userpage', context);
+            res.status(200).render('userpage', context);
             //res.status(403).send("Error 403, not allowed to view this page");
 	    }
 	    else {

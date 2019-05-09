@@ -16,7 +16,7 @@ nav {
 	/*background-color: #b4c7e7;*/
 }
 
-nav ul{
+ul{
 	list-style-type: none;
 	display:inline;
 }
@@ -276,7 +276,8 @@ div.spacer{
 }
 
 .column-20pct{
-	width: 20%;
+	padding-top: 50px;
+    width: 20%;
 }
 
 .colBtn{

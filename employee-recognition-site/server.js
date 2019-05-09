@@ -86,6 +86,7 @@ app.get('/logout', function(req, res, next) {
 app.use('/home', require('./custom_modules/home.js'));
 app.use('/awards', require('./custom_modules/awards.js'));
 app.use('/account', require('./custom_modules/account.js'));
+app.use('/employees', require('./custom_modules/employees.js'));
 
 //If the user tries navigating to a non-supplied page
 app.use(function(req,res){
