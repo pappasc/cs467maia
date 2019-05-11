@@ -10,9 +10,12 @@
                 <ul>
                     {{#if isView}}
                     <li><button id="awardsButton" onclick="gotoAwards('manage')">Manage Awards</button></li>
-                    {{/if}}
-                    <li><button>Save</button></li>
+                    <li><button id="saveUserButton" onclick="saveUser(username,Fname,Lname,Password,sigFile)">Save</button></li>
                     <li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
+                    {{else}}
+                    <li><button id="saveUserButton" onclick="saveUserInfo()">Save</button></li>
+                    <li><button id="cancelButton" onclick="gotoEmployees()">Cancel</button></li>
+                    {{/if}}
                 </ul>
             </nav>
 
@@ -29,7 +32,7 @@
                             {{#if isView}}
                                 {{email}}
                             {{else}}
-                                <input type="email" name="username" size="100" value={{email}}>
+                                <input type="email" name="username" id="UserName" size="100" value={{email}}>
                             {{/if}}
                         </td>
                     </tr>
@@ -41,9 +44,9 @@
                     </tr>
                     <tr>
                         <td>                        
-                            <input type="text" name="Fname" size="30" value={{firstName}}> 
+                            <input type="text" name="Fname" id="FName" size="30" value={{firstName}}> 
                             &nbsp;
-                            <input type="text" name="Lname" size="30" value={{lastName}}>
+                            <input type="text" name="Lname" id="LName" size="30" value={{lastName}}>
                         </td>
                     </tr>
                     {{#if isView}}
@@ -56,7 +59,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="password" name="password" size="20">
+                            <input type="password" name="Password" id="pword" size="20">
                         </td>
                     </tr>
                     {{/if}}
@@ -70,12 +73,15 @@
                             {{#if isView}}
                                 {{signature}}
                             {{else}}
-                                <input type="file" name="sigFile" size="100" value={{signature}}><br>
+                                <input type="file" name="sigFile" id="SigPath" size="100" value={{signature}}><br>
                             {{/if}}    
                         </td>
                     </tr>
 
                 </table>
+                {{#if err}}
+                    <h4>{{err}}</h4>
+                {{/if}}
             </article>
         </section>
     </div>

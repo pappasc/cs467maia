@@ -2,29 +2,36 @@ module.exports = function(){
     var express = require('express');
     var router = express.Router();
 
+    function getAdmin(id){
+        var options = {
+          uri: 'https://maia-backend.appspot.com/admins/'+ id,
+          json: true,
+        };
+
+        return rp(options).then(function (admin){
+            return admin.admin_ids;
+        });
+    }
+
     router.get('/', function (req, res) {
-	var context = {};
-	if (req.isAuthenticated()) {
-	    context.login = false;
-	    if (req.user.type == 'user') {
-            context.email = req.user.email_address;
-            context.firstName = req.user.first_name;
-            context.lastName = req.user.last_name;
-            context.signature = req.user.signature_path;
-            context.jsscripts = ["logoutUser.js", "gotoAwards.js"];
-            res.status(200).render('userpage', context);
+        var context = {};
+        if (req.isAuthenticated()) {
+            res.status(200).render('adminpage');
         }
-	    else if (req.user.type == 'admin'){
-            res.status(200).render('userpage', context);
-            //res.status(403).send("Error 403, not allowed to view this page");
-	    }
-	    else {
-		res.status(500).render('500');
-	    }
-	}
-	else {
-	    res.status(401).send("Error 401, need to be authenticated");
-	}
+        else {
+            res.status(401).send("Error 401, need to be authenticated");
+        }
+    });
+
+    router.get('/:id', function(req,res){
+        var context = {};
+        if (req.isAuthenticated()){
+            getAdmin(req.params.id).then(function (admins){
+                context.jsscripts = ["logoutUser.js", "gotoAwards.js"];
+                context.admins = admins;
+                res.status(200).render('adminpage', context);
+            });           
+        }
     });
     
     return router;

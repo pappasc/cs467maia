@@ -67,7 +67,7 @@ table{
 th{
 
 	background-color: #ccffcc;
-	color: white;
+	color: #148042;
 	border-radius: 10px;
 	
 }
@@ -116,7 +116,7 @@ h4{
 	text-align:center;
 	font-family: calibri;
 	font-size: 16pt;
-	color:#5A5050;
+	color:#d31212;
 	
 }
 
@@ -221,7 +221,7 @@ div#FooterDiv{
 input#FName{
 	
 	padding-left: 5px;
-	background-color: #ededed;
+	background-color: #ffffff;
 	width: 25%;
 	
 }
@@ -229,7 +229,7 @@ input#FName{
 input#LName{
 	
 	padding-left: 5px;
-	background-color: #ededed;
+	background-color: #ffffff;
 	width: 25%;
 	
 }
@@ -237,14 +237,14 @@ input#LName{
 input#UserName{
 	
 	padding-left: 5px;
-	background-color: #ededed;
+	background-color: #ffffff;
 	width: 25%;
 	
 }
 input#Password{
 	
 	padding-left: 5px;
-	background-color: #ededed;
+	background-color: #ffffff;
 	width: 25%;
 	
 }
@@ -252,7 +252,7 @@ input#Password{
 input#SigPath{
 	
 	padding-left: 5px;
-	background-color: #ededed;
+	background-color: #ffffff;
 	width: 25%;
 	
 }
