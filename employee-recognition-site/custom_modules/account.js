@@ -76,7 +76,7 @@ module.exports = function(){
 		context.firstName = req.user.first_name;
 		context.lastName = req.user.last_name;
 		context.signature = req.user.signature_path;
-		context.isUser = true;
+		context.isView = true;
 		context.jsscripts = ["logoutUser.js", "gotoAwards.js", "updateUser.js"];
 		res.status(200).render('userpage', context);
 	    }
