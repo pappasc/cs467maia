@@ -186,7 +186,6 @@ module.exports = function(){
 	    
             rp(options)
             .then(function (saveReturn){
-                console.log("Entered");
                 if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
                 res.redirect(303, '/employees');
                 }
