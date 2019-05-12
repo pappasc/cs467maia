@@ -8,10 +8,11 @@ function updateUser(userID){
     $.ajax({
         url: '/account',
         type: 'PUT',
-	dataType: 'json',
 	data: updatedUserInfo,
-        success: function(result){
-            window.location.reload(true);
-        }
-    })
+        success: redirectHandle
+    });
 };
+
+function redirectHandle () {
+    location.reload(true);
+}
