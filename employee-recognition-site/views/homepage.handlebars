@@ -29,18 +29,30 @@
 		</div>
 		<!-- login section -->
 		<div class="right column-20pct">
-			<table>
+			<table >
 				<td>
+					{{#if login}}
 					<h3 class="reg-title">Login</h3>
 						<form action="/login" method="post">
 						  Username:<br>
 						  <input type="text" name="username"><br>
 						  Password:<br>
-						  <input type="text" name="password"><br><br>
+						  <input type="password" name="password"><br><br>
 						  <input type="submit" value="Login">
 						</form>
+					{{else}}
+						<ul>
+							{{#if isUser}}
+							    <li><button id="accountButton" onclick="gotoAccount()">Account</button></li>
+                    		    <li><button id="awardsButton" onclick="gotoAwards('manage')">Manage Awards</button></li>
+							{{else if isAdmin}}
+							    <li><button id="employeesButton" onclick="gotoEmployees()">Manage Employees</button></li>
+                    			<li><button id="statsButton">Statistics</button></li>
+							{{/if}}
+							<li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
+						</ul>
+					{{/if}}
 				</td>
 			</table>
 		</div>		
 	</div>
-<div> Login status: {{login}} </div>

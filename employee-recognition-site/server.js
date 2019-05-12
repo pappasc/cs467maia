@@ -12,21 +12,24 @@ const path = require('path');
 const uuid = require('uuid/v4')
 const session = require('express-session')
 const {Datastore} = require('@google-cloud/datastore');
-
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-
-var genUser = {
-    username: 'regUser',
-    password: 'wordpass',
-    id: '456',
-    userType: 'user'
-};
-
 const app = express();
 const DatastoreStore = require('@google-cloud/connect-datastore')(session);
+
+//Using handlebars for rendering pages
+const handlebars = require('express-handlebars').create({defaultLayout:'main'});
+app.engine('handlebars', handlebars.engine);
+app.set('view engine', 'handlebars');
+
+//Enable requests with bodies to be in JSON format
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+//Set pathname for local file access
+app.use(express.static(path.join(__dirname, '/public')));
+
+//Enable sessions and instantiate store for cookies
 app.use(session({
     genid: (req) => {
 	return uuid();
@@ -43,71 +46,19 @@ app.use(session({
     saveUninitialized: true
 }));
 
-passport.use(new LocalStrategy(
-    (username, password, done) => {
-	//logic for checking user credentials
-	//make call to DB API to retreive user password and id
-	if(username === genUser.username && password === genUser.password) {
-	    return done(null, genUser)
-	}
-	else {
-	    return done(null, false);
-	}
-    }
-));
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-    var user;
-    //logic for checking user id
-    //should make a call to DB API to retreive id info
-    if (id == genUser.id) {
-	user = genUser;
-    }
-    else {
-	user = false;
-    }
-    done(null, user);
-});
+require('./custom_modules/authentication.js');
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Using handlebars for rendering pages
-const handlebars = require('express-handlebars').create({defaultLayout:'main'});
-app.engine('handlebars', handlebars.engine);
-app.set('view engine', 'handlebars');
-
-app.use(express.static(path.join(__dirname, '/public')));
+//Dummy backend for now. Will port to different module later
+app.use('/users', require('./testCode/userProxyBackend.js'));
+app.use('/admins', require('./testCode/adminProxyBackend.js'));
+app.use('/awardProxy', require('./testCode/awardProxyBackend.js'));
 
 app.get('/', function (req, res) {
     //Redirect straight to home
     res.redirect('/home');
-});
-
-app.get('/home', function (req, res) {
-    //Display a homepage with a link to start the process
-    var context = {};
-    context.login = "";
-    if (req.isAuthenticated()) {
-	context.login = "Login succeeded";
-	context.login = req.user.username;
-	if (req.user.userType == 'user') {
-	    context.login += ' regular user';
-	}
-	console.log(req.user);
-    }
-    else {
-	context.login = "Need to be logged in";
-    }
-    res.render('homepage', context);
-});
-
-app.get('/test', function (req, res) {
-    res.send("Test page");
 });
 
 app.post('/login', function(req, res) {
@@ -116,6 +67,41 @@ app.post('/login', function(req, res) {
 	    return res.redirect('/home');
 	})
     })(req, res);
+});
+
+//Endpoint to initiate user logout
+app.get('/logout', function(req, res, next) {
+    if (req.session) {
+	req.session.destroy(function(err) {
+	    if(err) {
+		return next(err);
+	    }
+	    else {
+		return res.redirect('/home');
+	    }
+	});
+    }
+});
+
+app.use('/home', require('./custom_modules/home.js'));
+app.use('/awards', require('./custom_modules/awards.js'));
+app.use('/account', require('./custom_modules/account.js'));
+app.use('/employees', require('./custom_modules/employees.js'));
+app.use('/admin', require('./custom_modules/adminAccount.js'));
+app.use('/newaccount', require('./custom_modules/newaccount.js'));
+
+//If the user tries navigating to a non-supplied page
+app.use(function(req,res){
+  res.status(404);
+  res.render('404');
+});
+
+//Something went wrong
+app.use(function(err, req, res, next){
+  console.error(err.stack);
+  res.type('plain/text');
+  res.status(500);
+  res.render('500');
 });
 
 const PORT = process.env.PORT || 8080;
