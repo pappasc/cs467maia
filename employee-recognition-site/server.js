@@ -88,8 +88,7 @@ app.use('/awards', require('./custom_modules/awards.js'));
 app.use('/account', require('./custom_modules/account.js'));
 app.use('/employees', require('./custom_modules/employees.js'));
 app.use('/admin', require('./custom_modules/adminAccount.js'));
-app.use('/account/:id', require('./custom_modules/account.js'));
-
+app.use('/newaccount', require('./custom_modules/newaccount.js'));
 
 //If the user tries navigating to a non-supplied page
 app.use(function(req,res){

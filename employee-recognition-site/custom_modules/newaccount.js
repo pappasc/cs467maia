@@ -18,12 +18,13 @@ module.exports = function(){
             first_name: req.body.first_name,
             last_name:  req.body.last_name,
             email_address: req.body.email_address,
-            signature_path: req.body.signature_path,
+            signature_path: "test.jpg",
             password: req.body.password,
-            created_timestamp: req.body.created_timestamp
+            created_timestamp: req.body.created_timestamp       
         };
 
         var options = {
+            header: "Content-Type: application/json",
             method: 'POST',
             uri: 'https://maia-backend.appspot.com/users',
             body: userInfo,
@@ -46,16 +47,36 @@ module.exports = function(){
             res.status(500).render('500');
         });        
     }
+
+    router.get('/', function (req, res) {
+        var context = {};
+        if (req.isAuthenticated()) {
+            
+            if (req.body.employee && req.body.employee != ''){
+                getuser(req.body.employee).then(function(user){
+                    context.email = user.email_address;
+                });
+            }
+            context.isView = false;
+            context.jsscripts = ["saveUserInfo.js", "gotoEmployees.js"];
+            res.status(200).render('newuserpage', context);
+            
+        }
+        else {
+            res.status(401).send("Error 401, need to be authenticated");
+        }
+    });
     
     router.post('/', function(req,res){
-       res.status(404).render('404');
-       /*if (req.isAuthenticated()){
+       //res.status(404).render('404');
+       //if (req.isAuthenticated()){
             var userBody = {
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
                 created_timestamp: req.body.created_timestamp,
                 email_address: req.body.email_address,
-                password: req.body.password
+                password: req.body.password,
+                signature_path: "test.jpg"
             }
 
             var options = {
@@ -64,9 +85,9 @@ module.exports = function(){
                 body: userBody,
                 json: true,
                 resolveWithFullResponse: true
-            };
+            }
 
-            rp(option).then(function (saveReturn){
+            rp(options).then(function (saveReturn){
                 if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
                     res.redirect('/employees');
                 }
@@ -78,7 +99,7 @@ module.exports = function(){
                 res.status(500).send("API Error.");
             });
             
-        }
+        /*}
         else
         {
             res.status(500).render('500');

@@ -1,50 +1,20 @@
 function saveUserInfo(){
-    var express = require('express');
-    var router = express.Router();
-    var rp = require('request-promise');
+    var userInfo = {};
 
-    function saveUser(req){
-        var options = {
-            method: 'POST',
-            uri: 'https://maia-backend.appspot.com/users',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify( {
-                "first_name": req.user.first_name,
-                "last_name": "DeLeon",
-                "password": "encryptme",
-                "email_address": "deleonp@oregonstate.edu",
-                "created_timestamp":"2018-05-06 09:10:00",
-                "signature_path": "kvavlen_sig.jpg"
-            }),
-            json: true
-        };
+    userInfo.email_address = document.getElementById("UserName").value;
+    userInfo.first_name     = document.getElementById("FName").value;
+    userInfo.last_name      = document.getElementById("LName").value;
+    userInfo.password       = document.getElementById("pword").value;
+    userInfo.created_timestamp = "2019-04-15 08:52:00";
 
-        return rp(options).then( function(user){
-            return user.user_id;
-        });
-    }    
-
-    router.get('/', function (req, res) {
-        var context = {};
-
-        if (req.isAuthenicated()){
-            saveUser(req)
-            .then(function (users){
-                res.status(204).redirect('/employees');
-            })
-            .catch(function(err){
-                context.isView = false;
-                context.jsscripts = ["logoutUser.js"];
-                context.err = err;
-		        res.status(500).render('userpage', context);
-            });
-        }
-        else
-        {
-            res.status(401).send("Bad request")
-        }
+    $.ajax({
+        url: '/newaccount',
+        type: 'POST',
+        data: userInfo,
+        success: redirectHandler
     });
+};
 
-    return router;
-
+function redirectHandler(){
+    location.assign(location.origin + "/employees");
 }
