@@ -21,7 +21,7 @@ module.exports = function(){
         if (req.user.type == 'admin')
         {
             getUsers(req).then(function(users){
-                context.jsscripts = ["logoutUser.js", "gotoNewAccount.js", "gotoUserAccount.js", "gotoAdmin.js", "deleteAccount.js"];
+                context.jsscripts = ["logoutUser.js", "gotoNewAccount.js", "gotoUserAccount.js", "gotoAdmin.js", "deleteUserInfo.js"];
                 context.users = users;
                 res.status(200).render('employees',context);
             });

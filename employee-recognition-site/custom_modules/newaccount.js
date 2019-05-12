@@ -3,50 +3,32 @@ module.exports = function(){
     var router = express.Router();
     var rp = require('request-promise');
 
-    function getuser(id){
+    function getUser(id){
         var options = {
           uri: 'https://maia-backend.appspot.com/users/'+ id,
           json: true,
         };
 
-        return rp(options).then(function (users){
-            return users.user_ids;
+        return rp(options).then(function (user){
+            return user;
         });
     }
 
-    function saveInfo(){
-        var userInfo = {
-            first_name: req.body.first_name,
-            last_name:  req.body.last_name,
-            email_address: req.body.email_address,
-            signature_path: "test.jpg",
-            password: req.body.password,
-            created_timestamp: req.body.created_timestamp       
-        };
-
-        var options = {
-            header: "Content-Type: application/json",
-            method: 'POST',
-            uri: 'https://maia-backend.appspot.com/users',
-            body: userInfo,
-            json: true,
-            resolveWithFullResponse: true
-        };
-
-        return rp(options).then(function(saveReturn){
-            if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
-                res.redirect(saveReturn.statusCode,'/employees');
-            }
-            else if (saveReturn.statusCode == 400){
-                res.status(400).send("Malformed request. Contact administrator.")
-            }
-            else{
-                res.status(500).send("API Error");
-            }
-        })
-        .catch(function(err){
-            res.status(500).render('500');
-        });        
+    function getUserPword(user_id) {
+	var options = {
+	    uri: 'https://maia-backend.appspot.com/users/' + user_id + '/login',
+	    json: true,
+	    resolveWithFullResponse: true
+	};
+	
+	return rp(options).then(function(passObj) {
+	    if (passObj.statusCode == 200) {
+		return passObj.body.password;
+	    }
+	    else {
+		return null;
+	    }
+	});
     }
 
     router.get('/', function (req, res) {
@@ -59,6 +41,7 @@ module.exports = function(){
                 });
             }
             context.isView = false;
+            context.update = false;
             context.jsscripts = ["saveUserInfo.js", "gotoEmployees.js"];
             res.status(200).render('newuserpage', context);
             
@@ -68,41 +51,116 @@ module.exports = function(){
         }
     });
     
+    router.get('/:id', function (req, res) {
+	var context = {};
+	if (req.isAuthenticated()) {
+	    if (req.user.type == 'user') {
+		res.status(403).send("Error 403 - Not authorized to view this page");
+	    }
+	    else if (req.user.type == 'admin'){
+		getUser(req.params.id)
+		    .then(function (userProfile) {
+			context.userId = userProfile.user_id;
+			context.email = userProfile.email_address;
+			context.firstName = userProfile.first_name;
+			context.lastName = userProfile.last_name;
+			context.signature = "test.jpg";
+            context.update = true;
+            getUserPword(req.params.id).then(function (pword){
+                console.log(pword);
+                context.password = pword;
+            });
+			context.isView = false;
+			context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
+			res.status(200).render('newuserpage', context);
+		    })
+		    .catch(function (err) {
+			res.status(500).render('500');
+		    });
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
+	}
+	else {
+	    res.status(401).send("Error 401, need to be authenticated");
+	}
+    });
+
     router.post('/', function(req,res){
 	if (req.isAuthenticated()){
-	    
-            var userBody = {
-            first_name: req.body.first_name,
-		last_name: req.body.last_name,
-		created_timestamp: req.body.created_timestamp,
-		email_address: req.body.email_address,
-		password: req.body.password,
-		signature_path: "turtle.jpg"
+	        var userBody = {
+                first_name: req.body.first_name,
+                last_name: req.body.last_name,
+                created_timestamp: req.body.created_timestamp,
+                email_address: req.body.email_address,
+                password: req.body.password,
+                signature_path: "turtle.jpg"
             };
 	
             var options = {
-		method: "POST",
-		uri: "https://maia-backend.appspot.com/users",
-		body: userBody,
-		json: true,
-		resolveWithFullResponse: true
+                method: "POST",
+                uri: "https://maia-backend.appspot.com/users",
+                body: userBody,
+                json: true,
+                resolveWithFullResponse: true
             };
 	    
             rp(options)
-		.then(function (saveReturn){
-		    console.log("Entered");
-		    if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
-			res.redirect(303, '/employees');
-		    }
-		    else if (saveReturn.statusCode >= 400){
-			res.status(500).send("Malformed request. Contact your administrator.");
-		    }
-		})
-		.catch(function (err) {
-		    console.log("Something broke");
-                    res.status(500).send("API Error.");
-		});
-            
+            .then(function (saveReturn){
+                console.log("Entered");
+                if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
+                res.redirect(303, '/employees');
+                }
+                else if (saveReturn.statusCode >= 400){
+                res.status(500).send("Malformed request. Contact your administrator.");
+                }
+            })
+            .catch(function (err) {
+                console.log("Something broke");
+                        res.status(500).send("API Error.");
+            });
+        }
+        else
+        {
+            res.status(500).render('500');
+        }
+    });
+
+    router.put('/', function(req,res){
+	if (req.isAuthenticated()){
+	    
+        var userBody = {
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            created_timestamp: req.body.created_timestamp,
+            email_address: req.body.email_address,
+            password: req.body.password,
+            signature_path: "turtle.jpg"
+        };
+	
+        var options = {
+            method: "PUT",
+            uri: "https://maia-backend.appspot.com/users",
+            body: userBody,
+            json: true,
+            resolveWithFullResponse: true
+        };
+	    
+        rp(options)
+            .then(function (saveReturn){
+                console.log("Entered");
+                if (saveReturn.statusCode == 200) {
+                res.redirect(303, '/employees');
+                }
+                else if (saveReturn.statusCode >= 400){
+                res.status(500).send("Malformed request. Contact your administrator.");
+                }
+            })
+            .catch(function (err) {
+                console.log("Something broke");
+                        res.status(500).send("API Error.");
+            });
         }
         else
         {
@@ -110,6 +168,36 @@ module.exports = function(){
         }
     });
     
+    router.delete("/", function(req,res){
+        if (req.isAuthenticated()){
+	        var options = {
+                method: "DELETE",
+                uri: "https://maia-backend.appspot.com/users/" + req.body.user_id,
+                body: "",
+                json: true,
+                resolveWithFullResponse: true
+            };
+	    
+            rp(options)
+            .then(function (saveReturn){
+                console.log("Entered");
+                if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
+                res.redirect(303, '/employees');
+                }
+                else if (saveReturn.statusCode >= 400){
+                res.status(500).send("Malformed request. Contact your administrator.");
+                }
+            })
+            .catch(function (err) {
+                console.log("Something broke");
+                        res.status(500).send("API Error.");
+            });
+        }
+        else
+        {
+            res.status(500).render('500');
+        }
+    });
     return router;
 }();
 

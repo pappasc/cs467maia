@@ -1,5 +1,5 @@
 function gotoUserAccount(){
-    location.assign(location.origin + "/account/" + getRadioValue());
+    location.assign(location.origin + "/newaccount/" + getRadioValue());
 }
 
 function getRadioValue()

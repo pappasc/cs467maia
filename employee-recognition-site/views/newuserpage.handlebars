@@ -3,12 +3,16 @@
 </div>
 
 <div class="column-wrap">
-    <h2 align="center">NewUser Profile</h2>
+    <h2 align="center">User Profile</h2>
     <div>
         <section>
             <nav>
                 <ul>
+                    {{#if update}}
+                    <li><button id="updateUserButton" onclick="updateUserInfo()">Update</button></li>
+                    {{else}}
                     <li><button id="saveUserButton" onclick="saveUserInfo()">Save</button></li>
+                    {{/if}}
                     <li><button id="cancelButton" onclick="gotoEmployees()">Cancel</button></li>
                 </ul>
             </nav>
@@ -46,7 +50,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="password" name="Password" id="pword" size="20">
+                            <input type="password" name="Password" id="Pword" size="20">
                         </td>
                     </tr>
                     <tr>

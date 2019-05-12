@@ -118,8 +118,11 @@ module.exports = function(){
 			context.firstName = userProfile.first_name;
 			context.lastName = userProfile.last_name;
 			context.signature = userProfile.signature_path;
+            getUserPword(userProfile.user_id).then(function (pword){
+                context.password = pword;
+            });
 			context.isView = false;
-			context.jsscripts = ["gotoEmployees.js", "saveUserInfo.js"];
+			context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
 			res.status(200).render('userpage', context);
 		    })
 		    .catch(function (err) {
@@ -171,6 +174,8 @@ module.exports = function(){
             res.status(500).render('500');
         }*/
     });
+
+
 
     router.put('/', function (req, res) {
 	if (req.isAuthenticated ()){
