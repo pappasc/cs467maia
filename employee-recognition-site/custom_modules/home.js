@@ -5,18 +5,19 @@ module.exports = function(){
     router.get('/', function (req, res) {
 	//Display a homepage with a link to start the process
 	var context = {};
-	if (req.isAuthenticated()) {
+    if (req.isAuthenticated()) {
 	    context.login = false;
 	    context.jsscripts = ["logoutUser.js"];
 	    if (req.user.type == 'user') {
 		context.isUser = true;
 		context.isAdmin = false;
-		context.jsscripts.push("gotoAccount.js");
+        context.jsscripts.push("gotoAccount.js");
 		context.jsscripts.push("gotoAwards.js");
-	    }
+        }
 	    else {
 		context.isUser = false;
 		context.isAdmin = true;
+        context.jsscripts.push("gotoEmployees.js");
 	    }
 	}
 	else {

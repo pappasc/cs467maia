@@ -3,19 +3,13 @@
 </div>
 
 <div class="column-wrap">
-    <h2 align="center">User Profile</h2>
+    <h2 align="center">NewUser Profile</h2>
     <div>
         <section>
             <nav>
                 <ul>
-                    {{#if isView}}
-                    <li><button id="awardsButton" onclick="gotoAwards('manage')">Manage Awards</button></li>
-                    <li><button id="userUpdateButton" onclick="updateUser()">Save</button></li>
-                    <li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
-                    {{else}}
                     <li><button id="saveUserButton" onclick="saveUserInfo()">Save</button></li>
                     <li><button id="cancelButton" onclick="gotoEmployees()">Cancel</button></li>
-                    {{/if}}
                 </ul>
             </nav>
 
@@ -29,17 +23,13 @@
                     </tr>
                     <tr>
                         <td>
-                            {{#if isView}}
-                                {{email}}
-                            {{else}}
-                                <input type="email" name="username" id="UserName" size="100" value={{email}}>
-                            {{/if}}
+                            <input type="email" name="username" id="UserName" size="100" value={{email}}>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            First name                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            Last name
+                            Firstname                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Lastname
                         </td>
                     </tr>
                     <tr>
@@ -49,9 +39,6 @@
                             <input type="text" name="Lname" id="LName" size="30" value={{lastName}}>
                         </td>
                     </tr>
-                    {{#if isView}}
-                    <tr/>
-                    {{else}}
                     <tr>
                         <td>
                             Password
@@ -59,14 +46,9 @@
                     </tr>
                     <tr>
                         <td>
-			{{#if isView}}
-                            **********
-			{{else}}
-			 <input type="password" name="password" id="pword" size="20">
-			{{/if}}
+                            <input type="password" name="Password" id="pword" size="20">
                         </td>
                     </tr>
-                    {{/if}}
                     <tr>
                         <td>
                             Signature
@@ -74,11 +56,7 @@
                     </tr>
                     <tr>
                         <td>
-                            {{#if isView}}
-                                {{signature}}
-                            {{else}}
-                                <input type="file" name="sigFile" id="SigPath" size="100" value={{signature}}><br>
-                            {{/if}}
+                            <input type="file" name="sigFile" id="SigPath" size="100" value={{signature}}><br>
                         </td>
                     </tr>
 

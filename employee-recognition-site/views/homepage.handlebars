@@ -29,7 +29,7 @@
 		</div>
 		<!-- login section -->
 		<div class="right column-20pct">
-			<table>
+			<table >
 				<td>
 					{{#if login}}
 					<h3 class="reg-title">Login</h3>
@@ -43,14 +43,14 @@
 					{{else}}
 						<ul>
 							{{#if isUser}}
-							      <li><button id="accountButton" onclick="gotoAccount()">Account</button></li>
-                    				      	      <li><button id="awardsButton" onclick="gotoAwards('manage')">Manage Awards</button></li>
+							    <li><button id="accountButton" onclick="gotoAccount()">Account</button></li>
+                    		    <li><button id="awardsButton" onclick="gotoAwards('manage')">Manage Awards</button></li>
 							{{else if isAdmin}}
-							       <li><button>Manage Employees</button></li>
-                    				      	       <li><button>Statistics</button></li>
+							    <li><button id="employeesButton" onclick="gotoEmployees()">Manage Employees</button></li>
+                    			<li><button id="statsButton">Statistics</button></li>
 							{{/if}}
 							<li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
-							</ul>
+						</ul>
 					{{/if}}
 				</td>
 			</table>
