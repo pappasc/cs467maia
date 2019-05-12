@@ -1,4 +1,4 @@
-function updateUserInfo(){
+function updateUserInfo(userId){
     var userInfo = {};
 
     userInfo.email_address  = document.getElementById("UserName").value;
@@ -7,6 +7,7 @@ function updateUserInfo(){
     userInfo.password       = document.getElementById("Pword").value; 
     userInfo.signature_path = document.getElementById("SigPath").value;
     userInfo.created_timestamp = "2018-05-06 09:10:00";
+    userInfo.user_id = userId;
 
     $.ajax({
         url: '/newaccount',
