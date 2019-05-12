@@ -65,14 +65,14 @@ module.exports = function(){
 			context.firstName = userProfile.first_name;
 			context.lastName = userProfile.last_name;
 			context.signature = "test.jpg";
-            context.update = true;
-            getUserPword(req.params.id).then(function (pword){
-                console.log(pword);
-                context.password = pword;
-            });
-			context.isView = false;
-			context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
-			res.status(200).render('newuserpage', context);
+			context.update = true;
+			getUserPword(req.params.id).then(function (pword){
+			    console.log(pword);
+			    context.password = pword;
+			    context.isView = false;
+			    context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
+			    res.status(200).render('newuserpage', context);
+			});
 		    })
 		    .catch(function (err) {
 			res.status(500).render('500');
@@ -130,37 +130,37 @@ module.exports = function(){
     router.put('/', function(req,res){
 	if (req.isAuthenticated()){
 	    
-        var userBody = {
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            created_timestamp: req.body.created_timestamp,
-            email_address: req.body.email_address,
-            password: req.body.password,
-            signature_path: "turtle.jpg"
-        };
-	
-        var options = {
-            method: "PUT",
-            uri: "https://maia-backend.appspot.com/users",
-            body: userBody,
-            json: true,
-            resolveWithFullResponse: true
-        };
+            var userBody = {
+		first_name: req.body.first_name,
+		last_name: req.body.last_name,
+		created_timestamp: req.body.created_timestamp,
+		email_address: req.body.email_address,
+		password: req.body.password,
+		signature_path: "turtle.jpg"
+            };
 	    
-        rp(options)
-            .then(function (saveReturn){
-                console.log("Entered");
-                if (saveReturn.statusCode == 200) {
-                res.redirect(303, '/employees');
-                }
-                else if (saveReturn.statusCode >= 400){
-                res.status(500).send("Malformed request. Contact your administrator.");
-                }
-            })
-            .catch(function (err) {
-                console.log("Something broke");
-                        res.status(500).send("API Error.");
-            });
+            var options = {
+		method: "PUT",
+		uri: "https://maia-backend.appspot.com/users",
+		body: userBody,
+		json: true,
+		resolveWithFullResponse: true
+            };
+	    
+            rp(options)
+		.then(function (saveReturn){
+                    console.log("Entered");
+                    if (saveReturn.statusCode == 200) {
+			res.redirect(303, '/employees');
+                    }
+                    else if (saveReturn.statusCode >= 400){
+			res.status(500).send("Malformed request. Contact your administrator.");
+                    }
+		})
+		.catch(function (err) {
+                    console.log("Something broke");
+                    res.status(500).send("API Error.");
+		});
         }
         else
         {
