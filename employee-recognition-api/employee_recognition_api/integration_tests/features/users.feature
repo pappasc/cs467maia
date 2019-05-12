@@ -1,8 +1,6 @@
 Feature: Integration Tests - USERS
 # Skipping PUT /users/<user_id>/signature, as this would be a highly complex automated test.
 
-# TODO: email_address can be "" 
-
 # 200 OK
 Scenario Outline: GET /users, 200
     When I make a GET <endpoint> request

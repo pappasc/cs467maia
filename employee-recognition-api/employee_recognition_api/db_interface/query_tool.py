@@ -243,7 +243,6 @@ class QueryTool:
             query = sqlalchemy.text('select admin_id, first_name, last_name, email_address, created_timestamp from admins where admin_id = :id;')
             key = 'admin_id'
         elif table == 'awards': 
-            # TODO: Specify exactly what I want, not *
             query = sqlalchemy.text('select * from awards where award_id = :id;')
             key = 'award_id'
         logging.info('QueryTool.get_by_id(): query is {}'.format(str(query)))

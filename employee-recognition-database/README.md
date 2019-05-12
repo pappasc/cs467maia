@@ -1,1 +1,4 @@
-employee-recognition-database
+# employee-recognition-database
+
+## Main Contributor
+Natasha Kvavle
