@@ -19,17 +19,15 @@ module.exports = function(){
 	    }
 	});
     }
-
     
-    
-    function getuser(id){
+    function getUser(id){
         var options = {
           uri: 'https://maia-backend.appspot.com/users/'+ id,
           json: true,
         };
 
-        return rp(options).then(function (users){
-            return users.user_ids;
+        return rp(options).then(function (user){
+            return user;
         });
     }
 
@@ -81,7 +79,52 @@ module.exports = function(){
 		res.status(200).render('userpage', context);
 	    }
 	    else if (req.user.type == 'admin'){
-		res.status(403).send("Error 403, not allowed to view this page");
+		console.log(req.body);
+		getUser(req.body.user_id)
+		    .then(function (userProfile) {
+			context.userId = userProfile.user_id;
+			context.email = userProfile.email_address;
+			context.firstName = userProfile.first_name;
+			context.lastName = userProfile.last_name;
+			context.signature = userProfile.signature_path;
+			context.isView = false;
+			context.jsscripts = ["gotoEmployees.js", "saveUserInfo.js"];
+			res.status(200).render('userpage', context);
+		    })
+		    .catch(function (err) {
+			res.status(500).render('500');
+		    });
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
+	}
+	else {
+	    res.status(401).send("Error 401, need to be authenticated");
+	}
+    });
+
+    router.get('/:id', function (req, res) {
+	var context = {};
+	if (req.isAuthenticated()) {
+	    if (req.user.type == 'user') {
+		res.status(403).send("Error 403 - Not authorized to view this page");
+	    }
+	    else if (req.user.type == 'admin'){
+		getUser(req.params.id)
+		    .then(function (userProfile) {
+			context.userId = userProfile.user_id;
+			context.email = userProfile.email_address;
+			context.firstName = userProfile.first_name;
+			context.lastName = userProfile.last_name;
+			context.signature = userProfile.signature_path;
+			context.isView = false;
+			context.jsscripts = ["gotoEmployees.js", "saveUserInfo.js"];
+			res.status(200).render('userpage', context);
+		    })
+		    .catch(function (err) {
+			res.status(500).render('500');
+		    });
 	    }
 	    else {
 		res.status(500).render('500');
@@ -93,8 +136,7 @@ module.exports = function(){
     });
     
     router.post('/', function(req,res){
-       res.status(404).render('404');
-       /*if (req.isAuthenticated()){
+       //if (req.isAuthenticated()){
             var userBody = {
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
@@ -123,12 +165,11 @@ module.exports = function(){
                 res.status(500).send("API Error.");
             });
             
-        }
+        /*}
         else
         {
             res.status(500).render('500');
-        }
-        */
+        }*/
     });
 
     router.put('/', function (req, res) {

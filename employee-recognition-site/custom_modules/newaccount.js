@@ -1,6 +1,7 @@
 module.exports = function(){
     var express = require('express');
     var router = express.Router();
+    var rp = require('request-promise');
 
     function getuser(id){
         var options = {
@@ -68,43 +69,45 @@ module.exports = function(){
     });
     
     router.post('/', function(req,res){
-       //res.status(404).render('404');
-       //if (req.isAuthenticated()){
+	if (req.isAuthenticated()){
+	    
             var userBody = {
-                first_name: req.body.first_name,
-                last_name: req.body.last_name,
-                created_timestamp: req.body.created_timestamp,
-                email_address: req.body.email_address,
-                password: req.body.password,
-                signature_path: "test.jpg"
-            }
-
+            first_name: req.body.first_name,
+		last_name: req.body.last_name,
+		created_timestamp: req.body.created_timestamp,
+		email_address: req.body.email_address,
+		password: req.body.password,
+		signature_path: "turtle.jpg"
+            };
+	
             var options = {
-                method: "POST",
-                uri: "https://maia-backend.appspot.com/users",
-                body: userBody,
-                json: true,
-                resolveWithFullResponse: true
-            }
-
-            rp(options).then(function (saveReturn){
-                if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
-                    res.redirect('/employees');
-                }
-                else if (saveReturn.statusCode >= 400){
-                    res.status(500).send("Malformed request. Contact your administrator.");
-                }
-            })
-            .catch(function (err) {
-                res.status(500).send("API Error.");
-            });
+		method: "POST",
+		uri: "https://maia-backend.appspot.com/users",
+		body: userBody,
+		json: true,
+		resolveWithFullResponse: true
+            };
+	    
+            rp(options)
+		.then(function (saveReturn){
+		    console.log("Entered");
+		    if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
+			res.redirect(303, '/employees');
+		    }
+		    else if (saveReturn.statusCode >= 400){
+			res.status(500).send("Malformed request. Contact your administrator.");
+		    }
+		})
+		.catch(function (err) {
+		    console.log("Something broke");
+                    res.status(500).send("API Error.");
+		});
             
-        /*}
+        }
         else
         {
             res.status(500).render('500');
         }
-        */
     });
     
     return router;
