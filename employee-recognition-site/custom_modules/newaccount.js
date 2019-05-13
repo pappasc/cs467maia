@@ -65,14 +65,13 @@ module.exports = function(){
 			context.firstName = userProfile.first_name;
 			context.lastName = userProfile.last_name;
 			context.signature = "test.jpg";
-            context.update = true;
-            getUserPword(req.params.id).then(function (pword){
-                console.log(pword);
-                context.password = pword;
-            });
-			context.isView = false;
-			context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
-			res.status(200).render('newuserpage', context);
+			context.update = true;
+			getUserPword(req.params.id).then(function (pword){
+			    context.password = pword;
+			    context.isView = false;
+			    context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
+			    res.status(200).render('newuserpage', context);
+			});
 		    })
 		    .catch(function (err) {
 			res.status(500).render('500');
@@ -89,10 +88,19 @@ module.exports = function(){
 
     router.post('/', function(req,res){
 	if (req.isAuthenticated()){
+	    
+	    var d = new Date,
+		timestamp = [d.getFullYear(),
+			     d.getMonth()+1,
+			     d.getDate()].join('-')+' '+
+		[d.getHours(),
+		 d.getMinutes(),
+		 d.getSeconds()].join(':');
+
 	        var userBody = {
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
-                created_timestamp: req.body.created_timestamp,
+                created_timestamp: timestamp,
                 email_address: req.body.email_address,
                 password: req.body.password,
                 signature_path: "turtle.jpg"
@@ -108,7 +116,6 @@ module.exports = function(){
 	    
             rp(options)
             .then(function (saveReturn){
-                console.log("Entered");
                 if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
                 res.redirect(303, '/employees');
                 }
@@ -130,37 +137,36 @@ module.exports = function(){
     router.put('/', function(req,res){
 	if (req.isAuthenticated()){
 	    
-        var userBody = {
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            created_timestamp: req.body.created_timestamp,
-            email_address: req.body.email_address,
-            password: req.body.password,
-            signature_path: "turtle.jpg"
-        };
-	
-        var options = {
-            method: "PUT",
-            uri: "https://maia-backend.appspot.com/users",
-            body: userBody,
-            json: true,
-            resolveWithFullResponse: true
-        };
+            var userBody = {
+		first_name: req.body.first_name,
+		last_name: req.body.last_name,
+		created_timestamp: req.body.created_timestamp,
+		email_address: req.body.email_address,
+		password: req.body.password,
+		signature_path: "turtle.jpg"
+            };
 	    
-        rp(options)
-            .then(function (saveReturn){
-                console.log("Entered");
-                if (saveReturn.statusCode == 200) {
-                res.redirect(303, '/employees');
-                }
-                else if (saveReturn.statusCode >= 400){
-                res.status(500).send("Malformed request. Contact your administrator.");
-                }
-            })
-            .catch(function (err) {
-                console.log("Something broke");
-                        res.status(500).send("API Error.");
-            });
+            var options = {
+		method: "PUT",
+		uri: "https://maia-backend.appspot.com/users/" + req.body.user_id,
+		body: userBody,
+		json: true,
+		resolveWithFullResponse: true
+            };
+	    
+            rp(options)
+		.then(function (saveReturn){
+                    if (saveReturn.statusCode == 200) {
+			res.redirect(303, '/employees');
+                    }
+                    else if (saveReturn.statusCode >= 400){
+			res.status(500).send("Malformed request. Contact your administrator.");
+                    }
+		})
+		.catch(function (err) {
+                    console.log("Something broke");
+                    res.status(500).send("API Error.");
+		});
         }
         else
         {
@@ -172,7 +178,7 @@ module.exports = function(){
         if (req.isAuthenticated()){
 	        var options = {
                 method: "DELETE",
-                uri: "https://maia-backend.appspot.com/users/" + req.body.user_id,
+                uri: "https://maia-backend.appspot.com/users/" + req.body.userId,
                 body: "",
                 json: true,
                 resolveWithFullResponse: true
@@ -180,7 +186,6 @@ module.exports = function(){
 	    
             rp(options)
             .then(function (saveReturn){
-                console.log("Entered");
                 if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
                 res.redirect(303, '/employees');
                 }
