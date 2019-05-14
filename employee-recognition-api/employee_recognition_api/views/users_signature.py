@@ -69,7 +69,7 @@ if os.environ.get('ENV') != 'local':
                 image = str(request.data)
 
                 # Open write connection to cloud storage bucket
-                connection = cloudstorage.open('/maia-backend.appspot.com/signatures/{}'.format(filename), mode='w', content_type='image/jpeg')
+                connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(filename), mode='w', content_type='image/jpeg')
                 
                 # Write raw image data & close connection to bucket
                 connection.write(request.data)
@@ -94,7 +94,7 @@ if os.environ.get('ENV') != 'local':
             #   'Authorization': 'Bearer {}'.format(token),
             # }
 
-            # upload_url = 'https://www.googleapis.com/upload/storage/v1/b/maia-backend.appspot.com/o?uploadType=media&name=signatures/{}'.format(filename)
+            # upload_url = 'https://www.googleapis.com/upload/storage/v1/b/cs467maia-backend.appspot.com/o?uploadType=media&name=signatures/{}'.format(filename)
 
             # Read binary image into array of bytes for transfer [6]
             # payload = bytearray(request.data)

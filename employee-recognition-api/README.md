@@ -9,7 +9,7 @@ Natasha Kvavle
  
 ### Instructions to Run 
  + Run proxy: 
- ```./cloud_sql_proxy -instances=maia-backend:us-west1:employee-recognition-db -dir=/cloudsql &```
+ ```./cloud_sql_proxy -instances=cs467maia-backend:us-west1:employee-recognition-database -dir=/cloudsql &```
  + Change app.yaml environment to 'dev'
  + Install requirements 
  ```pip install -t lib -r requirements.txt --system --upgrade```

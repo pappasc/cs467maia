@@ -4,7 +4,7 @@
 0. Ensure environment set up according to directions in employee-recognition-api/README.md
 1. Set ENV environmental variable to local: ```export ENV=local```
 2. Create python module so that we can import local classes: ```python -m employee_recognition_api.__init__```
-3. Run Google SQL Cloud Proxy: ```./cloud_sql_proxy --instances=maia-backend:us-west1:employee-recognition-db=tcp:3306```
+3. Run Google SQL Cloud Proxy: ```./cloud_sql_proxy --instances=cs467maia-backend:us-west1:employee-recognition-database=tcp:3306```
 3. Run unit tests
 	- Test views: ```python -m unittest.employee_recognition_api.unit_tests.views.test_views```
 	- Test db_interface QueryTool: ```python -m unittest.employee_recognition_api.unit_tests.db_interface.test_query_tool```

@@ -1,5 +1,5 @@
 -- 1: 	Create a new Google Cloud SQL project [1]
--- 		Current Project Name: 		maia-backend
+-- 		Current Project Name: 		cs467maia-backend
 -- 		Current SQL Instance Name: 	employee-recognition-database
 -- 		Database Name: 				maia
 --

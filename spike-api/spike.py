@@ -43,7 +43,7 @@ def file():
 
 	"""
 	
-	url = 'https://www.googleapis.com/upload/storage/v1/b/maia-backend.appspot.com/o?uploadType=media&name=signatures/test.jpg'
+	url = 'https://www.googleapis.com/upload/storage/v1/b/cs467maia-backend.appspot.com/o?uploadType=media&name=signatures/test.jpg'
 	headers = {
 		'Content-Type': 'image/jpeg',
 		'Authorization': 'Bearer ya29.Glz0BogAxpVghh5vM4fZnHYHS5pOMCA6LfB5CD-QaGmIMrfwdZu8Di7Rsq8xiTRi5vjMap7x5pk5fpcYvNf14IYUKIfVX2QK0bYAPm9795JrDbqv52EeWxX1Vn-_bw',
