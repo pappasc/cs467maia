@@ -10,7 +10,7 @@ from ..db_interface.input_validator_tool import InputValidatorTool
 users_api = Blueprint('users_api', __name__)
 
 # Define connection data
-connection_name = 'maia-backend:us-west1:employee-recognition-db'
+connection_name = 'cs467maia-backend:us-west1:employee-recognition-database'
 if os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == 'local': 
     connection_name = '127.0.0.1'
 connection_data = { 

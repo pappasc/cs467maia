@@ -4,7 +4,7 @@ import json
 import logging
 import datetime
 
-url = 'https://maia-backend.appspot.com'
+url = 'https://cs467maia-backend.appspot.com'
 logging.basicConfig(filename='IntegrationTestUsers-{}.log'.format(datetime.datetime.now()), level=logging.INFO)
 
 @when('I make a GET {endpoint} request')

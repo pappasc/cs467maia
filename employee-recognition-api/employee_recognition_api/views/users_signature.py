@@ -17,7 +17,7 @@ if os.environ.get('ENV') != 'local':
     from ..db_interface.query_tool import QueryTool
      
     # Define connection data
-    connection_name = 'maia-backend:us-west1:employee-recognition-db'
+    connection_name = 'cs467maia-backend:us-west1:employee-recognition-database'
     if os.environ.get('ENV') == 'dev': 
         connection_name = '127.0.0.1'
     connection_data = { 
