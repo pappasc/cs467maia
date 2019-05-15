@@ -1,0 +1,17 @@
+latex/__init__.py,sha256=hmfDWKjesgzVOm0GQSRDjQv_SM4n6DENtb_1RK-i970,1306
+latex/build.py,sha256=1QCXBcRob_4K2NRiBUPUPyB4LOIO55Jox7cXAyzhLFk,8396
+latex/errors.py,sha256=nIgb6Vv_3brnzNmyldFW692csVa8_065vFCpP6FbXAY,1172
+latex/exc.py,sha256=_c2TAFA5lUjt_bJYNFG6xgyGHcp_X_Hz1OdIpvoVxCw,928
+latex/jinja2.py,sha256=x7W3aKpklDrm5hJxrY9C84cJsoodLbKRAnHrS6gQIIM,1632
+latex-0.7.0.dist-info/DESCRIPTION.rst,sha256=UsZtNQXw0GR0fEGB7QWCiemDNAaB0fUlCCLenw9RN5Q,1926
+latex-0.7.0.dist-info/METADATA,sha256=N45jCFtfaVvDWT1wO1DsWglaQkS_RMbbkdMDCZGzCNc,2354
+latex-0.7.0.dist-info/RECORD,,
+latex-0.7.0.dist-info/WHEEL,sha256=F38j99qfcoNzHo88G-kisXWtI3MVVEd9JWjaAPcHMTc,93
+latex-0.7.0.dist-info/metadata.json,sha256=fNLgfv3F7FTQVzYjrqcLiUxRt0D2ohxAuPJlcTnAV4Y,613
+latex-0.7.0.dist-info/top_level.txt,sha256=9GOU-ES87RHLpXVwJZ3m__f3D1dagWmRQxJ8moNRvM8,6
+latex-0.7.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+latex/errors.pyc,,
+latex/__init__.pyc,,
+latex/exc.pyc,,
+latex/jinja2.pyc,,
+latex/build.pyc,,

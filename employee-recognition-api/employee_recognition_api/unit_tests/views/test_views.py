@@ -265,6 +265,9 @@ class TestViews(unittest.TestCase):
         self.check_status_code(get_result)
         self.check_keys(get_result, ['award_ids'])
 
+if __name__ == '__main__': 
+    unittest.main()
+    
 # References
 # [1] https://damyanon.net/post/flask-series-testing/        re: example to model unit tests for flask applications from
 # [2] http://flask.pocoo.org/docs/1.0/testing/               re: how to make different requests with flask testing framework

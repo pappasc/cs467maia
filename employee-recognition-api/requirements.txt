@@ -4,3 +4,4 @@ flask-sqlalchemy
 GoogleAppEngineCloudStorageClient==1.9.22.1
 behave
 requests
+latex
