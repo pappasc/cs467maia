@@ -6,7 +6,8 @@ import pymysql
 import json
 from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
-
+from ..award_interface.builder import Builder
+from ..award_interface.interpreter import Interpreter
 # Allow awards_api to be accessible from main.py 
 awards_api = Blueprint('awards_api', __name__)
 
@@ -347,6 +348,14 @@ def awards_distributed(distributed):
     logging.info('awards_api: returning result {}'.format(result))
     logging.info('awards_api: returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
+
+@awards_api.route('/awards/test', methods=['GET'])
+def test():
+
+    interpeter_tool = Interpreter()
+    interpeter_tool.interpret()
+
+    return 'yo'
 
 
 # References 
