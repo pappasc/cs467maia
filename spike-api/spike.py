@@ -1,6 +1,10 @@
 from flask import Flask 
 from google.appengine.api import urlfetch
 from google.appengine.api import mail
+#from latex import build_pdf
+import os
+import logging
+#import pdb; pdb.set_trace()
 
 app = Flask(__name__)
 
@@ -65,6 +69,22 @@ def file():
 
 	return 'success'
 
+@app.route('/pdf', methods=['GET'])
+def pdf():	
+	
+	try: 
+		logging.info('testy')
+		var = os.system('cat test.tex')
+		logging.info(var)
+		#os.system('var=$(/home/nkvavle/cs467maia/texlive/bin/x86_64-linux/pdflatex test.tex) && echo $var')
+		#pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
+		#return bytes(pdf)
+	except Exception as e: 
+		logging.exception(e) 
+
+	return 'test'
+
+
 # references (based code off of these resources)
 # [1] http://flask.pocoo.org/docs/1.0/quickstart/
 # [2] https://docs.python.org/2/tutorial/inputoutput.html
@@ -108,3 +128,9 @@ def file():
 # [37] https://2.python-requests.org//en/master/user/install/#install 
 # [38] https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project 
 # [39] https://pypi.org/project/requests-toolbelt/#files 
+
+
+# [40] https://cloud.google.com/appengine/docs/standard/python/tools/using-local-server re: pdb
+# [41] https://guides.lib.wayne.edu/latex/compiling re: bypassing latex lib
+# [42] https://stackoverflow.com/questions/2559076/how-do-i-redirect-output-to-a-variable-in-shell re: redirecting file to var
+# [43] https://stackoverflow.com/questions/2152114/google-app-engine-to-run-executable-files re: can't run binary files

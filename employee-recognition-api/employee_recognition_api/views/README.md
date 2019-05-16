@@ -10,4 +10,3 @@
 7. https://stackoverflow.com/questions/15231359/split-python-flask-app-into-multiple-files/15231623                 re: use of blueprints to allow for multiple files of app.routes
 8. https://stackoverflow.com/questions/11773348/python-flask-how-to-set-content-type                                re: how to set content-type and use Response()
 9. https://stackoverflow.com/questions/9823936/python-how-do-i-know-what-type-of-exception-occurred                 re: figuring out what exception to catch
-10. http://www.tug.org/texlive/quickinstall.html re: downloading LaTeX binary

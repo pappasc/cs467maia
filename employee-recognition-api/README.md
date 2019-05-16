@@ -285,6 +285,7 @@ If time allows, I will be implementing some way to prevent anyone but the maia g
 13. https://cloud.google.com/appengine/docs/standard/python/quickstart 
 14. https://console.cloud.google.com/appengine/start/deploy?language=python&environment=standard&project=maia-backend&organizationId=717626756570
 15. https://github.com/pypa/pip/issues/3826#issuecomment-232080694        re: use of --system to get pip install of third party libraries to work
+16. http://www.tug.org/texlive/quickinstall.html re: downloading LaTeX binary
 
 ### re: General References for employee-recognition-api 
 16. https://www.python.org/dev/peps/pep-0008/

@@ -351,11 +351,27 @@ def awards_distributed(distributed):
 
 @awards_api.route('/awards/test', methods=['GET'])
 def test():
+    
+    try: 
+        builder_tool = Builder('month')
+        test_block = {
+            'authorizeFirstName': 'Natasha',
+            'authorizeLastName': 'Kvavle',
+            'receiveFirstName': 'Patrick',
+            'receiveLastName': 'DeLeon',
+            'signaturePath': 'test.jpg', 
+            'month': 'May', 
+            'day': '5',
+            'year': '2019'
+        }    
+        builder_tool.replace_template(test_block)
+        builder_tool.create_award_tex()
+        interpeter_tool = Interpreter()
+        interpeter_tool.interpret('award.tex')
+    except Exception as e:
+        logging.exception(e)
 
-    interpeter_tool = Interpreter()
-    interpeter_tool.interpret()
-
-    return 'yo'
+    return 'made it'
 
 
 # References 

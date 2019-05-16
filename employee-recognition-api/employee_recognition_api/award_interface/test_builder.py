@@ -18,16 +18,17 @@ class test_builder(unittest.TestCase):
 		}	
 
 	def test_gen(self):
-		builder_tool = Builder('month') 
-		builder_tool.replace_template(self.test_block)
-		builder_tool.create_award_tex()
-		interpeter_tool = Interpreter()
-		interpeter_tool.interpret('award.tex')
+		#builder_tool = Builder('month') 
+		#builder_tool.replace_template(self.test_block)
+		#builder_tool.create_award_tex()
+		#interpeter_tool = Interpreter()
+		#interpeter_tool.interpret('award.tex')
+		tool = Interpreter()
+		tool.test_this()
 
-	def test_replace_template(self): 
-		builder_tool = Builder('month')
-
-		mod_template = builder_tool.replace_template(self.test_block)
+#	def test_replace_template(self): 
+#		builder_tool = Builder('month')
+#		mod_template = builder_tool.replace_template(self.test_block)
 		
 		#self.assertContains('Natasha', mod_template, msg='modified template is: {}'.format(mod_template))
 		#self.assertContains('Kvavle', mod_template, msg='modified template is: {}'.format(mod_template))

@@ -1,3 +1,5 @@
+import os 
+
 class Builder: 
 
     def __init__(self, type_string): 
@@ -7,9 +9,9 @@ class Builder:
             self
             type_string: string. type of award - 'month' or 'week'
         """
-
         # Open file for reading and save in memory
-        f = open('{}.tex'.format(type_string), 'r')
+        path = os.path.dirname(os.path.abspath(__file__))
+        f = open('{}/month.tex'.format(path), 'r')
         self.file = f.read() 
 
     def replace_template(self, block):
@@ -46,9 +48,8 @@ class Builder:
 
         Returns: None, but creates the award.tex file
         """
-        f = open('award.tex', 'w')
-        print(self.file)
-        f.write(self.file)
+        #print(self.file) 
+        return self.file
 
     def cleanup(self):
         """Deletes award.tex file
@@ -66,3 +67,4 @@ class Builder:
 # References
 # [1] https://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files    # re: file I/O
 # [2] https://www.tutorialspoint.com/python/string_replace.htm                          # re: replace()     
+# [3] https://stackoverflow.com/questions/3430372/how-to-get-full-path-of-current-files-directory-in-python     re: running pwd in python
