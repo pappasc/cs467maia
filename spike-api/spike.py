@@ -74,7 +74,7 @@ def pdf():
 	
 	try: 
 		logging.info('testy')
-		var = os.system('cat test.tex')
+		var = os.system('cat test.tex') # this is -1, it can't be used in the app engine
 		logging.info(var)
 		#os.system('var=$(/home/nkvavle/cs467maia/texlive/bin/x86_64-linux/pdflatex test.tex) && echo $var')
 		#pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
@@ -82,7 +82,7 @@ def pdf():
 	except Exception as e: 
 		logging.exception(e) 
 
-	return 'test'
+	return 'success'
 
 
 # references (based code off of these resources)
