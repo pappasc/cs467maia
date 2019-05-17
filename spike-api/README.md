@@ -6,6 +6,7 @@ This folder contains code for the spike API created during Week 3.
 ## results of spike
 1. Mail API can be used for email
 2. Google Cloud Storage JSON API may be used to add to buckets; special attention must be made to authorization keys
+3. Google Cloud AppEngine cannot be used for LaTeX interpretation, as we can't install or run binaries on this platform.
 
 
 ## references re: set-up of spike-api env

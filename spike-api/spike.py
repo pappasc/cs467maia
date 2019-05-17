@@ -69,19 +69,17 @@ def file():
 
 	return 'success'
 
+# Does not work
 @app.route('/pdf', methods=['GET'])
 def pdf():	
-	
+	""" This does not work, but was meant to build a pdf from latex file using
+		a given texlive distribution.
+	"""
 	try: 
-		logging.info('testy')
-		var = os.system('cat test.tex') # this is -1, it can't be used in the app engine
-		logging.info(var)
-		#os.system('var=$(/home/nkvavle/cs467maia/texlive/bin/x86_64-linux/pdflatex test.tex) && echo $var')
-		#pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
-		#return bytes(pdf)
+		pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
+		return bytes(pdf)
 	except Exception as e: 
 		logging.exception(e) 
-
 	return 'success'
 
 
@@ -128,9 +126,9 @@ def pdf():
 # [37] https://2.python-requests.org//en/master/user/install/#install 
 # [38] https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project 
 # [39] https://pypi.org/project/requests-toolbelt/#files 
-
-
 # [40] https://cloud.google.com/appengine/docs/standard/python/tools/using-local-server re: pdb
-# [41] https://guides.lib.wayne.edu/latex/compiling re: bypassing latex lib
-# [42] https://stackoverflow.com/questions/2559076/how-do-i-redirect-output-to-a-variable-in-shell re: redirecting file to var
-# [43] https://stackoverflow.com/questions/2152114/google-app-engine-to-run-executable-files re: can't run binary files
+# [41] https://guides.lib.wayne.edu/latex/compiling 														re: bypassing latex lib
+# [42] https://stackoverflow.com/questions/2559076/how-do-i-redirect-output-to-a-variable-in-shell 			re: redirecting file to var
+# [43] https://stackoverflow.com/questions/2152114/google-app-engine-to-run-executable-files 				re: can't run binary files
+
+
