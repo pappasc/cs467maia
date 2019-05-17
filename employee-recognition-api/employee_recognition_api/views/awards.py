@@ -121,7 +121,9 @@ def awards(award_id=None):
                 # Identify date range for week
                 # Get the week number that the awarded_datetime belongs to & save the year
                 week_number = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').isocalendar()[1]
+                logging.info('week number: {}'.format(week_number))
                 year = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').year
+                logging.info('{}'.format(year))
 
                 # Determine what day was the "beginning" of the week at the start of the year
                 jan1_weekday_number = datetime.datetime(year, 1, 1, 0, 0, 0, 0).isocalendar()[2]

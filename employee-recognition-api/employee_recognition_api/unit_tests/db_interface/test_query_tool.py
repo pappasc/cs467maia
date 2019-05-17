@@ -246,6 +246,39 @@ class TestQueryTool(unittest.TestCase):
             # Clean up test
             self.query.delete_by_id('{}s'.format(entity), {'{}_id'.format(entity): int(result['{}_id'.format(entity)]) })
 
+    def test_put_login_by_id(self): 
+        """Tests put_login_by_id() function
+
+        Arguments: self
+        """       
+        logging.debug('Test: put_login_by_id()')
+        entities = ['user', 'admin']
+
+        for entity in entities: 
+            logging.debug('Table: {}s'.format(entity))
+            # Set up test
+            # INSERT dynamic test data and capture user_id
+            result = self.query.post('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][0])
+            id = int(result['{}_id'.format(entity)])
+
+            # Add user_id to dynamic test data for UPDATE command
+            self.dyn_test_data['{}s'.format(entity)][1]['{}_id'.format(entity)] = id
+
+            # Make UPDATE query
+            result = self.query.put_login_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][1]['password'])
+            logging.debug('Function Result: {}'.format(result))
+
+            # Test: Result is an id 
+            logging.debug('Checking: Result is a {}_id'.format(entity))
+            self.assertEquals(result.keys(), ['{}_id'.format(entity)], msg='Result is not a {}_id: {}'.format(entity, result))
+
+            # Test: Result is the correct id
+            logging.debug('Checking: Result is correct {}_id'.format(entity))
+            self.assertEquals(int(result['{}_id'.format(entity)]), id, msg='Result is not the correct {}_id: {}'.format(entity, result))
+
+            # Clean up
+            self.query.delete_by_id('{}s'.format(entity), {'{}_id'.format(entity): int(result['{}_id'.format(entity)])})
+
     def test_put_by_id(self):
         """Tests put_by_id() function
 
@@ -274,7 +307,7 @@ class TestQueryTool(unittest.TestCase):
 
             # Test: Result is the correct id
             logging.debug('Checking: Result is correct {}_id'.format(entity))
-            self.assertEquals(int(result['{}_id'.format(entity)]), id, msg='Result is not the correct user_id: {}'.format(result))
+            self.assertEquals(int(result['{}_id'.format(entity)]), id, msg='Result is not the correct {}_id: {}'.format(entity, result))
 
             # Clean up
             self.query.delete_by_id('{}s'.format(entity), {'{}_id'.format(entity): int(result['{}_id'.format(entity)])})

@@ -168,6 +168,30 @@ class TestInputValidatorTool(unittest.TestCase):
             response = self.input_validator.valid_email(email)
             self.assertEquals(response, {'field': 'email_address', 'message': 'invalid value'}, msg='Response was not an error: {}'.format(response))
     
+    def test_validate_login(self): 
+        """Tests validate_login() 
+
+        Arguments: self
+        """        
+        all_happy = { 
+            'password': self.happy_path['password'][0]
+        }
+        response = self.input_validator.validate_login(all_happy)
+        self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
+       
+        # Test: Sad Path
+        all_sad = {
+            'password': self.sad_path['password'][0]
+        }
+        response = self.input_validator.validate_users(all_sad)
+        expected = {
+            'errors': [
+                {'field': 'password', 'message': 'invalid value'},
+            ]
+        }
+        self.assertEquals(response, expected, msg='THIS Response was not correct errors: {}'.format(response))
+
+
     def test_validate_users(self):
         """Tests validate_users() 
 
@@ -184,7 +208,7 @@ class TestInputValidatorTool(unittest.TestCase):
             'signature_path': self.happy_path['signature_path'][0],
             'email_address': self.happy_path['email_address'][0]
         }
-        response = self.input_validator.validate_users(all_happy)
+        response = self.input_validator.validate_users('POST', all_happy)
         self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
 
         # Test: Half Sad Path
@@ -197,7 +221,7 @@ class TestInputValidatorTool(unittest.TestCase):
             'email_address': self.happy_path['email_address'][0]
         }
 
-        response = self.input_validator.validate_users(half_sad)
+        response = self.input_validator.validate_users('POST', half_sad)
         expected = {
             'errors': [
                 {'field': 'created_timestamp', 'message': 'invalid value'},
@@ -216,7 +240,7 @@ class TestInputValidatorTool(unittest.TestCase):
             'signature_path': self.sad_path['signature_path'][0], 
             'email_address': self.sad_path['email_address'][0]
         }
-        response = self.input_validator.validate_users(all_sad)
+        response = self.input_validator.validate_users('POST', all_sad)
         expected = {
             'errors': [
                 {'field': 'first_name', 'message': 'invalid value'},
@@ -244,7 +268,7 @@ class TestInputValidatorTool(unittest.TestCase):
             'password': self.happy_path['password'][0],
             'email_address': self.happy_path['email_address'][0]
         }
-        response = self.input_validator.validate_admins(all_happy)
+        response = self.input_validator.validate_admins('POST', all_happy)
         self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
 
         # Test: Half Sad Path
@@ -256,7 +280,7 @@ class TestInputValidatorTool(unittest.TestCase):
             'email_address': self.sad_path['email_address'][0]
         }
 
-        response = self.input_validator.validate_admins(half_sad)
+        response = self.input_validator.validate_admins('POST', half_sad)
         expected = {
             'errors': [
                 {'field': 'created_timestamp', 'message': 'invalid value'},
@@ -274,7 +298,7 @@ class TestInputValidatorTool(unittest.TestCase):
             'password': self.sad_path['password'][0],
             'email_address': self.sad_path['email_address'][0]
         }
-        response = self.input_validator.validate_admins(all_sad)
+        response = self.input_validator.validate_admins('POST', all_sad)
         expected = {
             'errors': [
                 {'field': 'first_name', 'message': 'invalid value'},
