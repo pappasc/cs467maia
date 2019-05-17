@@ -130,5 +130,8 @@ def pdf():
 # [41] https://guides.lib.wayne.edu/latex/compiling 														re: bypassing latex lib
 # [42] https://stackoverflow.com/questions/2559076/how-do-i-redirect-output-to-a-variable-in-shell 			re: redirecting file to var
 # [43] https://stackoverflow.com/questions/2152114/google-app-engine-to-run-executable-files 				re: can't run binary files
-
-
+# [44] https://pypi.org/project/latex/
+# [45] https://stackoverflow.com/questions/38431066/runtime-error-in-build-pdf-module-of-latex-python            re: host to get latex binaries
+# [46] https://github.com/mbr/latex/blob/master/latex/build.py                                                   re: specifying texinputs in build_pdf()
+# [47] https://tex.stackexchange.com/questions/265688/how-can-i-add-the-latex-on-python-path 					 re: adding to path
+# [48] https://stackoverflow.com/questions/5971312/how-to-set-environment-variables-in-python 					 re: effectively adding to os var
