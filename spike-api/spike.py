@@ -1,7 +1,7 @@
 from flask import Flask 
 from google.appengine.api import urlfetch
 from google.appengine.api import mail
-#from latex import build_pdf
+from latex import build_pdf
 import os
 import logging
 #import pdb; pdb.set_trace()
