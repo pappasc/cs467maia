@@ -1,10 +1,10 @@
 import logging
 import os 
 
-#class Interpreter:
+class Interpreter:
 
-#   def __init__(self):
-  
+	def __init__(self):
+		print('test')  
 
-#   def interpret(self, variable):
-
+	def interpret(self, variable):
+		print('test')

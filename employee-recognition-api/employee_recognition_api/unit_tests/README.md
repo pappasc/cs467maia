@@ -9,6 +9,8 @@
 	- Test views: ```python -m unittest.employee_recognition_api.unit_tests.views.test_views```
 	- Test db_interface QueryTool: ```python -m unittest.employee_recognition_api.unit_tests.db_interface.test_query_tool```
 	- Test db_interface InputValidatorTool: ```python -m unittest.employee_recognition_api.unit_tests.db_interface.test_input_validator_tool```
+	- Test awrad_interface Builder: 
+	```python -m unittest employee_recognition_api.unit_tests.award_interface.test_builder```
 
 ## References 
 1. https://docs.python.org/2.7/library/unittest.html
