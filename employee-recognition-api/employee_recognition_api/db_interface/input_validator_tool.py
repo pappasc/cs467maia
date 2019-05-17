@@ -136,7 +136,7 @@ class InputValidatorTool:
         else: 
             return self.template_response('type')
 
-    def validate_users(self, data):
+    def validate_users(self, request_type, data):
         """Validates all data for users POST/PUT requests.
 
         Arguments:
@@ -159,14 +159,6 @@ class InputValidatorTool:
         if valid_lname_result is not None:
             result['errors'].append(valid_lname_result)
 
-        valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
-        if valid_time_result is not None:
-            result['errors'].append(valid_time_result)
-
-        valid_pass_result = self.valid_password(data['password'])
-        if valid_pass_result is not None: 
-            result['errors'].append(valid_pass_result) 
-
         valid_email_result = self.valid_email(data['email_address'])
         if valid_email_result is not None:
             result['errors'].append(valid_email_result) 
@@ -175,6 +167,15 @@ class InputValidatorTool:
         if valid_sig_result is not None:
             result['errors'].append(valid_sig_result) 
 
+        if request_type == 'PUT': 
+            valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
+            if valid_time_result is not None:
+                result['errors'].append(valid_time_result)
+
+            valid_pass_result = self.valid_password(data['password'])
+            if valid_pass_result is not None: 
+                result['errors'].append(valid_pass_result) 
+
         if result == {'errors':[]}:
             logging.info('validate_users(): returning None')
             return None 
@@ -182,7 +183,33 @@ class InputValidatorTool:
             logging.info('validate_users(): returning {}'.format(result))
             return result
 
-    def validate_admins(self, data):
+    def validate_login(self, data): 
+        """Validates password for users/admins PUT requests.
+
+        Arguments:
+            self
+            data: dict. Data contained in POST/PUT request to /admins endpoint.
+                keys: password
+
+        Returns: 
+            if valid: None
+            if invalid: List of errors in format {'errors': [] }
+        """
+        logging.info('validating request data in /login request')
+        result = { 'errors': [] } 
+
+        valid_pass_result = self.valid_password(data['password'])
+        if valid_pass_result is not None: 
+            result['errors'].append(valid_pass_result) 
+        
+        if result == {'errors': []}:
+            logging.info('returning None')
+            return None 
+        else:
+            logging.info('returning {}'.format(result))
+            return result
+
+    def validate_admins(self, request_type, data):
         """Validates all data for admins POST/PUT requests.
 
         Arguments:
@@ -205,19 +232,20 @@ class InputValidatorTool:
         valid_lname_result = self.valid_name(data['last_name'], 'last_name')
         if valid_lname_result is not None:
             result['errors'].append(valid_lname_result)
-
-        valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
-        if valid_time_result is not None:
-            result['errors'].append(valid_time_result)
-
-        valid_pass_result = self.valid_password(data['password'])
-        if valid_pass_result is not None: 
-            result['errors'].append(valid_pass_result) 
         
         valid_email_result = self.valid_email(data['email_address'])
         if valid_email_result is not None:
             result['errors'].append(valid_email_result)
         
+        if request_type == 'POST':
+            valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
+            if valid_time_result is not None:
+                result['errors'].append(valid_time_result)
+
+            valid_pass_result = self.valid_password(data['password'])
+            if valid_pass_result is not None: 
+                result['errors'].append(valid_pass_result) 
+
         if result == {'errors': []}:
             logging.info('returning None')
             return None 

@@ -64,7 +64,7 @@ def users(user_id=None):
         # Parse JSON request data
         data = json.loads(request.data)
         # Validate parsed request data
-        result = ivt.validate_users(data)
+        result = ivt.validate_users(request.method, data)
 
         # If result is None, continue
         if result is None: 
@@ -85,7 +85,7 @@ def users(user_id=None):
         data = json.loads(request.data)
 
         # Validate parsed request data
-        result = ivt.validate_users(data)
+        result = ivt.validate_users(request.method, data)
 
         # If valid data, continue
         if result is None:
@@ -121,7 +121,7 @@ def users(user_id=None):
     logging.info('users_api: returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
-@users_api.route('/users/<int:user_id>/login', methods=['GET'])
+@users_api.route('/users/<int:user_id>/login', methods=['GET', 'PUT'])
 def users_login(user_id): 
     """ Handle GET /users/<user_id>/login request
     
@@ -145,6 +145,20 @@ def users_login(user_id):
                 status_code = 200 
         except KeyError:
             status_code = 400
+
+    # PUT /users/<user_id>/login
+    elif request.method == 'PUT' and admin_id is not None
+        # Parse JSON data into dictionary
+        data = json.loads(request.data)
+
+        # Validate request data
+        result = ivt.validate_login(data)
+
+        # Add user_id to request body
+        data['user_id'] = int(user_id)
+
+        # Query database
+        result = query.put_login_by_id('users', data)
 
     query.disconnect()
     logging.info('users_api (users_login()): returning result {}'.format(result))

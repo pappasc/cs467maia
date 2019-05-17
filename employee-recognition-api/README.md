@@ -93,7 +93,7 @@ PUT /users/{user_id}/signature
 PUT /users/{user_id}
 - **function:** update user's information based on user_id
 - **note:** leaving in the unchanged values as this will be pre-populated in form
-- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"first_name": "Natasha", "last_name": "Kvavle", "signature_path": "kvavlen_sig.jpg", "created_timestamp": "2019-04-15 00:00:00", "password": "EncryptMe", "email_address": "greens@oregonstate.edu"}'```
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"first_name": "Natasha", "last_name": "Kvavle", "signature_path": "kvavlen_sig.jpg", "email_address": "greens@oregonstate.edu"}'```
 - **response:**
 
 | status | content-type     | example body                                                                                                                                    |
@@ -154,7 +154,7 @@ POST /admins
 
 PUT /admins/{admin_id}
 - **function:** returns admin's information based on admin_id
-- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/2 -d '{ "first_name": "Ann", "last_name": "Nova", "email_address": "novat@oregonstate.edu", "password": "encrypteme", "created_timestamp": "2018-04-17 00:00:00" }'```
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/2 -d '{ "first_name": "Ann", "last_name": "Nova", "email_address": "novat@oregonstate.edu" }'```
 - **example response:**
 
 | status | content-type     | example body                                                                                                                                    |

@@ -64,7 +64,7 @@ def admins(admin_id=None):
         data = json.loads(request.data)
 
         # Validate request data
-        result = ivt.validate_admins(data)
+        result = ivt.validate_admins(request.method, data)
 
         # If request data is valid, continue
         if result is None: 
@@ -86,7 +86,7 @@ def admins(admin_id=None):
         data = json.loads(request.data)
 
         # Validate request data
-        result = ivt.validate_admins(data)
+        result = ivt.validate_admins(request.method, data)
 
         # If request data is valid, continue
         if result is None:
@@ -120,7 +120,7 @@ def admins(admin_id=None):
     query.disconnect() 
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
-@admins_api.route('/admins/<int:admin_id>/login', methods=['GET'])
+@admins_api.route('/admins/<int:admin_id>/login', methods=['GET', 'PUT'])
 def admins_login(admin_id): 
     """Handle GET /admins/<admin_id>/login
     
@@ -144,5 +144,20 @@ def admins_login(admin_id):
                 status_code = 200
         except KeyError:
             status_code = 400
+
+    # PUT /admins/<admin_id>/login
+    elif request.method == 'PUT' and admin_id is not None
+        # Parse JSON data into dictionary
+        data = json.loads(request.data)
+
+        # Validate request data
+        result = ivt.validate_login(data)
+
+        # Add admin_id to request body
+        data['admin_id'] = int(admin_id)
+
+        # Query database
+        result = query.put_login_by_id('admins', data)
+
     query.disconnect()
     return Response(json.dumps(result), status=status_code, mimetype='application/json')

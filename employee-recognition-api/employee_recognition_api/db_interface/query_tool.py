@@ -371,6 +371,42 @@ class QueryTool:
         logging.info('QueryTool.post(): query is {}'.format(str(query)))
         return self.build_json_insert(key, result) 
     
+    def put_login_by_id(self, table, data): 
+        """Update users or admins password based on id
+
+        Arguments: 
+            self
+            table: string. 'users' or 'admins'
+            data: dictionary. Containing query information based on the table: 
+
+                users
+                data['user_id']
+                data['password']
+
+                admins
+                data['admin_id']
+                data['password']
+        Returns: Parsed dictionary result of update query in format { 'key': int(id) }
+        """
+        # Create UPDATE and SELECT query based on table, execute and return parsed dictionary result
+        # SELECT query effectively verifies that the entry still exists in the table, instead of relying on 
+        # request data to make the response
+        if table == 'users': 
+            query = sqlalchemy.text('update users set password = :password where user_id = :user_id;')
+            result = self.connxn.execute(query, password=data['password'], user_id=int(data['user_id']))
+            verify_query = sqlalchemy.text('select user_id from users where user_id = :id and password = :password;')
+            key = 'user_id'
+        elif table == 'admins': 
+            query = sqlalchemy.text('update admins set first_name = :first_name, last_name = :last_name, email_address = :email_address where admin_id = :admin_id;')
+            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], admin_id=int(data['admin_id']))
+            verify_query = sqlalchemy.text('select admin_id from admins where admin_id = :id and password = :password;')
+            key = 'admin_id'
+
+        logging.info('QueryTool.put(): update query is {}'.format(str(query)))
+        logging.info('QueryTool.put(): select query is {}'.format(str(verify_query)))
+        result = self.connxn.execute(verify_query, id=int(data[key]), password=data['password'])
+        return self.build_json_select(result, key, True)
+
     def put_by_id(self, table, data):
         """Update users or admins table based on id 
 
@@ -392,9 +428,9 @@ class QueryTool:
                 data['admin_id']: int
                 data['first_name']: string
                 data['last_name']: string
-                data['password']: string
+                removed: data['password']: string
                 data['email_address']: string
-                data['created_timestamp']: string
+                removed: data['created_timestamp']: string
 
         Returns: Parsed dictionary result of update query in format { 'key': int(id) }
         """
@@ -402,13 +438,13 @@ class QueryTool:
         # SELECT query effectively verifies that the entry still exists in the table, instead of relying on 
         # request data to make the response
         if table == 'users': 
-            query = sqlalchemy.text('update users set first_name = :first_name, last_name = :last_name, email_address = :email_address, password = :password, created_timestamp = :created_timestamp, signature_path = :signature_path where user_id = :user_id;')
-            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], password=data['password'], created_timestamp=data['created_timestamp'], signature_path=data['signature_path'], user_id=int(data['user_id']))
+            query = sqlalchemy.text('update users set first_name = :first_name, last_name = :last_name, email_address = :email_address, signature_path = :signature_path where user_id = :user_id;')
+            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], signature_path=data['signature_path'], user_id=int(data['user_id']))
             verify_query = sqlalchemy.text('select user_id from users where user_id = :id;')
             key = 'user_id'
         elif table == 'admins': 
-            query = sqlalchemy.text('update admins set first_name = :first_name, last_name = :last_name, email_address = :email_address, password = :password, created_timestamp = :created_timestamp where admin_id = :admin_id;')
-            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], password=data['password'], created_timestamp=data['created_timestamp'], admin_id=int(data['admin_id']))
+            query = sqlalchemy.text('update admins set first_name = :first_name, last_name = :last_name, email_address = :email_address where admin_id = :admin_id;')
+            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], admin_id=int(data['admin_id']))
             verify_query = sqlalchemy.text('select admin_id from admins where admin_id = :id;')
             key = 'admin_id'
 
