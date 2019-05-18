@@ -183,13 +183,13 @@ class TestInputValidatorTool(unittest.TestCase):
         all_sad = {
             'password': self.sad_path['password'][0]
         }
-        response = self.input_validator.validate_users(all_sad)
+        response = self.input_validator.validate_login(all_sad)
         expected = {
             'errors': [
                 {'field': 'password', 'message': 'invalid value'},
             ]
         }
-        self.assertEquals(response, expected, msg='THIS Response was not correct errors: {}'.format(response))
+        self.assertEquals(response, expected, msg='This Response was not correct errors: {}'.format(response))
 
 
     def test_validate_users(self):
@@ -222,6 +222,7 @@ class TestInputValidatorTool(unittest.TestCase):
         }
 
         response = self.input_validator.validate_users('POST', half_sad)
+        logging.info('Half sad data: {}'.format(half_sad))
         expected = {
             'errors': [
                 {'field': 'created_timestamp', 'message': 'invalid value'},
@@ -241,6 +242,7 @@ class TestInputValidatorTool(unittest.TestCase):
             'email_address': self.sad_path['email_address'][0]
         }
         response = self.input_validator.validate_users('POST', all_sad)
+        logging.info('All sad data: {}'.format(all_sad))
         expected = {
             'errors': [
                 {'field': 'first_name', 'message': 'invalid value'},
@@ -251,7 +253,7 @@ class TestInputValidatorTool(unittest.TestCase):
                 {'field': 'signature_path', 'message': 'invalid value'}
             ]
         }
-        self.assertEquals(response, expected, msg='THIS Response was not correct errors: {}'.format(response))
+        self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
     
     def test_validate_admins(self):
         """Tests validate_admins() 
@@ -283,11 +285,10 @@ class TestInputValidatorTool(unittest.TestCase):
         response = self.input_validator.validate_admins('POST', half_sad)
         expected = {
             'errors': [
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'email_address', 'message': 'invalid value'}
-            ]
-        }
+                {'field': 'email_address', 'message': 'invalid value'}, 
+                {'field': 'created_timestamp', 'message': 'invalid value'}, 
+                {'field': 'password', 'message': 'invalid value'}
+            ]}
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
 
         # Test: Sad Path
@@ -301,13 +302,13 @@ class TestInputValidatorTool(unittest.TestCase):
         response = self.input_validator.validate_admins('POST', all_sad)
         expected = {
             'errors': [
-                {'field': 'first_name', 'message': 'invalid value'},
-                {'field': 'last_name', 'message': 'invalid value'},
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'email_address', 'message': 'invalid value'}
-            ]
-        }
+                {'field': 'first_name', 'message': 'invalid value'}, 
+                {'field': 'last_name', 'message': 'invalid value'}, 
+                {'field': 'email_address', 'message': 'invalid value'}, 
+                {'field': 'created_timestamp', 'message': 'invalid value'}, 
+                {'field': 'password', 'message': 'invalid value'}
+            ]}
+
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
     
 if __name__ == '__main__': 

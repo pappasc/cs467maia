@@ -313,7 +313,7 @@ class QueryTool:
             result = self.connxn.execute(query, key = data[filter])
         elif filter == 'awarded_datetime' and between == True: 
             # This is only used internally to determine if too many awards for a given week/month
-            query = sqlalchemy.text('select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;')
+            query = sqlalchemy.text('select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime <= :key2;')
             result = self.connxn.execute(query, key1 = data[filter]['greater'], key2 = data[filter]['lesser'], key3 = data['type'])
         elif filter == 'distributed': 
             query = sqlalchemy.text('select * from awards where distributed = :key;')
@@ -397,8 +397,8 @@ class QueryTool:
             verify_query = sqlalchemy.text('select user_id from users where user_id = :id and password = :password;')
             key = 'user_id'
         elif table == 'admins': 
-            query = sqlalchemy.text('update admins set first_name = :first_name, last_name = :last_name, email_address = :email_address where admin_id = :admin_id;')
-            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], admin_id=int(data['admin_id']))
+            query = sqlalchemy.text('update admins set password = :password where admin_id = :admin_id;')
+            result = self.connxn.execute(query, password=data['password'], admin_id=int(data['admin_id']))
             verify_query = sqlalchemy.text('select admin_id from admins where admin_id = :id and password = :password;')
             key = 'admin_id'
 

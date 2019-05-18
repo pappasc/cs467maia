@@ -34,6 +34,16 @@ Scenario Outline: PUT /admins, 200
         | endpoint      | status_code | keys      | body  |
         | admins        | 200         | admin_id   | { "first_name": "test1", "last_name": "test1", "email_address": "test1@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme1"}  |
 
+Scenario Outline: PUT /admins/<admin_id>/login, 200
+    When I make a POST <endpoint> request with body  { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme"} 
+    When I make a PUT <endpoint> login request with body <body>
+    Then I get a status code of <status_code>
+    Then the result has keys <keys>
+    Then I clean up my POST to <endpoint>
+    Examples:  
+        | endpoint      | status_code | keys      | body  |       
+        | admins         | 200        | user_id   | { "password": "encryptme2"}
+
 
 # 400 BAD REQUEST
 Scenario Outline: GET /admins

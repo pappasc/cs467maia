@@ -118,12 +118,13 @@ def awards(award_id=None):
     
         elif data['type'] == 'week':
             try: 
+                # Roundabout way of doing this, but works.
                 # Identify date range for week
                 # Get the week number that the awarded_datetime belongs to & save the year
                 week_number = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').isocalendar()[1]
                 logging.info('week number: {}'.format(week_number))
                 year = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').year
-                logging.info('{}'.format(year))
+                logging.info('year: {}'.format(year))
 
                 # Determine what day was the "beginning" of the week at the start of the year
                 jan1_weekday_number = datetime.datetime(year, 1, 1, 0, 0, 0, 0).isocalendar()[2]
@@ -133,7 +134,7 @@ def awards(award_id=None):
 
                 # Calculate beginning of week by adding the week_number to the first day of the first week of the year
                 # Then add 7 days to get end of week
-                beg_of_week = beg_of_year + datetime.timedelta(weeks=week_number - 1)
+                beg_of_week = beg_of_year + datetime.timedelta(weeks=week_number - 1) + datetime.timedelta(days=1)
                 end_of_week = beg_of_year + datetime.timedelta(weeks=week_number - 1) + datetime.timedelta(days=7)
 
                 logging.info('beginning of week: {}'.format(beg_of_week))
@@ -149,6 +150,7 @@ def awards(award_id=None):
                     }, 
                     'type': 'week'
                 }
+                logging.info('blob: {}'.format(blob))
                 existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
 
                 # Determine success based on lack of 'errors' key
@@ -382,3 +384,4 @@ def test():
 # [3] https://stackoverflow.com/questions/19480028/attributeerror-datetime-module-has-no-attribute-strptime     re: use of strptime
 # [4] https://stackoverflow.com/questions/2600775/how-to-get-week-number-in-python                              re: isocalendar
 # [5] https://stackoverflow.com/questions/6871016/adding-5-days-to-a-date-in-python?rq=1                        re: using timedelta
+# [6] https://stackoverflow.com/questions/19216334/python-give-start-and-end-of-week-data-from-a-given-date     re: ideas on how to accomplish getting first and last day of a week

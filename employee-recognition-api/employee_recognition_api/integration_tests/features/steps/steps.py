@@ -86,6 +86,20 @@ def make_put_request(self, endpoint, body):
     if self.id_created is not None: 
         self.r = requests.put('{}/{}/{}'.format(url, endpoint, self.id_created), data=body, headers={'Content-Type': 'application/json'})
 
+@when('I make a PUT {endpoint} login request with body {body}')
+def make_put_login_request(self, endpoint, body): 
+    """Makes a PUT login request if id created is not None
+
+    Arguments: 
+        self
+        endpoint: string. endpoint to make a request against.
+        body: JSON obj. body of request to make
+    """
+    logging.info('PUT {}/{}/{}/login'.format(url, endpoint, self.id_created))
+    logging.info('Body: {}'.format(body))
+    if self.id_created is not None: 
+        self.r = requests.put('{}/{}/{}/login'.format(url, endpoint, self.id_created), data=body, headers={'Content-Type': 'application/json'})
+
 @when('I make a DELETE {endpoint} request')
 def make_delete_request(self, endpoint):
     """Makes a DELETE request.

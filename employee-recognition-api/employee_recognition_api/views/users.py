@@ -132,6 +132,7 @@ def users_login(user_id):
     """
     # Initial tool classes
     query = QueryTool(connection_data)
+    ivt = InputValidatorTool()
     
     # GET /users/<user_id>/login
     if request.method == 'GET' and user_id is not None: 
@@ -147,7 +148,7 @@ def users_login(user_id):
             status_code = 400
 
     # PUT /users/<user_id>/login
-    elif request.method == 'PUT' and admin_id is not None
+    elif request.method == 'PUT' and user_id is not None: 
         # Parse JSON data into dictionary
         data = json.loads(request.data)
 
@@ -159,6 +160,14 @@ def users_login(user_id):
 
         # Query database
         result = query.put_login_by_id('users', data)
+
+        # Error if result doesn't have the key 'user_id'
+        try: 
+            if result['user_id']: 
+                status_code = 200
+        except KeyError:
+            status_code = 400
+
 
     query.disconnect()
     logging.info('users_api (users_login()): returning result {}'.format(result))

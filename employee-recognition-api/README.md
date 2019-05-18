@@ -101,6 +101,16 @@ PUT /users/{user_id}
 | 200    | application/json | ```{ "user_id": 3 }```                                                                                                                          |
 | 400    | application/json | ```{ "errors": [ { "field": "user_id", "message": "user_id does not exist" } ] }```                                                             |
 
+PUT /users/{user_id}/login
+- **function:** update user's password based on user_id
+- **note:** leaving in the unchanged values as this will be pre-populated in form
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"password": "encrytme2"}'```
+- **response:**
+
+| status | content-type     | example body                                                                                                                                    |
+| -------| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200    | application/json | ```{ "user_id": 3 }```                                                                                                                          |
+| 400    | application/json | ```{ "errors": [ { "field": "user_id", "message": "user_id does not exist" } ] }```                                                        
 DELETE /users/{user_id}
 - **function:** delete user based on user_id, but delete is not cascading and will not delete awards created by user
 - **example request:** ```curl -H 'Content-Type: application/json' -X DELETE <url>/users/3```
@@ -133,7 +143,7 @@ GET /admins/{admin_id}
 | 400    | application/json | ```{ "errors": [ { "field": "admin_id", "message": "admin_id does not exist" } ] }```                                                           |
 
 GET /admins/{admin_id}/login 
-- **function:** returns admin's information based on admin_id
+- **function:** returns admin's password based on admin_id
 - **example request:** ```curl -X GET <url>/admins/1/login```
 - **example response:**
 
@@ -153,8 +163,8 @@ POST /admins
 | 400    | application/json | ```{ "errors": [ { "field": "created_timestamp", "message": "invalid value" } ] }```                                                            |
 
 PUT /admins/{admin_id}
-- **function:** returns admin's information based on admin_id
-- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/2 -d '{ "first_name": "Ann", "last_name": "Nova", "email_address": "novat@oregonstate.edu" }'```
+- **function:** returns admin's password based on admin_id
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/2 -d '{ "password": "encryptme2" }'```
 - **example response:**
 
 | status | content-type     | example body                                                                                                                                    |
@@ -162,6 +172,16 @@ PUT /admins/{admin_id}
 | 200    | application/json | ```{ "admin_id": 2 }```                                                                                                                         |
 | 400    | application/json | ```{ "errors": [ { "field": "password", "message": "string length maximum exceeded" } ] }```                                                    |
 
+PUT /admins/{admin_id}/login
+- **function:** update user's information based on user_id
+- **note:** leaving in the unchanged values as this will be pre-populated in form
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"password": "encryptme"}'```
+- **response:**
+
+| status | content-type     | example body                                                                                                                                    |
+| -------| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200    | application/json | ```{ "user_id": 3 }```                                                                                                                          |
+| 400    | application/json | ```{ "errors": [ { "field": "user_id", "message": "user_id does not exist" } ] }```                                                        
 DELETE /admins/{admin_id}
 - **function:** deletes admin based on admin_id
 - **example request:** ```curl -H 'Content-Type: application/json' -X DELETE <url>/users/2 -d '{"creds": { "employee_type": "admin", "id": 2, "password": "encryptme" } }'```

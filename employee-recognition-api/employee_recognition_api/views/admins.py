@@ -130,7 +130,8 @@ def admins_login(admin_id):
     Returns: see README for results expected for each endpoint 
     """
     query = QueryTool(connection_data)
-    
+    ivt = InputValidatorTool()
+
     # GET /admins/<admin_id>/login
     if request.method == 'GET' and admin_id is not None: 
         # Make a select query for particular admin_id's password information
@@ -146,18 +147,25 @@ def admins_login(admin_id):
             status_code = 400
 
     # PUT /admins/<admin_id>/login
-    elif request.method == 'PUT' and admin_id is not None
+    elif request.method == 'PUT' and admin_id is not None: 
         # Parse JSON data into dictionary
         data = json.loads(request.data)
 
         # Validate request data
         result = ivt.validate_login(data)
 
-        # Add admin_id to request body
+        # Add user_id to request body
         data['admin_id'] = int(admin_id)
-
+        
         # Query database
         result = query.put_login_by_id('admins', data)
-
+        print('test')
+        # Error if result doesn't have the key 'admin_id'
+        try: 
+            if result['admin_id']: 
+                status_code = 200
+        except KeyError:
+            status_code = 400
+        
     query.disconnect()
     return Response(json.dumps(result), status=status_code, mimetype='application/json')

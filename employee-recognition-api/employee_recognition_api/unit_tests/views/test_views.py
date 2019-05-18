@@ -90,13 +90,19 @@ class TestViews(unittest.TestCase):
             json={
                 'first_name': 'Amelia',
                 'last_name': 'Bedelia', 
-                'created_timestamp': '2019-05-11 0:00:00',
-                'password': 'ameliabe',
                 'signature_path': 'test.jpg',
                 'email_address': 'ameliabedelia@fakesite.com'
             })
         self.check_status_code(put_result)
         self.check_keys(put_result, ['user_id'])
+
+        logging.debug('TEST: PUT/users/{}/login'.format(user_id))
+        put_login_result = self.app.put('/users/{}'.format(user_id), 
+            json={
+                'password': 'ameliabede',
+            })
+        self.check_status_code(put_login_result)
+        self.check_keys(put_login_result, ['user_id'])
 
         # Test: DELETE /users/{user_id}
         logging.debug('TEST: DELETE /users/{}'.format(user_id))
@@ -156,12 +162,19 @@ class TestViews(unittest.TestCase):
             json={
                 'first_name': 'Amelia',
                 'last_name': 'Bedelia', 
-                'created_timestamp': '2019-05-11 0:00:00',
-                'password': 'ameliabe',
                 'email_address': 'ameliabedelia@fakesite.com'
             })
         self.check_status_code(put_result)
         self.check_keys(put_result, ['admin_id'])
+
+        # Test: PUT /admins/{admin_id}/login
+        logging.debug('TEST: PUT /admins/{}/login'.format(admin_id))
+        put_login_result = self.app.put('/admins/{}/login'.format(admin_id), 
+            json={
+                'password': 'ameliabe',
+            })
+        self.check_status_code(put_login_result)
+        self.check_keys(put_login_result, ['admin_id'])
 
         # Test: DELETE /admins/{admin_id}
         logging.debug('TEST: DELETE /admins/{}'.format(admin_id))
