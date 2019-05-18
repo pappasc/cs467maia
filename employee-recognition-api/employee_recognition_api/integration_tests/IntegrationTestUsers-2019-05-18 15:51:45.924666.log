@@ -1,0 +1,201 @@
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme"}
+INFO:root:ID Created: 97
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme"}
+INFO:root:ID Created: 98
+INFO:root:PUT https://cs467maia-backend.appspot.com/admins/98
+INFO:root:Body: { "first_name": "test1", "last_name": "test1", "email_address": "test1@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme1"}
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body:  { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme"}
+INFO:root:ID Created: 99
+INFO:root:PUT https://cs467maia-backend.appspot.com/admins/99/login
+INFO:root:Body: { "password": "encryptme2" }
+INFO:root:STATUS: 200
+INFO:root:STATUS: 400
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "test", "last_name": "", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "tes", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "testytestytestytesty", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: { "first_name": "", "last_name": "", "email_address": "", "created_timestamp": "2018-05-00:00:00", "password": "en"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme"}
+INFO:root:ID Created: 100
+INFO:root:PUT https://cs467maia-backend.appspot.com/admins/100
+INFO:root:Body: { "first_name": "", "last_name": "test", "email_address": "test@oregonstate.edu"}
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme"}
+INFO:root:ID Created: 101
+INFO:root:PUT https://cs467maia-backend.appspot.com/admins/101
+INFO:root:Body: { "first_name": "test", "last_name": "", "email_address": "test@oregonstate.edu"}
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme"}
+INFO:root:ID Created: 102
+INFO:root:PUT https://cs467maia-backend.appspot.com/admins/102
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "" }
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/admins
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme" }
+INFO:root:ID Created: 103
+INFO:root:PUT https://cs467maia-backend.appspot.com/admins/103
+INFO:root:Body: { "first_name": "", "last_name": "", "email_address": "" }
+INFO:root:STATUS: 400
+INFO:root:URL: https://cs467maia-backend.appspot.com/admins/3
+INFO:root:STATUS: 400
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/awards
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2021-05-01 12:00:00" }
+INFO:root:ID Created: 78
+INFO:root:STATUS: 200
+INFO:root:STATUS: 400
+INFO:root:STATUS: 400
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/awards
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2020-05-12:00:00" }
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/awards
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "asdf", "awarded_datetime": "2020-05-01 12:00:00" }
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/awards
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "asdf", "awarded_datetime": "2020-05-12:00:00" }
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/awards
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2022-05-12 00:00:00" }
+INFO:root:ID Created: 79
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2022-05-12 00:00:00" }
+INFO:root:ID Created: 80
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/awards
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "month", "awarded_datetime": "2022-05-12 00:00:00" }
+INFO:root:ID Created: 81
+INFO:root:Body: { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "month", "awarded_datetime": "2022-05-12 00:00:00" }
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:URL: https://cs467maia-backend.appspot.com/awards/3
+INFO:root:STATUS: 400
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 107
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body:  { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 108
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/108
+INFO:root:Body: { "first_name": "test1", "last_name": "test1", "email_address": "test1@oregonstate.edu", "signature_path": "test1.jpg"}
+INFO:root:STATUS: 200
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body:  { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 109
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/109/login
+INFO:root:Body: { "password": "encryptme2"}
+INFO:root:STATUS: 200
+INFO:root:STATUS: 400
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "test", "last_name": "", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "tes", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "testytestytestytesty", "signature_path": "test.jpg"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": ""}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.png"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: { "first_name": "", "last_name": "", "email_address": "", "created_timestamp": "2018-05-00:00:00", "password": "en", "signature_path": "test.j"}
+INFO:root:ID Created: None
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 110
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/110
+INFO:root:Body: { "first_name": "", "last_name": "test", "email_address": "test@oregonstate.edu", "signature_path": "test.jpg"}
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 111
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/111
+INFO:root:Body: { "first_name": "test", "last_name": "", "email_address": "test@oregonstate.edu", "signature_path": "test.jpg"}
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 112
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/112
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "", "signature_path": "test.jpg"}
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 113
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/113
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "signature_path": ""}
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 114
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/114
+INFO:root:Body: { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "signature_path": "test.png"}
+INFO:root:STATUS: 400
+INFO:root:POST https://cs467maia-backend.appspot.com/users
+INFO:root:Body: {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+INFO:root:ID Created: 115
+INFO:root:PUT https://cs467maia-backend.appspot.com/users/115
+INFO:root:Body: { "first_name": "", "last_name": "", "email_address": "", "signature_path": "test.j"}
+INFO:root:STATUS: 400
+INFO:root:URL: https://cs467maia-backend.appspot.com/users/3
+INFO:root:STATUS: 400

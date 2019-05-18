@@ -239,7 +239,7 @@ class InputValidatorTool:
         if valid_email_result is not None:
             result['errors'].append(valid_email_result)
         
-        if request_type != 'PUT':
+        if request_type == 'POST':
             valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
             if valid_time_result is not None:
                 result['errors'].append(valid_time_result)
