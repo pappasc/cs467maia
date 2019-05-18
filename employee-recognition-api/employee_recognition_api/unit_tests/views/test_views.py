@@ -93,11 +93,12 @@ class TestViews(unittest.TestCase):
                 'signature_path': 'test.jpg',
                 'email_address': 'ameliabedelia@fakesite.com'
             })
+
         self.check_status_code(put_result)
         self.check_keys(put_result, ['user_id'])
 
         logging.debug('TEST: PUT/users/{}/login'.format(user_id))
-        put_login_result = self.app.put('/users/{}'.format(user_id), 
+        put_login_result = self.app.put('/users/{}/login'.format(user_id), 
             json={
                 'password': 'ameliabede',
             })
@@ -235,8 +236,8 @@ class TestViews(unittest.TestCase):
         Arguments: self
         """     
         # Test: GET /awards/receive/{user_id}
-        logging.debug('TEST: GET /awards/receive/1')
-        get_result = self.app.get('/awards/receive/1') 
+        logging.debug('TEST: GET /awards/receive/2')
+        get_result = self.app.get('/awards/receive/2') 
         self.check_status_code(get_result)
         self.check_keys(get_result, ['award_ids'])
   

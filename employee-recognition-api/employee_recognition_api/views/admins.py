@@ -159,7 +159,6 @@ def admins_login(admin_id):
         
         # Query database
         result = query.put_login_by_id('admins', data)
-        print('test')
         # Error if result doesn't have the key 'admin_id'
         try: 
             if result['admin_id']: 

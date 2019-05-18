@@ -141,6 +141,7 @@ class InputValidatorTool:
 
         Arguments:
             self
+            request_type: POST or PUT
             data: dict. Data contained in POST/PUT request to /users endpoint.
                 keys: first_name, last_name, created_timestamp, password, email_address, signature_path
 
@@ -167,7 +168,7 @@ class InputValidatorTool:
         if valid_sig_result is not None:
             result['errors'].append(valid_sig_result) 
 
-        if request_type != 'PUT': 
+        if request_type == 'POST': 
             valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
             if valid_time_result is not None:
                 result['errors'].append(valid_time_result)
@@ -201,13 +202,14 @@ class InputValidatorTool:
         valid_pass_result = self.valid_password(data['password'])
         if valid_pass_result is not None: 
             result['errors'].append(valid_pass_result) 
-        
+            
         if result == {'errors': []}:
             logging.info('returning None')
             return None 
         else:
             logging.info('returning {}'.format(result))
             return result
+
 
     def validate_admins(self, request_type, data):
         """Validates all data for admins POST/PUT requests.
