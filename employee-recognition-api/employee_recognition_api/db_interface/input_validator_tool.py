@@ -167,7 +167,7 @@ class InputValidatorTool:
         if valid_sig_result is not None:
             result['errors'].append(valid_sig_result) 
 
-        if request_type == 'PUT': 
+        if request_type != 'PUT': 
             valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
             if valid_time_result is not None:
                 result['errors'].append(valid_time_result)
@@ -237,7 +237,7 @@ class InputValidatorTool:
         if valid_email_result is not None:
             result['errors'].append(valid_email_result)
         
-        if request_type == 'POST':
+        if request_type != 'PUT':
             valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
             if valid_time_result is not None:
                 result['errors'].append(valid_time_result)

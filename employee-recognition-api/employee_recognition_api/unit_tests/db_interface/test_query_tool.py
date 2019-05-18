@@ -265,7 +265,7 @@ class TestQueryTool(unittest.TestCase):
             self.dyn_test_data['{}s'.format(entity)][1]['{}_id'.format(entity)] = id
 
             # Make UPDATE query
-            result = self.query.put_login_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][1]['password'])
+            result = self.query.put_login_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][1])
             logging.debug('Function Result: {}'.format(result))
 
             # Test: Result is an id 

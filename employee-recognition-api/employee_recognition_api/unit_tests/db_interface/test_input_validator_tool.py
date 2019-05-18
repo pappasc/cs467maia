@@ -199,7 +199,7 @@ class TestInputValidatorTool(unittest.TestCase):
         """
         logging.debug('Test: validate_users()')
 
-        # Test: Happy Path 
+        # Test: POST Happy Path 
         all_happy = {
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -211,7 +211,7 @@ class TestInputValidatorTool(unittest.TestCase):
         response = self.input_validator.validate_users('POST', all_happy)
         self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
 
-        # Test: Half Sad Path
+        # Test: POST Half Sad Path
         half_sad = { 
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -223,16 +223,15 @@ class TestInputValidatorTool(unittest.TestCase):
 
         response = self.input_validator.validate_users('POST', half_sad)
         logging.info('Half sad data: {}'.format(half_sad))
-        expected = {
-            'errors': [
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'signature_path', 'message': 'invalid value'},
-            ]
-        }
+        expected = {'errors': [
+            {'field': 'signature_path', 'message': 'invalid value'}, 
+            {'field': 'created_timestamp', 'message': 'invalid value'}, 
+            {'field': 'password', 'message': 'invalid value'}
+        ]}
+
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
 
-        # Test: Sad Path
+        # Test: POST Sad Path
         all_sad = {
             'first_name': self.sad_path['name'][0],
             'last_name': self.sad_path['name'][0],
@@ -243,16 +242,14 @@ class TestInputValidatorTool(unittest.TestCase):
         }
         response = self.input_validator.validate_users('POST', all_sad)
         logging.info('All sad data: {}'.format(all_sad))
-        expected = {
-            'errors': [
-                {'field': 'first_name', 'message': 'invalid value'},
-                {'field': 'last_name', 'message': 'invalid value'},
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'email_address', 'message': 'invalid value'},
-                {'field': 'signature_path', 'message': 'invalid value'}
-            ]
-        }
+        expected = {'errors': [
+            {'field': 'first_name', 'message': 'invalid value'}, 
+            {'field': 'last_name', 'message': 'invalid value'}, 
+            {'field': 'email_address', 'message': 'invalid value'}, 
+            {'field': 'signature_path', 'message': 'invalid value'}, 
+            {'field': 'created_timestamp', 'message': 'invalid value'}, 
+            {'field': 'password', 'message': 'invalid value'}
+        ]}
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
     
     def test_validate_admins(self):
@@ -262,7 +259,7 @@ class TestInputValidatorTool(unittest.TestCase):
         """
         logging.debug('Test: validate_admins()')
 
-        # Test: Happy Path 
+        # Test: POST Happy Path 
         all_happy = {
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -273,7 +270,7 @@ class TestInputValidatorTool(unittest.TestCase):
         response = self.input_validator.validate_admins('POST', all_happy)
         self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
 
-        # Test: Half Sad Path
+        # Test: POST Half Sad Path
         half_sad = { 
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -291,7 +288,7 @@ class TestInputValidatorTool(unittest.TestCase):
             ]}
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
 
-        # Test: Sad Path
+        # Test: POST Sad Path
         all_sad = {
             'first_name': self.sad_path['name'][0],
             'last_name': self.sad_path['name'][0],
