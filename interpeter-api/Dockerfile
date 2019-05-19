@@ -1,3 +1,4 @@
+# CentOS base image
 FROM centos:7
 
 # Install Python 2.7 in container
@@ -7,7 +8,6 @@ RUN wget https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
 RUN tar xzf Python-2.7.10.tgz
 WORKDIR Python-2.7.10
 RUN ./configure
-#RUN make altinstall
 RUN python2.7 -V
 
 # Install texlive in container
