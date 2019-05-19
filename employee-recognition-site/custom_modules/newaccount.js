@@ -143,9 +143,11 @@ module.exports = function(){
 		created_timestamp: req.body.created_timestamp,
 		email_address: req.body.email_address,
 		password: req.body.password,
-		signature_path: "turtle.jpg"
+		signature_path: "turtle.jpg",
+        user_id: req.body.user_id
             };
 	    
+        console.log(userBody);
             var options = {
 		method: "PUT",
 		uri: "https://maia-backend.appspot.com/users/" + req.body.user_id,

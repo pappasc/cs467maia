@@ -53,7 +53,7 @@ app.use(passport.session());
 
 //Dummy backend for now. Will port to different module later
 app.use('/users', require('./testCode/userProxyBackend.js'));
-app.use('/admins', require('./testCode/adminProxyBackend.js'));
+//app.use('/admins', require('./testCode/adminProxyBackend.js'));
 app.use('/awardProxy', require('./testCode/awardProxyBackend.js'));
 
 app.get('/', function (req, res) {
@@ -88,6 +88,7 @@ app.use('/awards', require('./custom_modules/awards.js'));
 app.use('/account', require('./custom_modules/account.js'));
 app.use('/employees', require('./custom_modules/employees.js'));
 app.use('/admin', require('./custom_modules/adminAccount.js'));
+app.use('/admins', require('./custom_modules/administrators.js'));
 app.use('/newaccount', require('./custom_modules/newaccount.js'));
 
 //If the user tries navigating to a non-supplied page

@@ -3,17 +3,17 @@
 </div>
 
 <div class="column-wrap">
-     <h2 id="awardTitle" align="center">Employees</h2>
+     <h2 id="awardTitle" align="center">Administrators</h2>
      <div>
 	    <section>
             <nav>
                 <ul>
-                    <li><button id="userbutton" onclick="gotoNewAccount()">Add User</button></li>
-                    <li><button id="userbutton" onclick="gotoUserAccount()">Update</button></li>
-                    <li><button id="userbutton" onclick="deleteUserInfo()">Remove</button></li>
+                    <li><button id="userbutton" onclick="gotoAdmin()">Add Admin</button></li>
+                    <li><button id="userbutton" onclick="gotoAdminAccount()">Update</button></li>
+                    <li><button id="userbutton" onclick="deleteAdminInfo()">Remove</button></li>
                     <li></li>
                     <li></li>
-                    <li><button id="homeButton" onclick="gotoHome()">Home</button></li>
+                    <li><button id="home" onclick="gotoHome()">Home</button></li>
                     <li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
                 </ul>
             </nav>
@@ -21,7 +21,7 @@
             <article id="EmplContainer">
                 <div style="height:500px;overflow:auto;">
                 
-                    <form action="/employees" method="post">
+                    <form action="/admins" method="post">
                         <table>
                             <thead>
                                 <th>Select</th>
@@ -30,10 +30,10 @@
                                 <th>Email</th>
                                 <th>Created on</th>
                             </thead>
-                            {{#each users}}
+                            {{#each admins}}
                                 <tr>
-                                    <td align="center"><input type="radio" name="employee" value={{user_id}}></td>
-                                    <td align="center">{{user_id}}</td>
+                                    <td align="center"><input type="radio" name="admin" value={{admin_id}}></td>
+                                    <td align="center">{{admin_id}}</td>
                                     <td align="center">{{first_name}} {{last_name}}</td>
                                     <td align="center">{{email_address}}</td>
                                     <td align="center">{{created_timestamp}}</td>

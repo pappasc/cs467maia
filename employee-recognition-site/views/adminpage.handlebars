@@ -3,13 +3,17 @@
 </div>
 
 <div class="column-wrap">
-    <h2 align="center">User Profile</h2>
+    <h2 align="center">Administrator Profile</h2>
     <div>
         <section>
             <nav>
                 <ul>
-                    <li><button>Save</button></li>
-                    <li><button id="cancelButton" onclick="gotoEmployees()">Cancel</button></li>
+                    {{#if update}}
+                        <li><button id="updateAdminButton" onclick="updateAdmin({{adminId}})">Update</button></li>
+                    {{else}}
+                        <li><button id="saveAdminButton" onclick="saveAdmin()">Save</button></li>
+                    {{/if}}
+                    <li><button id="cancelButton" onclick="gotoAdmins()">Cancel</button></li>
                 </ul>
             </nav>
 
@@ -23,7 +27,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="email" name="username" size="100" value={{email}}>
+                            <input type="email" name="username" id="Username" size="100" value={{email}}>
                         </td>
                     </tr>
                     <tr>
@@ -34,9 +38,9 @@
                     </tr>
                     <tr>
                         <td>                        
-                            <input type="text" name="Fname" size="30" value={{firstName}}> 
+                            <input type="text" name="Fname" id="FName" size="30" value={{firstName}}> 
                             &nbsp;
-                            <input type="text" name="Lname" size="30" value={{lastName}}>
+                            <input type="text" name="Lname" id="LName" size="30" value={{lastName}}>
                         </td>
                     </tr>
                     <tr>
@@ -46,7 +50,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="password" name="password" size="20">
+                            <input type="password" name="password" id="Password" size="20" value="{{password}}">
                         </td>
                     </tr>
                 </table>

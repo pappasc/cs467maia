@@ -17,7 +17,7 @@ module.exports = function(){
 	    else {
 		context.isUser = false;
 		context.isAdmin = true;
-        context.jsscripts.push("gotoEmployees.js");
+        context.jsscripts.push("gotoEmployees.js","gotoAdmins.js");
 	    }
 	}
 	else {
