@@ -14,7 +14,7 @@ def pdf():
 	try: 
 		tex_file = open('test.tex', 'r')
 		tex_data = tex_file.read()
-		pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
+		pdf = build_pdf(tex_data)
 		return bytes(pdf)
 	except Exception as e: 
 		logging.exception(e) 

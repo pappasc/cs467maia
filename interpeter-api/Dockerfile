@@ -13,14 +13,17 @@ RUN python2.7 -V
 # Install texlive in container
 RUN yum install texlive -y 
 
-# Install dependencies of Flask app in container
-RUN yum install pip -y
-RUN pip install -r requirements.txt
+# Install pip for later install of dependencies
+RUN yum install epel-release -y
+RUN yum install python-pip -y
 
 # Copy source directory into container
 RUN mkdir /interpreter-api
 WORKDIR /intereter-api
 COPY . . 
+
+# Install dependencies of application
+RUN pip install -r requirements.txt
 
 # Run Flask application when spinning up docker container
 CMD [ "python2.7", "interpreter_api.py"]
