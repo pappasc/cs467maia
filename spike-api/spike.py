@@ -69,18 +69,18 @@ def file():
 
 	return 'success'
 
-# Does not work
+# GET /pdf
 @app.route('/pdf', methods=['GET'])
 def pdf():	
-	""" This does not work, but was meant to build a pdf from latex file using
-		a given texlive distribution.
+	"""Returns PDF bytes--only useful if you have a texlive distribution
 	"""
 	try: 
-		pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
+		tex_file = open('test.tex', 'r')
+		tex_data = tex_file.read()
+		pdf = build_pdf(tex_data)
 		return bytes(pdf)
 	except Exception as e: 
 		logging.exception(e) 
-	return 'success'
 
 
 # references (based code off of these resources)
