@@ -69,15 +69,14 @@ def file():
 
 	return 'success'
 
-# GET /pdf
+# Does not work in Google App Engine Standard Environment
 @app.route('/pdf', methods=['GET'])
 def pdf():	
-	"""Returns PDF bytes--only useful if you have a texlive distribution
+	""" This does not work, but was meant to build a pdf from latex file using
+		a given texlive distribution.
 	"""
 	try: 
-		tex_file = open('test.tex', 'r')
-		tex_data = tex_file.read()
-		pdf = build_pdf(tex_data)
+		pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
 		return bytes(pdf)
 	except Exception as e: 
 		logging.exception(e) 
