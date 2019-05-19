@@ -25,7 +25,7 @@ insert into users (first_name, last_name, email_address, password, created_times
 insert into users (first_name, last_name, email_address, password, created_timestamp, signature_path ) values ('Patrick', 'DeLeon', 'deleonp@oregonstate.edu', 'encryptme', '2019-04-15 08:52:00', 'deleonp_sig.jpg');
 insert into admins (first_name, last_name, email_address, password, created_timestamp ) values ('Conner', 'Pappas', 'pappasc@oregonstate.edu', 'encryptme', '2019-04-15 08:52:00'); 
 insert into awards (authorizing_user_id, receiving_user_id, type, distributed, awarded_datetime) values (1, 2, 'week', false, '2019-04-27 10:00:00');
-
+insert into awards (authorizing_user_id, receiving_user_id, type, distributed, awarded_datetime) values (2, 1, 'month', false, '2019-04-30 00:00:00');
 -- Create user for api -- no access restrictions will occur between admins/users at the database level
 
 create user if not exists api_user;
