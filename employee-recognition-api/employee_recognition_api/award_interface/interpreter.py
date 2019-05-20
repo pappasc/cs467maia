@@ -8,3 +8,5 @@ class Interpreter:
 
 	def interpret(self, variable):
 		print('test')
+
+## Replaced by interpreter-api

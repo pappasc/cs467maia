@@ -8,7 +8,14 @@ This API addresses the fact that we cannot run LaTeX on the Standard Google AppE
 
 ## Instructions
 ### Build
-```sudo docker build -t interpeter-api:latest .```
+```sudo docker build -t cs467maia-backend:latest .```
 
-### Run 
-```sudo docker -p 8080:8080 run interpeter-api:latest```
+### Push to Docker Hub (private repo)
+```docker push kvavlen/cs467maia-backend:latest```
+
+### Run
+1. ssh to ECS instance: ```ssh -i "cs467-maia-key-pair.pem" ec2-user@ec2-54-203-128-106.us-west-2.compute.amazonaws.com
+``` 
+2. Pull down image ```sudo docker pull kvavlen/cs467maia-backend:latest```
+2. Run on port 80 ```sudo docker -p 8080:80 run kvavlen/cs467maia-backend:latest```
+

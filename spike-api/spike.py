@@ -76,6 +76,8 @@ def pdf():
 		a given texlive distribution.
 	"""
 	try: 
+		file = open('test.tex', 'r')
+		min_latex = file.read()
 		pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
 		return bytes(pdf)
 	except Exception as e: 
