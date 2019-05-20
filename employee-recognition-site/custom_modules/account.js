@@ -206,7 +206,7 @@ module.exports = function(){
 		    //Compose the PUT request to update the user
 		    var options = {
 			method: 'PUT',
-			uri: 'https://cs467maia-backend.appspot.com/' + req.user.user_id,
+			uri: 'https://cs467maia-backend.appspot.com/users/' + req.user.user_id,
 			body: userBody,
 			json: true,
 			resolveWithFullResponse: true
