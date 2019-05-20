@@ -13,9 +13,12 @@ This API addresses the fact that we cannot run LaTeX on the Standard Google AppE
 ### Push to Docker Hub (private repo)
 ```docker push kvavlen/cs467maia-backend:latest```
 
-### Run
-1. ssh to ECS instance: ```ssh -i "cs467-maia-key-pair.pem" ec2-user@ec2-54-203-128-106.us-west-2.compute.amazonaws.com
+### Run on EC2 
+1. ssh to EC2 instance: ```ssh -i "cs467-maia-key-pair.pem" ec2-user@ec2-54-203-128-106.us-west-2.compute.amazonaws.com
 ``` 
-2. Pull down image ```sudo docker pull kvavlen/cs467maia-backend:latest```
-2. Run on port 80 ```sudo docker -p 8080:80 run kvavlen/cs467maia-backend:latest```
+2. Login to docker if needed ```docker login```
+3. Pull down image ```docker pull kvavlen/cs467maia-backend:latest```
+4. Run on port 80 ```docker run -p 80:8080 kvavlen/cs467maia-backend:latest```
 
+## References
+1. re: https://www.ybrikman.com/writing/2015/11/11/running-docker-aws-ground-up/ re: setup ec2 and install docker 

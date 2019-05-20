@@ -5,12 +5,12 @@ import logging
 
 interpreter_api = Flask(__name__)
 
-# Does not work
+@interpreter_api.route('/test', methods=['GET'])
+def test(): 
+	return 'hello, it is me'
+
 @interpreter_api.route('/pdf', methods=['GET'])
 def pdf():	
-	""" This does not work, but was meant to build a pdf from latex file using
-		a given texlive distribution.
-	"""
 	try: 
 		tex_file = open('test.tex', 'r')
 		tex_data = tex_file.read()
