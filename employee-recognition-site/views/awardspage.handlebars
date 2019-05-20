@@ -25,6 +25,9 @@
 		<article id="awardsContainer">
 			 <div style="height:500px;overflow:auto;">
 		     	      {{#if create}}
+			      {{#if error}}
+			      	    <div>Error getting users - contact administrator</div>
+			      {{else}}
 		     	      	   <form action="/awards" method="post">
 		     	  	   	 <table>
 		     	  	 	 	<thead>
@@ -35,7 +38,7 @@
 				 		</thead>
 				 		{{#each users}}
 				 	 		<tr>
-								<td align="center"><input type="radio" name="employee" value={{user_id}}></td>
+								<td align="center"><input type="radio" name="employee" value={{user_id}} required></td>
 								<td align="center">{{first_name}} {{last_name}}</td>
 								<td align="center">{{email_address}}</td>
 								<td align="center">{{created_timestamp}}</td>
@@ -43,13 +46,17 @@
 						{{/each}}
 					</table>
 					<div>Award Type:
-					<select>
+					<select class="typepicker" name="typepicker">
 						<option value="week">week</option>
 						<option value="month">month</option>
 					</select>
 					</div>
 					<input type="submit" value="Submit">
 				  </form>
+				  {{/if}}
+				{{else}}
+				{{#if error}}
+				<div>Error getting awards - contact administrator</div>
 				{{else}}
 					<table>
 		     	    		       <thead>
@@ -59,18 +66,22 @@
 							<th>Awarded</th>
 			    			</thead>
 			    			{{#each awards}}
-                     	    <tr>
-				<td align="center">{{recipient_name}}</td>
-				<td align="center">{{type}}</td>
-				<td align="center">{{distributed}}</td>
-				<td align="center">{{awarded_datetime}}</td>
-				<td><button onclick="deleteAwards({{award_id}})">Delete</button></td>
-                		</tr>
-				{{/each}}
-				</table>
-			{{/if}}
+                     	    			<tr>
+						<td align="center">{{recipient_name}}</td>
+						<td align="center">{{type}}</td>
+						<td align="center">{{distributed}}</td>
+						<td align="center">{{awarded_datetime}}</td>
+						<td><button onclick="deleteAwards({{award_id}})">Delete</button></td>
+                				</tr>
+						{{/each}}
+						</table>
+						{{/if}}
+						{{/if}}
 		</div>
             </article>
+	    {{#if createError}}
+	    <div>Error creating award</div>
+	    {{/if}}
         </section>
     </div>
 </div>

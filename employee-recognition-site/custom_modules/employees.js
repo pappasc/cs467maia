@@ -5,7 +5,7 @@ module.exports = function(){
     
     function getUsers(req){
         var options = {
-          uri: 'https://maia-backend.appspot.com/users', //'https://cs467maia.appspot.com/users',
+          uri: 'https://cs467maia-backend.appspot.com/users', //'https://cs467maia.appspot.com/users',
           json: true,
         };
 

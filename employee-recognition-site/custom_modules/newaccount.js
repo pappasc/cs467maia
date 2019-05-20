@@ -5,7 +5,7 @@ module.exports = function(){
 
     function getUser(id){
         var options = {
-          uri: 'https://maia-backend.appspot.com/users/'+ id,
+          uri: 'https://cs467maia-backend.appspot.com/users/'+ id,
           json: true,
         };
 
@@ -16,7 +16,7 @@ module.exports = function(){
 
     function getUserPword(user_id) {
 	var options = {
-	    uri: 'https://maia-backend.appspot.com/users/' + user_id + '/login',
+	    uri: 'https://cs467maia-backend.appspot.com/users/' + user_id + '/login',
 	    json: true,
 	    resolveWithFullResponse: true
 	};
@@ -108,7 +108,7 @@ module.exports = function(){
 	
             var options = {
                 method: "POST",
-                uri: "https://maia-backend.appspot.com/users",
+                uri: "https://cs467maia-backend.appspot.com/users",
                 body: userBody,
                 json: true,
                 resolveWithFullResponse: true
@@ -148,7 +148,7 @@ module.exports = function(){
 	    
             var options = {
 		method: "PUT",
-		uri: "https://maia-backend.appspot.com/users/" + req.body.user_id,
+		uri: "https://cs467maia-backend.appspot.com/users/" + req.body.user_id,
 		body: userBody,
 		json: true,
 		resolveWithFullResponse: true
@@ -178,7 +178,7 @@ module.exports = function(){
         if (req.isAuthenticated()){
 	        var options = {
                 method: "DELETE",
-                uri: "https://maia-backend.appspot.com/users/" + req.body.userId,
+                uri: "https://cs467maia-backend.appspot.com/users/" + req.body.userId,
                 body: "",
                 json: true,
                 resolveWithFullResponse: true

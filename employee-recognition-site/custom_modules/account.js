@@ -5,7 +5,7 @@ module.exports = function(){
 
     function getUserPword(user_id) {
 	var options = {
-	    uri: 'https://maia-backend.appspot.com/users/' + user_id + '/login',
+	    uri: 'https://cs467maia-backend.appspot.com/users/' + user_id + '/login',
 	    json: true,
 	    resolveWithFullResponse: true
 	};
@@ -22,7 +22,7 @@ module.exports = function(){
     
     function getUser(id){
         var options = {
-          uri: 'https://maia-backend.appspot.com/users/'+ id,
+          uri: 'https://cs467maia-backend.appspot.com/users/'+ id,
           json: true,
         };
 
@@ -43,7 +43,7 @@ module.exports = function(){
 
         var options = {
             method: 'POST',
-            uri: 'https://maia-backend.appspot.com/users',
+            uri: 'https://cs467maia-backend.appspot.com/users',
             body: userInfo,
             json: true,
             resolveWithFullResponse: true
@@ -139,7 +139,7 @@ module.exports = function(){
     });
     
     router.post('/', function(req,res){
-       //if (req.isAuthenticated()){
+       if (req.isAuthenticated()){
             var userBody = {
                 first_name: req.body.first_name,
                 last_name: req.body.last_name,
@@ -150,7 +150,7 @@ module.exports = function(){
 
             var options = {
                 method: "POST",
-                uri: "https://maia-backend.appspot.com/users",
+                uri: "https://cs467maia-backend.appspot.com/users",
                 body: userBody,
                 json: true,
                 resolveWithFullResponse: true
@@ -168,11 +168,11 @@ module.exports = function(){
                 res.status(500).send("API Error.");
             });
             
-        /*}
+        }
         else
         {
             res.status(500).render('500');
-        }*/
+        }
     });
 
 
@@ -206,7 +206,7 @@ module.exports = function(){
 		    //Compose the PUT request to update the user
 		    var options = {
 			method: 'PUT',
-			uri: 'https://maia-backend.appspot.com/users/' + req.user.user_id,
+			uri: 'https://cs467maia-backend.appspot.com/' + req.user.user_id,
 			body: userBody,
 			json: true,
 			resolveWithFullResponse: true

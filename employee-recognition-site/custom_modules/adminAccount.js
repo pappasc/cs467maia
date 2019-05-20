@@ -4,7 +4,7 @@ module.exports = function(){
 
     function getAdmin(id){
         var options = {
-          uri: 'https://maia-backend.appspot.com/admins/'+ id,
+          uri: 'https://cs467maia-backend.appspot.com/admins/'+ id,
           json: true,
         };
 
