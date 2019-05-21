@@ -1,7 +1,13 @@
 import os 
+import logging
+
+if os.environ.get('ENV') != 'local':
+    import cloudstorage 
 
 class Builder: 
-    """Creates award tex data, based on month.tex or week.tex"""
+    """Build and retrieve the stuff (award tex data, image)
+        required to create a PDF award
+    """
 
     def __init__(self, type_string): 
         """Reads template LaTeX file into memory based on type provided
@@ -15,6 +21,22 @@ class Builder:
         f = open('{}/award.tex'.format(path), 'r')
         self.file = f.read() 
         self.type_string = type_string
+
+    def get_image_from_bucket(self, signature_path):
+        # Based off of code from views/users_signature.py  
+        try:        
+            # Open read-only connection to cloud storage bucket
+            connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path), mode='r', content_type='image/jpeg')
+            
+            # Save bytes of signature into variable & close connection
+            image = bytes(connection.read('{}'.format(signature_path)))
+            connection.close()
+
+            # Return image bytes if successful
+            return image
+        except Exception as e:
+            logging.exception(e)
+            return None
 
     def generate_award_tex(self, block):
         """Replaces values within the .tex template
@@ -48,3 +70,4 @@ class Builder:
 # [1] https://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files                             re: file I/O
 # [2] https://www.tutorialspoint.com/python/string_replace.htm                                                  re: replace()     
 # [3] https://stackoverflow.com/questions/3430372/how-to-get-full-path-of-current-files-directory-in-python     re: running pwd in python
+# See references in views/users_signature.py re: uploading to bucket

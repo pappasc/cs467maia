@@ -186,6 +186,12 @@ def awards(award_id=None):
 
         logging.info('awards_api: returning {}'.format(result))
         logging.info('awards_api: status code {}'.format(status_code))
+        
+
+        # TODO: Award Distribution
+        # award_driver = Driver()
+        # award_driver.run()
+
         return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
     # DELETE /awards/<award_id>
@@ -357,25 +363,27 @@ def awards_distributed(distributed):
 def test():
     
     try: 
-        builder_tool = Builder('month')
-        test_block = {
-            'authorizeFirstName': 'Natasha',
-            'authorizeLastName': 'Kvavle',
-            'receiveFirstName': 'Patrick',
-            'receiveLastName': 'DeLeon',
-            'signaturePath': 'test.jpg', 
-            'month': 'May', 
-            'day': '5',
-            'year': '2019'
-        }    
-        builder_tool.replace_template(test_block)
-        builder_tool.create_award_tex()
+        #builder_tool = Builder('month')
+        #test_block = {
+        #    'authorizeFirstName': 'Natasha',
+        #    'authorizeLastName': 'Kvavle',
+        #    'receiveFirstName': 'Patrick',
+        #    'receiveLastName': 'DeLeon',
+        #    'signaturePath': 'test.jpg', 
+        #    'month': 'May', 
+        #    'day': '5',
+        #    'year': '2019'
+        #}    
+        #builder_tool.replace_template(test_block)
+        #builder_tool.create_award_tex()
         interpeter_tool = Interpreter()
-        interpeter_tool.interpret('award.tex')
+        result = interpeter_tool.interpret('award.tex')
+        return result
+
     except Exception as e:
         logging.exception(e)
 
-    return 'made it'
+    
 
 
 # References 

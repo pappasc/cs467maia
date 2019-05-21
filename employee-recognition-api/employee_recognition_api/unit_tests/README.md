@@ -16,3 +16,4 @@
 1. https://docs.python.org/2.7/library/unittest.html
 2. https://docs.python.org/2.7/library/unittest.html#unittest.TestCase.setUp
 3. https://stackoverflow.com/questions/52305191/using-self-vs-cls-to-access-variable-in-unittest/52305252
+4. https://testandcode.com/ re: test image
