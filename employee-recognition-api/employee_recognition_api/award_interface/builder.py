@@ -85,16 +85,17 @@ class Builder:
     def query_bucket_for_image(self, signature_path):
         # Based off of code from views/users_signature.py  
         try:        
+            signature_file = 'kvavlen_sig.jpg' # TODO: DONT HARD CODE THIS
+
             # Open read-only connection to cloud storage bucket
-            connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))
+            connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_file))
             
             # Save bytes of signature into variable & close connection
             image = connection.read()
             connection.close()
 
-            logging.info(image)
             # Return image bytes if successful
-            return bytes(image)
+            return image
         except Exception as e:
             logging.exception(e)
             return None

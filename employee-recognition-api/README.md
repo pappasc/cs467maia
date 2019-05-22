@@ -324,3 +324,4 @@ If time allows, I will be implementing some way to prevent anyone but the maia g
 29. http://flask.pocoo.org/docs/1.0/api/#incoming-request-data                                      re: use of request.data for getting body of POST request
 30. https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/appengine/standard/storage/appengine-client/requirements.txt re: requirements for storage client lib
 31. https://github.com/dkalpakchi/rel_import/blob/master/__init__.py  								re: \__init\__.py usage
+32. https://www.google.com/search?q=signature&client=ubuntu&hs=Se2&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiW1ejUua7iAhXHilQKHRVrAuoQ_AUIDigB&biw=635&bih=385#imgrc=2OON3FzNBqcOVM: re: test signature
