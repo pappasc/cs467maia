@@ -20,5 +20,6 @@ This API addresses the fact that we cannot run LaTeX on the Standard Google AppE
 3. Pull down image ```docker pull kvavlen/cs467maia-backend:latest```
 4. Run on port 80 ```docker run -p 80:8080 kvavlen/cs467maia-backend:latest```
 
+
 ## References
 1. re: https://www.ybrikman.com/writing/2015/11/11/running-docker-aws-ground-up/ re: setup ec2 and install docker 

@@ -186,7 +186,6 @@ def awards(award_id=None):
 
         logging.info('awards_api: returning {}'.format(result))
         logging.info('awards_api: status code {}'.format(status_code))
-        
 
         # TODO: Award Distribution
         # award_driver = Driver()
@@ -360,24 +359,27 @@ def awards_distributed(distributed):
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
 @awards_api.route('/awards/test', methods=['GET'])
-def test():
-    
+def test_awards():
     try: 
-        #builder_tool = Builder('month')
-        #test_block = {
-        #    'authorizeFirstName': 'Natasha',
-        #    'authorizeLastName': 'Kvavle',
-        #    'receiveFirstName': 'Patrick',
-        #    'receiveLastName': 'DeLeon',
-        #    'signaturePath': 'test.jpg', 
-        #    'month': 'May', 
-        #    'day': '5',
-        #    'year': '2019'
-        #}    
-        #builder_tool.replace_template(test_block)
-        #builder_tool.create_award_tex()
-        interpeter_tool = Interpreter()
-        result = interpeter_tool.interpret('award.tex')
+        builder_tool = Builder(connection_data, 'month')
+        test_block = {
+            'AuthorizeFirstName': 'Natasha',
+            'AuthorizeLastName': 'Kvavle',
+            'ReceiveFirstName': 'Patrick',
+            'ReceiveLastName': 'DeLeon',
+            'SignaturePath': 'kvavlen_sig.jpg', 
+            'Month': 'May', 
+            'Day': '5',
+            'Year': '2019'
+        }    
+        try: 
+            award_tex = builder_tool.generate_award_tex(test_block)
+            image = builder_tool.query_bucket_for_image(test_block['SignaturePath'])    
+            interpeter_tool = Interpreter()
+            result = interpeter_tool.interpret(test_block['SignaturePath'], award_tex, image)
+        except Exception as e: 
+            logging.exception(e)
+
         return result
 
     except Exception as e:
