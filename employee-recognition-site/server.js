@@ -37,8 +37,8 @@ app.use(session({
     store: new DatastoreStore({
 	dataset: new Datastore({
 	    kind: 'express-sessions',
-	    projectId: 'cs467maia',
-	    keyFilename: 'cs467maia-a21a648c06b7.json'
+	    projectId: 'cs467maia-site',
+	    keyFilename: 'cs467maia-site-2c8a987d36ff.json'
 	})
     }),
     secret: 'groupmaia',
