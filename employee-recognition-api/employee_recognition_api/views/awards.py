@@ -377,9 +377,6 @@ def test_awards():
             award_tex = builder_tool.generate_award_tex(test_block)
             image = builder_tool.query_bucket_for_image(test_block['SignaturePath'])    
             interpeter_tool = Interpreter()
-            logging.info(test_block['SignaturePath'])
-            logging.info(award_tex)
-            logging.info(image)
             result = interpeter_tool.interpret('{}'.format(test_block['SignaturePath']), award_tex, image)
         except Exception as e: 
             logging.exception(e)

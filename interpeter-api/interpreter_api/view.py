@@ -10,6 +10,14 @@ interpreter_api = Flask(__name__)
 def test(): 
 	return 'hello, it is me'
 
+@interpreter_api.route('/image', methods=['POST'])
+def image():
+	logging.info('interpreter_api.image(): writing image in request to disk')
+	image = request.data
+	image_on_disk = open('kvavlen_sig.jpg', 'w')
+	image_on_disk.write(image)
+	return Response('success', status=200)
+
 @interpreter_api.route('/pdf', methods=['POST'])
 def pdf():	
 	try: 
@@ -19,21 +27,23 @@ def pdf():
 		# Print image to {signature_path}.jpg file
 		# TODO: FIX
 		logging.info('interpeter_api.pdf(): writing signature .jpg file to disk')
-		bytes_jpg = data['jpg_data']
+		jpg = str(data['jpg_data'])
 		signature_path = data['signature_path']
-		image = open('{}'.format(data['signature_path']), 'wb')
-		image.write(bytes_jpg)
+		image = open('{}'.format(data['signature_path']), 'w')
+		image.write(jpg)
+
 		logging.info('interpeter_api.pdf(): success')
 
 		# Build PDF using image
-		logging.info('interpeter_api.pdf(): building PDF using image & tex data')
-		pdf = build_pdf(data['tex_data'])
+		#logging.info('interpeter_api.pdf(): building PDF using image & tex data')
+		#pdf = build_pdf(data['tex_data'])
 
 		# TODO: Delete image
 		#image = delete('award_{}.jpg'.format(data['award_id']))
 		
 		# Return bytes of pdf if successful
-		return Response(bytes(pdf), status=200, mimetype='application/pdf') 
+		#return Response(bytes(pdf), status=200, mimetype='application/pdf') 
+		return Response('success', status=200)
 	except Exception as e: 
 		logging.exception(e) 
 		return Response(None, status=400, mimetype='application/pdf')
