@@ -367,17 +367,19 @@ def test_awards():
             'AuthorizeLastName': 'Kvavle',
             'ReceiveFirstName': 'Patrick',
             'ReceiveLastName': 'DeLeon',
-            'SignaturePath': '/interpeter-api/kvavlen_sig.jpg', 
+            'SignaturePath': '/app/kvavlen_sig.jpg', 
             'Month': 'May', 
             'Day': '5',
             'Year': '2019'
         }    
         # NOTE: Signature path is within context of docker container
         try: 
-            award_tex = builder_tool.generate_award_tex(test_block)
-            image = builder_tool.query_bucket_for_image(test_block['SignaturePath'])    
+            #award_tex = builder_tool.generate_award_tex(test_block)
+            #image = builder_tool.query_bucket_for_image(test_block['SignaturePath'])    
+        
             interpeter_tool = Interpreter()
-            result = interpeter_tool.interpret('{}'.format(test_block['SignaturePath']), award_tex, image)
+            result = interpeter_tool.interpret('kvavlen_sig.jpg')
+        
         except Exception as e: 
             logging.exception(e)
 

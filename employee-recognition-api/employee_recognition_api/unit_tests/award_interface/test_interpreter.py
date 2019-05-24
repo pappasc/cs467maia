@@ -18,7 +18,6 @@ class TestInterpreter(unittest.TestCase):
     def test_interpret(self):
         logging.info('test_interpet() cannot be tested due to dependency on google app engine urlfetch')
 
-
     def test_write_award_to_bucket(self):
         logging.info('write_award_to_bucket() cannot be tested due to dependency on google app engine storage bucket')
 

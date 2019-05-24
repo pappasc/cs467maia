@@ -15,31 +15,21 @@ def test():
 def image(signature_path): 
 	# TODO: Add Exceptions
 	if request.method == 'POST':  
-		logging.info('interpreter_api.image(): saving image {}'.format(filename))
+		logging.info('interpreter_api.image(): saving image {}'.format(signature_path))
 		image = open(signature_path, 'w')
 		image.write(request.data)
 		return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
 	elif request.method == 'DELETE': 
-		logging.info('interpeter_api.image(): deleting image {}'.format(filename))
+		logging.info('interpeter_api.image(): deleting image {}'.format(signature_path))
 		os.remove(signature_path)
 		return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
 
-@interpreter_api.route('/pdf/<signature_path>', methods=['POST'])
-def pdf(signature_path):	
-	logging.info('interpreter_api.pdf(): building pdf')
-
-	pdf = build_pdf(request.data)
-
-		# Build PDF using image
-		#logging.info('interpeter_api.pdf(): building PDF using image & tex data')
-		#pdf = build_pdf(data['tex_data'])
-
-		# TODO: Delete image
-		#image = delete('award_{}.jpg'.format(data['award_id']))
-		
-		# Return bytes of pdf if successful
-		#return Response(bytes(pdf), status=200, mimetype='application/pdf') 
-		return Response('success', status=200)
+@interpreter_api.route('/pdf', methods=['POST'])
+def pdf():	
+	try: 
+		logging.info('interpreter_api.pdf(): building pdf')
+		pdf = build_pdf(request.data)
+		return Response(bytes(pdf), status=200, mimetype='application/pdf')
 	except Exception as e: 
 		logging.exception(e) 
 		return Response(None, status=400, mimetype='application/pdf')

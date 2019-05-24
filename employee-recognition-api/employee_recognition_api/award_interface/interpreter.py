@@ -13,34 +13,57 @@ class Interpreter:
     def __init__(self):
         logging.info('Interpreter.__init__(): do nothing')
 
-    def interpret(self, signature_path, tex, jpg):
+    def interpret(self, signature_path):
 
-        # Make POST request to interpreter-api /pdf endpoint
-        url = 'http://54.203.128.106:80/pdf'
+        # POST image to AWS instance
+        url = 'http://54.203.128.106:80/image'
+        image = open(signature_path, 'r')
+        payload = image.read()
 
         try: 
             result = urlfetch.fetch(
                 url=url,
-                payload=json.dumps({
-                    'signature_path': signature_path,
-                    'tex_data': tex,
-                    'jpg_data': jpg
-                }),
+                payload=payload,
                 method=urlfetch.POST,
                 headers={
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'image/jpeg'
                 })
             
             logging.info(result)
             # If result is successful, return binary to calling function
             # Otherwise, return None
             if result.status_code == 200: 
-                return result.content       
+                continue_bool = True       
             else:
-                return None
+                continue_bool = False
         except urlfetch.Error as e:
             logging.exception(e)
             return None
+
+        if continue_bool is True: 
+            # POST tex to AWS instance, get PDF
+            url = 'http://54.203.128.106:80/pdf'
+            tex = open('award.tex', 'r')
+            payload = tex.read()
+
+            try: 
+                result = urlfetch.fetch(
+                    url=url,
+                    payload=payload,
+                    method=urlfetch.POST,
+                    headers={
+                        'Content-Type': 'application/octet-stream'
+                    })
+
+                # If result is successful, then print to PDF file (TEMPORARY)
+                # Otherwise, return None
+                if result.status_code == 200: 
+                    return result.content 
+                else:
+                    return None
+            except urlfetch.Error as e:
+                logging.exception(e)
+                return None        
 
     def write_award_to_bucket(self, award_id, pdf_bytes):
 
