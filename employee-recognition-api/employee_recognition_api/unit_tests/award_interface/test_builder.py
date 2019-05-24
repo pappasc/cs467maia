@@ -45,7 +45,7 @@ class TestBuilder(unittest.TestCase):
     def test_generate_award_tex(self):
         """Tests generate_award_tex()
         """
-        types = ['month', 'week']
+        types = ['Month', 'Week']
         
         self.test_block = {
             'AuthorizeFirstName': 'Natasha',

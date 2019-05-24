@@ -7,18 +7,29 @@ if os.environ.get('ENV') != 'local':
     import cloudstorage 
 
 class Interpreter:
-    """ Communicates with interpeter-api to gather PDF award & pushes to 
+    """ Communicates with interpeter-api to render PDF award & pushes to 
         the cs467maia-backend storage bucket 
     """
     def __init__(self):
         logging.info('Interpreter.__init__(): do nothing')
 
     def save_image_to_disk(self, signature_path, image):
+        """Save signature image to disk on AWS instance 
 
+        Arguments: 
+            self
+            signature_path: string. name of signature file, not full path.
+            image:          bytes. contents of image/jpeg file, pulled down from Google Storage Bucket
+        
+        Returns: 
+            True on success, False on failure
+        """
+
+        # If image is not None, then we can continue (not an empty image)
         if image is not None: 
+            logging.info('Interpeter.save_image_to_disk(): Saving image to AWS instance')
             # POST image to AWS instance
             url = 'http://54.203.128.106:80/image/{}'.format(signature_path)
-
             try: 
                 result = urlfetch.fetch(
                     url=url,
@@ -28,9 +39,8 @@ class Interpreter:
                         'Content-Type': 'image/jpeg'
                     })
                 
-                logging.info(result.content)
-                # If result is successful, return binary to calling function
-                # Otherwise, return None
+                # Log the result of the POST request
+                logging.info('Interpreter.save_image_to_disk(): POST result was {}'.format(result.content))
                 if result.status_code == 200: 
                     return True       
                 else:
@@ -42,8 +52,19 @@ class Interpreter:
             return False
 
     def interpret(self, signature_path, modified_award_tex, image):
+        """Render PDF award using AWS instance
 
+        Arguments: 
+            self
+            signature_path:         string. name of signature file, not full path.
+            image:                  bytes. contents of image/jpeg file, pulled down from Google Storage Bucket
+            modified_award_tex:     bytes. contents of tex file modified with user information
+        Returns: 
+            Returns bytes of PDF on success, None on failure
+        """
+        # Only continue if we could appropriately save our signature file to AWS instance
         if self.save_image_to_disk(signature_path, image) is True: 
+            logging.info('Interpeter.interpret(): Rendering PDF on AWS instance')
             # POST tex to AWS instance, get PDF
             url = 'http://54.203.128.106:80/pdf'
             try: 
@@ -55,8 +76,8 @@ class Interpreter:
                         'Content-Type': 'application/octet-stream'
                     })
 
-                # If result is successful, then print to PDF file (TEMPORARY)
-                # Otherwise, return None
+                # Return PDF contents if successful
+                logging.info('Interpreter.interpret(): POST result was {}'.format(result.content))
                 if result.status_code == 200: 
                     return result.content 
                 else:
@@ -65,7 +86,7 @@ class Interpreter:
                 logging.exception(e)
                 return None        
 
-    def write_award_to_bucket(self, award_id, pdf_bytes):
+    def write_award_to_bucket(self, award_id, pdf):
 
         # Based off of code from views/users_signature.py  
         logging.info('Interpeter.write_award_to_bucket(): writing to cloud storage')
@@ -74,10 +95,10 @@ class Interpreter:
             filename = 'award_{}.pdf'.format(award_id)
 
             # Open write connection to cloud storage bucket
-            connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/{}'.format(filename), mode='w', content_type='pdf')
+            connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/{}'.format(filename), mode='w', content_type='application/pdf')
                 
             # Write raw image data & close connection to bucket
-            connection.write(pdf_bytes)
+            connection.write(pdf)
             connection.close()
             return 0 # success
 

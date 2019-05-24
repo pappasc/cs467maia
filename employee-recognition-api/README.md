@@ -194,6 +194,14 @@ DELETE /admins/{admin_id}
 
 ### Awards 
 
+GET /awards
+- **function:** returns all awards' information
+- **example request:** ```curl -X GET <url>/awards```
+- **example response:**
+| status | content-type     | example body                                                                                                                                                |
+| -------| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200    | application/json | ```{ "award_ids": [{ "award_id": 1, "authorizing_user_id": 2, "receiving_user_id": 3, "type": "week", distributed: "true", "awarded_datetime": "2019-04-18 12:00:00" } ] }```  |
+
 GET /awards/{award_id}  
 - **function:** returns award's information based on award_id
 - **example request:** ```curl -X GET <url>/award_id/1```

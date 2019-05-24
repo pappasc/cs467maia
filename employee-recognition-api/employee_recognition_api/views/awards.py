@@ -372,34 +372,31 @@ def awards_distributed(distributed):
 
 @awards_api.route('/awards/test', methods=['GET'])
 def test_awards():
+
+    builder_tool = Builder(connection_data, 'month')
+    test_block = {
+        'AuthorizeFirstName': 'Natasha',
+        'AuthorizeLastName': 'Kvavle',
+        'ReceiveFirstName': 'Patrick',
+        'ReceiveLastName': 'DeLeon',
+        'SignaturePath': 'kvavlen_sig.jpg', 
+        'Month': 'May', 
+        'Day': '5',
+        'Year': '2019'
+    }    
+
     try: 
-        builder_tool = Builder(connection_data, 'month')
-        test_block = {
-            'AuthorizeFirstName': 'Natasha',
-            'AuthorizeLastName': 'Kvavle',
-            'ReceiveFirstName': 'Patrick',
-            'ReceiveLastName': 'DeLeon',
-            'SignaturePath': 'kvavlen_sig.jpg', 
-            'Month': 'May', 
-            'Day': '5',
-            'Year': '2019'
-        }    
-
-        try: 
-            modified_award_tex = builder_tool.generate_award_tex(test_block)
-            image = builder_tool.query_bucket_for_image('kvavlen_sig.jpg')    
-            interpeter_tool = Interpreter()
-            pdf = interpeter_tool.interpret('kvavlen_sig.jpg', modified_award_tex, image)
-            
-        except Exception as e: 
-            logging.exception(e)
-            pdf = None 
-
-        return pdf
-
-    except Exception as e:
+        modified_award_tex = builder_tool.generate_award_tex(test_block)
+        image = builder_tool.query_bucket_for_image(test_block['SignaturePath'])    
+        interpreter_tool = Interpreter()
+        pdf = interpreter_tool.interpret(test_block['SignaturePath'], modified_award_tex, image)
+        
+        interpreter_tool.write_award_to_bucket(1, pdf)
+        return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
+    # TODO: Failing
+    except Exception as e: 
         logging.exception(e)
-
+        return Response(json.dumps({'result': 'failure'}), status=400, mimetype='application/json')
     
 
 

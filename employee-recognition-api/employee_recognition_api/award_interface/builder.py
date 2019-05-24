@@ -86,19 +86,23 @@ class Builder:
 
     
     def query_bucket_for_image(self, signature_path):
-        # Based off of code from views/users_signature.py  
-        try:      
-            #cloudstorage.set_default_retry_params(cloudstorage.RetryParams(initial_delay=0.2, max_delay=5.0, backoff_factor=2, max_retry_period=15))
-            try: 
-                connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))              
-            except Exception as e:
-                logging.exception('firsttry: {}'.format(e))
-                connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))              
+        """Queries Google Storage Bucket for image
 
+        Arguments: 
+            self
+            signature_path: string. signature file name to query for
+
+        Returns:
+            bytes of image or None if unsuccessful
+        """
+        # Based off of code from views/users_signature.py 
+        # Connect to the Cloud Storage bucket, read image contents, and close connection 
+        try:      
+            connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))              
             image = connection.read()
             connection.close()
 
-            # Return image if successful
+            # Return bytes of image if successful
             return bytes(image)
         except Exception as e:
             logging.exception(e)
@@ -138,5 +142,4 @@ class Builder:
 # [3] https://stackoverflow.com/questions/3430372/how-to-get-full-path-of-current-files-directory-in-python     re: running pwd in python
 # [4] See references in views/users_signature.py re: uploading to bucket
 # [5] https://docs.python.org/2/library/datetime.html re: datetime
-# [6] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/retryparams_class        re: retry params to use
-# [7] https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                      re: setting access token in dev environment
+# [6] https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                      re: setting access token in dev environment
