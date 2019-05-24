@@ -18,8 +18,8 @@ RUN yum install epel-release -y
 RUN yum install python-pip -y
 
 # Copy source directory into container
-RUN mkdir /interpreter-api
-WORKDIR /interpreter-api
+RUN mkdir /app
+WORKDIR /app
 COPY interpreter_api .
 
 # Install dependencies of application
