@@ -23,7 +23,7 @@ connection_data = {
     'connection_name': '{}'.format(connection_name) 
 }
 
-@awards_api.route('/awards', methods=['POST'])
+@awards_api.route('/awards', methods=['POST', 'GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])
 def awards(award_id=None):
     """ Handle POST /awards, GET, DELETE /awards/<award_id> 
@@ -47,6 +47,18 @@ def awards(award_id=None):
         # Determine success on presence of award_id
         try: 
             if result['award_id']: 
+                status_code = 200
+        except KeyError:
+            status_code = 400
+
+    # GET /awards
+    elif request.method == 'GET' and award_id is None: 
+        # Query database for award based on ID
+        result = query.get('awards')
+
+        # Determine success on presence of award_id
+        try: 
+            if result['award_ids']: 
                 status_code = 200
         except KeyError:
             status_code = 400
