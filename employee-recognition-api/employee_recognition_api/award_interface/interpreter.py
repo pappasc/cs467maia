@@ -13,43 +13,43 @@ class Interpreter:
     def __init__(self):
         logging.info('Interpreter.__init__(): do nothing')
 
-    def interpret(self, signature_path):
+    def save_image_to_disk(self, signature_path, image):
 
-        # POST image to AWS instance
-        url = 'http://54.203.128.106:80/image'
-        image = open(signature_path, 'r')
-        payload = image.read()
-
-        try: 
-            result = urlfetch.fetch(
-                url=url,
-                payload=payload,
-                method=urlfetch.POST,
-                headers={
-                    'Content-Type': 'image/jpeg'
-                })
-            
-            logging.info(result)
-            # If result is successful, return binary to calling function
-            # Otherwise, return None
-            if result.status_code == 200: 
-                continue_bool = True       
-            else:
-                continue_bool = False
-        except urlfetch.Error as e:
-            logging.exception(e)
-            return None
-
-        if continue_bool is True: 
-            # POST tex to AWS instance, get PDF
-            url = 'http://54.203.128.106:80/pdf'
-            tex = open('award.tex', 'r')
-            payload = tex.read()
+        if image is not None: 
+            # POST image to AWS instance
+            url = 'http://54.203.128.106:80/image/{}'.format(signature_path)
 
             try: 
                 result = urlfetch.fetch(
                     url=url,
-                    payload=payload,
+                    payload=image,
+                    method=urlfetch.POST,
+                    headers={
+                        'Content-Type': 'image/jpeg'
+                    })
+                
+                logging.info(result.content)
+                # If result is successful, return binary to calling function
+                # Otherwise, return None
+                if result.status_code == 200: 
+                    return True       
+                else:
+                    return False
+            except urlfetch.Error as e:
+                logging.exception(e)
+                return False
+        else: 
+            return False
+
+    def interpret(self, signature_path, modified_award_tex, image):
+
+        if self.save_image_to_disk(signature_path, image) is True: 
+            # POST tex to AWS instance, get PDF
+            url = 'http://54.203.128.106:80/pdf'
+            try: 
+                result = urlfetch.fetch(
+                    url=url,
+                    payload=modified_award_tex,
                     method=urlfetch.POST,
                     headers={
                         'Content-Type': 'application/octet-stream'

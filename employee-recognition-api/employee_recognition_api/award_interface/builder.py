@@ -6,6 +6,9 @@ from ..db_interface.query_tool import QueryTool
 if os.environ.get('ENV') != 'local':
     import cloudstorage 
 
+#    if os.environ.get('ENV') == 'dev': 
+#        cloudstorage.common.set_access_token("Bearer ya29.GlwAB_3k8a_MRfpYkos12hj6viafjBb1G30xgIK7IlJ2Atdaxc0ZUuranxzv81sxChjXcrMnkLVr5n0EJvyG0FYHTuvpkJDHzuXPLTpqOfk8bhUBgh7mEU9wKCE-gA")
+
 class Builder: 
     """Build and retrieve the stuff (award tex data, image)
         required to create a PDF award
@@ -84,16 +87,19 @@ class Builder:
     
     def query_bucket_for_image(self, signature_path):
         # Based off of code from views/users_signature.py  
-        try:        
-            signature_file = 'kvavlen_sig.jpg' # TODO: DONT HARD CODE THIS
-            
-            # Get image from storage bucket
-            connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_file), mode='r')
+        try:      
+            #cloudstorage.set_default_retry_params(cloudstorage.RetryParams(initial_delay=0.2, max_delay=5.0, backoff_factor=2, max_retry_period=15))
+            try: 
+                connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))              
+            except Exception as e:
+                logging.exception('firsttry: {}'.format(e))
+                connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))              
+
             image = connection.read()
             connection.close()
 
-            # Return image bytes if successful
-            return str(image)
+            # Return image if successful
+            return bytes(image)
         except Exception as e:
             logging.exception(e)
             return None
@@ -124,7 +130,7 @@ class Builder:
         self.file = self.file.replace('Day', data['Day'])
         self.file = self.file.replace('Year', data['Year'])
         self.file = self.file.replace('Type', self.type_string)
-        return self.file
+        return bytes(self.file)
 
 # References
 # [1] https://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files                             re: file I/O
@@ -132,3 +138,5 @@ class Builder:
 # [3] https://stackoverflow.com/questions/3430372/how-to-get-full-path-of-current-files-directory-in-python     re: running pwd in python
 # [4] See references in views/users_signature.py re: uploading to bucket
 # [5] https://docs.python.org/2/library/datetime.html re: datetime
+# [6] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/retryparams_class        re: retry params to use
+# [7] https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                      re: setting access token in dev environment

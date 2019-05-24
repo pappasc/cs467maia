@@ -367,23 +367,23 @@ def test_awards():
             'AuthorizeLastName': 'Kvavle',
             'ReceiveFirstName': 'Patrick',
             'ReceiveLastName': 'DeLeon',
-            'SignaturePath': '/app/kvavlen_sig.jpg', 
+            'SignaturePath': 'kvavlen_sig.jpg', 
             'Month': 'May', 
             'Day': '5',
             'Year': '2019'
         }    
-        # NOTE: Signature path is within context of docker container
+
         try: 
-            #award_tex = builder_tool.generate_award_tex(test_block)
-            #image = builder_tool.query_bucket_for_image(test_block['SignaturePath'])    
-        
+            modified_award_tex = builder_tool.generate_award_tex(test_block)
+            image = builder_tool.query_bucket_for_image('kvavlen_sig.jpg')    
             interpeter_tool = Interpreter()
-            result = interpeter_tool.interpret('kvavlen_sig.jpg')
-        
+            pdf = interpeter_tool.interpret('kvavlen_sig.jpg', modified_award_tex, image)
+            
         except Exception as e: 
             logging.exception(e)
+            pdf = None 
 
-        return result
+        return pdf
 
     except Exception as e:
         logging.exception(e)
