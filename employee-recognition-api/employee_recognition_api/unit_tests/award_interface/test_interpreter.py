@@ -18,18 +18,13 @@ class TestInterpreter(unittest.TestCase):
         cls.interpreter = Interpreter()
 
     def test_save_image_to_disk(self): 
-        """Test save_image_to_disk()
-        """
-        logging.debug('TEST: save_image_to_disk()')
-        
-
-
+        logging.debug('save_image_to_disk() cannot be tested locally due to dependency on google app engine urlfetch')
 
     def test_interpret(self):
-        logging.debug('test_interpet() cannot be tested due to dependency on google app engine urlfetch')
+        logging.debug('interpet() cannot be tested locally due to dependency on google app engine urlfetch')
 
     def test_write_award_to_bucket(self):
-        logging.debug('write_award_to_bucket() cannot be tested due to dependency on google app engine storage bucket')
+        logging.debug('write_award_to_bucket() cannot be tested locally due to dependency on google app engine storage bucket')
 
 if __name__ == '__main__': 
     unittest.main()
