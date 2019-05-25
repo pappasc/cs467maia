@@ -1,0 +1,75 @@
+<div id="header">
+    <img src="./../images/MaiaGroupHeader.jpg" width="100%" height="100%" alt=""/>
+</div>
+
+<div class="column-wrap">
+    <h2 align="center">User Profile</h2>
+    <div>
+        <section>
+            <nav>
+                <ul>
+                    {{#if update}}
+                    <li><button id="updateUserButton" onclick="updateUserInfo({{userId}})">Update</button></li>
+                    {{else}}
+                    <li><button id="saveUserButton" onclick="saveUserInfo()">Save</button></li>
+                    {{/if}}
+                    <li><button id="cancelButton" onclick="gotoEmployees()">Cancel</button></li>
+                </ul>
+            </nav>
+
+            <article>
+                <table>
+                    <tr>
+                        <td>
+                            Username
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="email" name="username" id="UserName" size="100" value={{email}}>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Firstname                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Lastname
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>                        
+                            <input type="text" name="Fname" id="FName" size="30" value={{firstName}}> 
+                            &nbsp;
+                            <input type="text" name="Lname" id="LName" size="30" value={{lastName}}>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Password
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="password" name="Password" id="Pword" size="20" value={{password}}>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Signature
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="file" name="sigFile" id="SigPath" size="100" value={{signature}}><br>
+                        </td>
+                    </tr>
+
+                </table>
+                {{#if err}}
+                    <h4>{{err}}</h4>
+                {{/if}}
+            </article>
+        </section>
+    </div>
+</div>
+	
