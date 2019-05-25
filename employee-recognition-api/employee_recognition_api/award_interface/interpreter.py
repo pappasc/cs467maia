@@ -39,8 +39,8 @@ class Interpreter:
                         'Content-Type': 'image/jpeg'
                     })
                 
-                # Log the result of the POST request
-                logging.info('Interpreter.save_image_to_disk(): POST result was {}'.format(result.content))
+                # Log the result of the POST request, return True only if successful
+                logging.info('Interpreter.save_image_to_disk(): POST /image result was {}'.format(result.content))
                 if result.status_code == 200: 
                     return True       
                 else:
@@ -65,6 +65,7 @@ class Interpreter:
         # Only continue if we could appropriately save our signature file to AWS instance
         if self.save_image_to_disk(signature_path, image) is True: 
             logging.info('Interpeter.interpret(): Rendering PDF on AWS instance')
+            
             # POST tex to AWS instance, get PDF
             url = 'http://54.203.128.106:80/pdf'
             try: 
@@ -76,8 +77,8 @@ class Interpreter:
                         'Content-Type': 'application/octet-stream'
                     })
 
-                # Return PDF contents if successful
-                logging.info('Interpreter.interpret(): POST result was {}'.format(result.content))
+                # Return PDF contents if successful, otherwise return None
+                logging.info('Interpreter.interpret(): POST /pdf result was {}'.format(result.content))
                 if result.status_code == 200: 
                     return result.content 
                 else:
@@ -87,8 +88,18 @@ class Interpreter:
                 return None        
 
     def write_award_to_bucket(self, award_id, pdf):
+        """Write PDF award to Google App Engine Storage Bucket for cs467maia-backend
 
-        # Based off of code from views/users_signature.py  
+        Based off of code from views/users_signature.py
+
+        Arguments: 
+            self
+            award_id:   int. award id for the award, to be used in the pdf file name
+            pdf:        bytes. content of PDF file.
+    
+        Returns: 
+            Returns True on success, False on failure
+        """   
         logging.info('Interpeter.write_award_to_bucket(): writing to cloud storage')
         try:        
             # Make file name based on award id
@@ -100,15 +111,15 @@ class Interpreter:
             # Write raw image data & close connection to bucket
             connection.write(pdf)
             connection.close()
-            return True # success
+            return True
 
+        # cloudstorage is unpredictable, log any exceptions and return false if captured
         except Exception as e:
-            # Don't raise any exception, but log exception and return error to user
             logging.exception(e)
-            return False # failure
+            return False
         
 
 # References
 # [1] https://cloud.google.com/appengine/docs/standard/python/issue-requests            re: code example for using urlfetch
 # [2] https://www.programiz.com/python-programming/methods/built-in/bytes               re: use of bytes()
-# See references in views/users_signature.py re: uploading to bucket
+# [3] See references in views/users_signature.py re: uploading to bucket

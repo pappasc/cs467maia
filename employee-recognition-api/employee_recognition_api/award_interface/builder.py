@@ -6,9 +6,6 @@ from ..db_interface.query_tool import QueryTool
 if os.environ.get('ENV') != 'local':
     import cloudstorage 
 
-#    if os.environ.get('ENV') == 'dev': 
-#        cloudstorage.common.set_access_token("Bearer ya29.GlwAB_3k8a_MRfpYkos12hj6viafjBb1G30xgIK7IlJ2Atdaxc0ZUuranxzv81sxChjXcrMnkLVr5n0EJvyG0FYHTuvpkJDHzuXPLTpqOfk8bhUBgh7mEU9wKCE-gA")
-
 class Builder: 
     """Build and retrieve the stuff (award tex data, image)
         required to create a PDF award
@@ -29,19 +26,34 @@ class Builder:
         self.connxn_data = connxn_data
 
     def query_database_for_data(self, data):
-        # data is from request.data 
+        """Queries database for data required for the award
+
+        Arguments: 
+            self
+            data:   dict. POST request data, as well as data from the result of the post request
+                keys = award_id, authorizing_user_id, receiving_user_id
+        Returns: dict for use in generate_award_tex()
+        """
+
+        #  Retrieve authorizing user id's information
         query_tool = QueryTool(self.connxn_data)
         result = query_tool.get_by_id('users', {'user_id': int(data['authorizing_user_id'])})
         authorizing_first_name = result['first_name']
         authorizing_last_name = result['last_name']
         signature_path = result['signature_path']
 
+        # Retrieve receiving user id's information
         result = query_tool.get_by_id('users', {'user_id': int(data['receiving_user_id'])})
         receiving_first_name = result['first_name']
         receiving_last_name = result['last_name']
 
+        # Retrieve award information
+        # This is a bit overkill, as it's already passwed in data.
+        # TODO: Determine if this can be removed and replaced with data dict.
         result = query_tool.get_by_id('awards', {'award_id': int(data['award_id'])})
         awarded_datetime = result['awarded_datetime']
+        
+        # Parse awarded_datetime to find year, month (in words) and day
         parsed_datetime = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S')
         year = parsed_datetime.year
 
@@ -69,10 +81,12 @@ class Builder:
             month = 'November'
         elif int(parsed_datetime.month) == 12:
             month = 'December'
-          
         day = parsed_datetime.day
+
+        # Get type of award
         type_string = result['type']
 
+        # Return a dict required for award tex generation from template
         return {
             'AuthorizeFirstName': authorizing_first_name, 
             'AuthorizeLastName': authorizing_last_name, 
@@ -88,6 +102,8 @@ class Builder:
     def query_bucket_for_image(self, signature_path):
         """Queries Google Storage Bucket for image
 
+        Based off of code from views/users_signature.py 
+        
         Arguments: 
             self
             signature_path: string. signature file name to query for
@@ -95,7 +111,6 @@ class Builder:
         Returns:
             bytes of image or None if unsuccessful
         """
-        # Based off of code from views/users_signature.py 
         # Connect to the Cloud Storage bucket, read image contents, and close connection 
         try:      
             connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))              
@@ -104,7 +119,9 @@ class Builder:
 
             # Return bytes of image if successful
             return bytes(image)
-        except Exception as e:
+
+        # Catch and log any exception - cloudstorage seems less predictable
+        except Exception as e: 
             logging.exception(e)
             return None
 
@@ -142,4 +159,4 @@ class Builder:
 # [3] https://stackoverflow.com/questions/3430372/how-to-get-full-path-of-current-files-directory-in-python     re: running pwd in python
 # [4] See references in views/users_signature.py re: uploading to bucket
 # [5] https://docs.python.org/2/library/datetime.html re: datetime
-# [6] https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                      re: setting access token in dev environment
+# [6] https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                      re: can't run in dev w/o access token

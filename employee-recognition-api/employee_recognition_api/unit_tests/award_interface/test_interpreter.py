@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import unittest
@@ -13,13 +14,22 @@ class TestInterpreter(unittest.TestCase):
 
         Arguments: class
         """
+        logging.basicConfig(filename='TestInterpreter-{}.log'.format(datetime.datetime.now()), level=logging.DEBUG)
         cls.interpreter = Interpreter()
 
+    def test_save_image_to_disk(self): 
+        """Test save_image_to_disk()
+        """
+        logging.debug('TEST: save_image_to_disk()')
+        
+
+
+
     def test_interpret(self):
-        logging.info('test_interpet() cannot be tested due to dependency on google app engine urlfetch')
+        logging.debug('test_interpet() cannot be tested due to dependency on google app engine urlfetch')
 
     def test_write_award_to_bucket(self):
-        logging.info('write_award_to_bucket() cannot be tested due to dependency on google app engine storage bucket')
+        logging.debug('write_award_to_bucket() cannot be tested due to dependency on google app engine storage bucket')
 
 if __name__ == '__main__': 
     unittest.main()
