@@ -80,27 +80,17 @@ def check_award_does_not_exist(type_string, awarded_datetime):
             logging.info('awards_api.check_award_does_not_exist(): No awards found during time period')
 
     elif type_string == 'week':
-        # Roundabout way of doing this, but works.
-        # Identify date range for week
-        # Get the week number that the awarded_datetime belongs to & save the year
-        week_number = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').isocalendar()[1]
-        logging.info('week number: {}'.format(week_number))
-        year = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').year
-        logging.info('year: {}'.format(year))
+        # Determine what day of the week our day is 
+        # 1 2 3 4 5 6 7
+        # M T W T F S S
+        weekday_number = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').isoweekday()
+        logging.info('awards_api.check_award_does_not_exist(): weekday_number is {}'.format(weekday_number))
 
-        # Determine what day was the "beginning" of the week at the start of the year
-        jan1_weekday_number = datetime.datetime(year, 1, 1, 0, 0, 0, 0).isocalendar()[2]
-        logging.info('weekday number jan 1: {}'.format(jan1_weekday_number))
-        beg_of_year = datetime.datetime(year, 1, 1, 0, 0, 0, 0) - datetime.timedelta(days=jan1_weekday_number)
-        logging.info('beginning of year: {}'.format(beg_of_year))
-
-        # Calculate beginning of week by adding the week_number to the first day of the first week of the year
-        # Then add 7 days to get end of week
-        beg_of_week = beg_of_year + datetime.timedelta(weeks=week_number - 1) + datetime.timedelta(days=1)
-        end_of_week = beg_of_year + datetime.timedelta(weeks=week_number - 1) + datetime.timedelta(days=8)
-
-        logging.info('beginning of week: {}'.format(beg_of_week))
-        logging.info('end of week: {}'.format(end_of_week))
+        # Get the beginning and end of week based on this
+        beg_of_week = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S') - datetime.timedelta(days=weekday_number - 1)
+        end_of_week = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(days=7 - weekday_number)
+        logging.info('awards_api.check_award_does_not_exist(): beginning of week: {}'.format(beg_of_week))
+        logging.info('awards_api.check_award_does_not_exist(): end of week: {}'.format(end_of_week))
 
         # Query database for awards that exist in this week time period
         greater = str(beg_of_week)
