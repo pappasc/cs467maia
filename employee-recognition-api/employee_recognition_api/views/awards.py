@@ -108,7 +108,7 @@ def check_award_does_not_exist(type_string, awarded_datetime):
         logging.info('awards_api.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
         if len(existing_awards['award_ids']) != 0:
             logging.info('awards_api.check_award_does_not_exist(): Awards found during time period')
-            result = {'errors': [{'field': 'type', 'message': 'too many awards of month type in time period'}]}
+            result = {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}
         else: 
             logging.info('awards_api.check_award_does_not_exist(): No awards found during time period')
 
@@ -195,6 +195,12 @@ def awards_post():
     ivt = InputValidatorTool()
     query = QueryTool(connection_data)
 
+    # Validate the data provided
+    result = ivt.validate_awards(data)
+    if result is not None:
+        query.disconnect() 
+        return Response(json.dumps(result), status=400, mimetype='application/json')
+    
     # Check both users exist
     users_exists = check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
     if users_exists is not True: 
@@ -207,12 +213,6 @@ def awards_post():
         return Response(json.dumps(award_dne), status=400, mimetype='application/json')
     
     # Continue with award POST 
-    # Validate the data provided
-    result = ivt.validate_awards(data)
-    if result is not None:
-        query.disconnect() 
-        return Response(json.dumps(result), status=400, mimetype='application/json')
-    
     # Insert query against database based on request data
     data['distributed'] = False
     post_result = query.post('awards', data)
@@ -377,34 +377,6 @@ def awards_distributed(distributed):
     logging.info('awards_api: returning result {}'.format(result))
     logging.info('awards_api: returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
-
-@awards_api.route('/awards/test', methods=['GET'])
-def test_awards():
-
-    builder_tool = Builder(connection_data, 'month')
-    test_block = {
-        'AuthorizeFirstName': 'Natasha',
-        'AuthorizeLastName': 'Kvavle',
-        'ReceiveFirstName': 'Patrick',
-        'ReceiveLastName': 'DeLeon',
-        'SignaturePath': 'kvavlen_sig.jpg', 
-        'Month': 'May', 
-        'Day': '5',
-        'Year': '2019'
-    }    
-
-    try: 
-        modified_award_tex = builder_tool.generate_award_tex(test_block)
-        image = builder_tool.query_bucket_for_image(test_block['SignaturePath'])    
-        interpreter_tool = Interpreter()
-        pdf = interpreter_tool.interpret(test_block['SignaturePath'], modified_award_tex, image)
-        
-        interpreter_tool.write_award_to_bucket(1, pdf)
-        return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
-    # TODO: Failing
-    except Exception as e: 
-        logging.exception(e)
-        return Response(json.dumps({'result': 'failure'}), status=400, mimetype='application/json')
 
 # References 
 # [1] https://www.programiz.com/python-programming/methods/string/replace                                       re: python string replace()

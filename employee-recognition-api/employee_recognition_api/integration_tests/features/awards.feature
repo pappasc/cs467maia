@@ -27,6 +27,17 @@ Scenario Outline: POST & DELETE /awards, 200
         | endpoint      | status_code | keys       | body  |
         | awards        | 200         | award_id   | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2021-05-01 12:00:00" } |
 
+
+Scenario Outline: GET /awards, 200 but empty
+    When I make a GET <endpoint> request
+    Then I get a status code of <status_code>
+    Then the result has keys <keys>
+
+    Examples: 
+        | endpoint              | status_code   | keys         | 
+        | awards/receive/1000   | 200           | award_ids    | 
+        | awards/authorize/1000 | 200           | award_ids    |  
+
 # 400 BAD REQUEST
 Scenario Outline: GET /awards
     When I make a GET <endpoint> request
@@ -38,8 +49,6 @@ Scenario Outline: GET /awards
     Examples: 
         | endpoint       | status_code | keys     | field   | message   | 
         | awards/2       | 400        | errors    | award_id | award_id does not exist |
-        | awards/receive/5 | 400          | errors    | award_id | award_id does not exist | 
-        | awards/authorize/5 | 400        | errors    | award_id | award_id does not exist | 
 
 Scenario Outline: POST /awards; malformed request (single)
     When I make a POST <endpoint> request with body <body>

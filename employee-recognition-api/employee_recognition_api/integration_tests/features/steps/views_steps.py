@@ -5,7 +5,7 @@ import logging
 import datetime
 
 url = 'https://cs467maia-backend.appspot.com'
-logging.basicConfig(filename='IntegrationTestUsers-{}.log'.format(datetime.datetime.now()), level=logging.INFO)
+logging.basicConfig(filename='IntegrationTest-Views-{}.log'.format(datetime.datetime.now()), level=logging.INFO)
 
 @when('I make a GET {endpoint} request')
 def make_get_request(self, endpoint):

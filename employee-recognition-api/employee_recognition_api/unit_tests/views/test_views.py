@@ -184,19 +184,27 @@ class TestViews(unittest.TestCase):
         self.check_keys(delete_result, ['admin_id'])
 
 
-    def test_awards(self): 
+    def test_awards_get(self): 
         """Test endpoints defined in awards()
 
         Arguments: self
         """
+
         # Test: GET /awards/{award_id}
         logging.debug('TEST: GET /awards/1')
         get_result = self.app.get('/awards/1') 
         self.check_status_code(get_result)
         self.check_keys(get_result, ['authorizing_user_id', 'distributed', 'awarded_datetime', 'receiving_user_id', 'award_id', 'type'])
   
+    def test_awards_post_delete(self): 
+        """Test endpoints defined in awards()
+
+        Arguments: self
+        """
         # Test: POST /awards
         logging.debug('TEST: POST /awards')
+        logging.debug('test_awards(): Expect this to fail, due to dependencies on Google App Engine libraries')
+        # And it's now unsafe to run DELETE test because POST fails
         post_result = self.app.post('/awards',
             json={
                 'authorizing_user_id': 1,

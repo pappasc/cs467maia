@@ -35,7 +35,7 @@ class TestQueryTool(unittest.TestCase):
             'first_name': 'Natasha', 
             'last_name': 'Kvavle', 
             'email_address': 'kvavlen@oregonstate.edu', 
-            'created_timestamp': '2019-04-15 08:52:00', 
+            'created_timestamp': '2019-05-20 05:31:30', 
             'signature_path': 'kvavlen_sig.jpg',
             'password': 'encryptme'
         })
