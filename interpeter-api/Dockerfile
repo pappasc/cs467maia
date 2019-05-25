@@ -20,8 +20,7 @@ RUN yum install python-pip -y
 # Copy source directory into container
 RUN mkdir /app
 WORKDIR /app
-COPY interpreter_api/requirements.txt .
-COPY interpreter_api/views.py .
+COPY interpreter_api .
 
 # Install dependencies of application
 RUN pip install -r requirements.txt
