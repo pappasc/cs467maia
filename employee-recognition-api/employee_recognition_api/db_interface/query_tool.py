@@ -72,7 +72,7 @@ class QueryTool:
     # Note: build_json_* functions are a bit of a misnomer. They originally returned JSON objects, but now they only 
     #       return parsed dictionaries, to later be dumped to JSON.
     
-    def build_json_select(self, result, key, expect_one=False): 
+    def build_json_select(self, result, key, expect_none=False, expect_one=False): 
         """Transforms SELECT query results into parsed dictionary
 
         Arguments:
@@ -116,7 +116,7 @@ class QueryTool:
                 
             # Return the result dictionary based on the number of rows returned
             # If no rows returned, then there was an error so return an error dict  
-            if iterations == 0:
+            if iterations == 0 and expect_none is False:
                 result_dict = {
                     'errors': [{ 
                         'field': '{}'.format(key),
@@ -128,6 +128,9 @@ class QueryTool:
             # { 'column': 'data', 'column': 'data', etc. }
             elif iterations == 1 and expect_one is True:  
                 result_dict = result_sub_dict
+
+            elif iterations == 0 and expect_none is True: 
+                result_dict = { '{}s'.format(key): [] }
 
             # In all other cases, use the default dict created in the format: 
             # { 'key': [ { }, { }, { } ] }
@@ -220,7 +223,7 @@ class QueryTool:
 
         # Execute SELECT query & return parsed dictionary result
         result = self.connxn.execute(query)
-        return self.build_json_select(result, key, False)
+        return self.build_json_select(result, key, True, False)
 
     def get_by_id(self, table, data):
         """Select users, admins, or awards information (excluding login information) based on id 
@@ -249,7 +252,7 @@ class QueryTool:
 
         # Execute query & return parsed dictionary result
         result = self.connxn.execute(query, id = data[key]) 
-        return self.build_json_select(result, key, True) 
+        return self.build_json_select(result, key, False, True) 
 
     def get_login_by_id(self, table, data): 
         """Select user or admin login information based on id 
@@ -275,7 +278,7 @@ class QueryTool:
 
         # Execute query & return parsed dictionary result
         result = self.connxn.execute(query, id = data[key])
-        return self.build_json_select(result, key, True) 
+        return self.build_json_select(result, key, False, True) 
 
     def get_awards_by_filter(self, filter, data, between=False): 
         """Select awards information based on filter
@@ -319,7 +322,7 @@ class QueryTool:
             query = sqlalchemy.text('select * from awards where distributed = :key;')
             result = self.connxn.execute(query, key = bool(data[filter]))
         logging.info('QueryTool.get_awards_by_filter(): query is {}'.format(str(query)))
-        return self.build_json_select(result, 'award_id', False) 
+        return self.build_json_select(result, 'award_id', True, False) 
 
     def post(self, table, data):
         """Insert into users, admins, or awards table 
@@ -405,7 +408,7 @@ class QueryTool:
         logging.info('QueryTool.put(): update query is {}'.format(str(query)))
         logging.info('QueryTool.put(): select query is {}'.format(str(verify_query)))
         result = self.connxn.execute(verify_query, id=int(data[key]), password=data['password'])
-        return self.build_json_select(result, key, True)
+        return self.build_json_select(result, key, False, True)
 
     def put_by_id(self, table, data):
         """Update users or admins table based on id 
@@ -451,7 +454,7 @@ class QueryTool:
         logging.info('QueryTool.put(): update query is {}'.format(str(query)))
         logging.info('QueryTool.put(): select query is {}'.format(str(verify_query)))
         result = self.connxn.execute(verify_query, id=int(data[key]))
-        return self.build_json_select(result, key, True)
+        return self.build_json_select(result, key, False, True)
 
     def delete_by_id(self, table, data):
         """Delete from users, admins, or awards table based on user_id 

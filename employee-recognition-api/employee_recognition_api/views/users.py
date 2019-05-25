@@ -41,7 +41,7 @@ def users(user_id=None):
         result = query.get('users')
         # Determine success based on presence of 'user_ids' key
         try: 
-            if result['user_ids']: 
+            if type(result['user_ids']) == list: 
                 status_code = 200
         except KeyError:
             status_code = 400

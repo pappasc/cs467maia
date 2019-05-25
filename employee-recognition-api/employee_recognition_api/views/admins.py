@@ -39,7 +39,7 @@ def admins(admin_id=None):
 
         # Define success based on presence of 'admin_ids' key in result
         try: 
-            if result['admin_ids']: 
+            if type(result['admin_ids']) == list: 
                 status_code = 200
         except KeyError:
             status_code = 400
