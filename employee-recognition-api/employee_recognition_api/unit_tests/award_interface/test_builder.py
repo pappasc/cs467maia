@@ -36,8 +36,8 @@ class TestBuilder(unittest.TestCase):
             self.assertEquals(result['ReceiveFirstName'], 'Patrick', msg='ReceiveFirstName was {}'.format(result['ReceiveFirstName']))
             self.assertEquals(result['ReceiveLastName'], 'DeLeon', msg='ReceiveLastName was {}'.format(result['ReceiveLastName']))
             self.assertEquals(result['Month'], 'April', msg='Month was {}'.format(result['Month']))
-            self.assertEquals(result['Year'], 2019, msg='Year was {}'.format(result['Year']))
-            self.assertEquals(result['Day'], 27, msg='Day was {}'.format(result['Day']))
+            self.assertEquals(result['Year'], str(2019), msg='Year was {}'.format(result['Year']))
+            self.assertEquals(result['Day'], str(27), msg='Day was {}'.format(result['Day']))
 
     def test_query_bucket_for_image(self): 
         logging.info('query_bucket_for_image() cannot be tested locally due to dependency on google appengine storage bucket.')

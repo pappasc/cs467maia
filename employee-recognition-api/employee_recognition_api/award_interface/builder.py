@@ -80,8 +80,8 @@ class Builder:
             'ReceiveLastName': receiving_last_name,
             'SignaturePath': signature_path, 
             'Month': month, 
-            'Year': year, 
-            'Day': day
+            'Year': str(year), 
+            'Day': str(day)
         }
 
     
