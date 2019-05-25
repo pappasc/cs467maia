@@ -20,13 +20,14 @@ RUN yum install python-pip -y
 # Copy source directory into container
 RUN mkdir /app
 WORKDIR /app
-COPY interpreter_api .
+COPY interpreter_api/requirements.txt .
+COPY interpreter_api/views.py .
 
 # Install dependencies of application
 RUN pip install -r requirements.txt
 
 # Run Flask application when spinning up docker container
-CMD [ "python2.7", "view.py"]
+CMD [ "python2.7", "views.py"]
 
 # References: 
 # [1] https://hub.docker.com/_/python/							re: installing python from base image

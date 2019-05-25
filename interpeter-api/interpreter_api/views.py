@@ -2,39 +2,54 @@ import json
 import os
 import logging
 from flask import Flask, request, Response
-from latex import build_pdf
+from latex import build_pdf, LatexBuildError
 import os 
 
 interpreter_api = Flask(__name__)
 
-@interpreter_api.route('/test', methods=['GET'])
-def test(): 
-	return 'hello, it is me'
-
-@interpreter_api.route('/image/<signature_path>', methods=['POST', 'DELETE'])
+@interpreter_api.route('/image/<signature_path>', methods=['GET', 'POST', 'DELETE'])
 def image(signature_path): 
-	# TODO: Add Exceptions
+	# POST /image/<signature_path>
+	# Saves an image to disk with signature_path as filename
 	if request.method == 'POST':  
 		logging.info('interpreter_api.image(): saving image {}'.format(signature_path))
-		image = open(signature_path, 'w')
-		image.write(request.data)
-		return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
+		try: 
+			image = open(signature_path, 'w')
+			image.write(request.data)
+			return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
+		except IOError as e: 
+			logging.exception('interpeter_api.image(): {}'.format(e))
+			return Response(json.dumps({'result': 'failure'}), status=400, mimetype='application/json')
+	# DELETE /image/<signature_path>
+	# Deletes image with signature_path as filename
 	elif request.method == 'DELETE': 
 		logging.info('interpeter_api.image(): deleting image {}'.format(signature_path))
 		os.remove(signature_path)
 		return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
+	# GET /image/<signature_path>
+	# Simply tells us if image exists
+	elif request.method == 'GET': 
+		logging.info('interpeter_api.image(): retrieving image {}'.format(signature_path))
+		try: 
+			image = open(signature_path, 'r')
+			return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
+		except IOError as e: 
+			logging.exception('interpeter_api.image(): {}'.format(e))
+			return Response(json.dumps({'result': 'failure'}), status=400, mimetype='application/json')
 
+# POST /pdf
 @interpreter_api.route('/pdf', methods=['POST'])
-def pdf():	
+def pdf():
 	try: 
 		logging.info('interpreter_api.pdf(): building pdf')
 		pdf = build_pdf(request.data)
 		return Response(bytes(pdf), status=200, mimetype='application/pdf')
-	except Exception as e: 
+	except LatexBuildError as e: 
 		logging.exception(e) 
 		return Response(None, status=400, mimetype='application/pdf')
 
 if __name__ == '__main__': 
+	# Host 0.0.0.0 because we're in a container
 	interpreter_api.run(host='0.0.0.0', port=8080)
 
 # [1] https://cloud.google.com/appengine/docs/standard/python/tools/using-local-server re: pdb
@@ -53,3 +68,4 @@ if __name__ == '__main__':
 # [14] https://stackoverflow.com/questions/17693231/how-save-image-to-disk										re: writing image to disk
 # [15] https://docs.python.org/3/tutorial/inputoutput.html 														re: printing bytes to file with file lib
 # [16] https://www.dummies.com/programming/python/how-to-delete-a-file-in-python/								re: deleting file in python 
+# [17] https://pythonhosted.org/latex/																			re: exception to catch

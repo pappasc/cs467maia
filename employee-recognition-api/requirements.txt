@@ -3,8 +3,6 @@ pymysql
 flask-sqlalchemy
 GoogleAppEngineCloudStorageClient==1.9.22.1
 
-
 # Only for Unit Tests
 behave
 requests
-urlfetch
