@@ -126,18 +126,18 @@ def check_award_does_not_exist(type_string, awarded_datetime):
     return result
 
 def create_pdf(data): 
-    try: 
-        builder_tool = Builder(connection_data, data['type'])
-        award_data = builder_tool.query_database_for_data(data)
-        modified_award_tex = builder_tool.generate_award_tex(award_data)
-        image = builder_tool.query_bucket_for_image(award_data['SignaturePath'])    
+    success_bool = False
+    builder_tool = Builder(connection_data, data['type'])
+    award_data = builder_tool.query_database_for_data(data)
+    modified_award_tex = builder_tool.generate_award_tex(award_data)
+    image = builder_tool.query_bucket_for_image(award_data['SignaturePath'])    
+    if image is not None: 
         interpreter_tool = Interpreter()
         pdf = interpreter_tool.interpret(award_data['SignaturePath'], modified_award_tex, image)
-        interpreter_tool.write_award_to_bucket(data['award_id'], pdf)
-        return True 
-    except Exception as e: 
-        logging.exception(e)
-        return False
+        if pdf is not None:
+            success_bool = interpreter_tool.write_award_to_bucket(data['award_id'], pdf)
+        
+    return success_bool  
 
 @awards_api.route('/awards', methods=['GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])

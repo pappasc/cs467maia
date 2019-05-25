@@ -100,12 +100,12 @@ class Interpreter:
             # Write raw image data & close connection to bucket
             connection.write(pdf)
             connection.close()
-            return 0 # success
+            return True # success
 
         except Exception as e:
-            # Don't raise any exception, bug log exception and return error to user
+            # Don't raise any exception, but log exception and return error to user
             logging.exception(e)
-            return 1 # failure
+            return False # failure
         
 
 # References
