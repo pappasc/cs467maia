@@ -54,7 +54,7 @@ def test_awards_create_pdf(self):
             logging.info('tests_api: Testing create_pdf() Happy Path')
             result = create_pdf(tc)
             if result.keys != ['award_id']:
-                test_result.push({'happy_path': 'failure'})
+                test_result.push({tc, { 'result' : 'failure'}})
             else:
 
                 # Open read connection to cloud storage bucket & read file
@@ -63,20 +63,20 @@ def test_awards_create_pdf(self):
                 connection.close()
                 
                 if b'\x25\x50\x44\x46' in bytearray(pdf):
-                    test_result.push({'happy_path': 'success'})
+                    test_result.push({tc, { 'result' : 'success'}})
 
         for tc in data['sad_path']:
             logging.info('tests_api: Testing create_pdf() Sad Path')
             result = create_pdf(tc)
             if result.keys != ['award_id']:
-                test_result.push({'sad_path': 'failure'})
+                test_result.push({tc, { 'result' : 'failure'}})
             else:
                 connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/award_1.pdf', mode='r')
                 pdf = connection.read()
                 connection.close()
                 
                 if pdf is None: 
-                    test_result.push({'sad_path': 'success'})
+                    test_result.push({tc, { 'result' : 'success'}})
     except Exception as e:
         logging.exception(e)
 
