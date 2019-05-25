@@ -198,12 +198,13 @@ class TestViews(unittest.TestCase):
   
     def test_awards_post_delete(self): 
         """Test endpoints defined in awards()
-
         Arguments: self
         """
+
         # Test: POST /awards
         logging.debug('TEST: POST /awards')
         logging.debug('test_awards(): Expect this to fail, due to dependencies on Google App Engine libraries')
+        
         # And it's now unsafe to run DELETE test because POST fails
         post_result = self.app.post('/awards',
             json={

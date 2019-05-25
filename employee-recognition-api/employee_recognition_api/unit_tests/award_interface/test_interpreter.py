@@ -5,7 +5,9 @@ import unittest
 from ...award_interface.interpreter import Interpreter
 
 class TestInterpreter(unittest.TestCase):
-    """No tests available at this time due to complexities with dependencies.
+    """Test Interpreter Class
+    No tests available at this time due to complexities with dependencies.
+    Simply adding this as a reminder that unit tests don't work for this class.
     """
 
     @classmethod

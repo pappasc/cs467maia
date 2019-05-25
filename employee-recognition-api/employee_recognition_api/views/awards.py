@@ -132,7 +132,7 @@ def create_pdf(data):
 @awards_api.route('/awards', methods=['GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])
 def awards(award_id=None):
-    """ Handle POST /awards, GET, DELETE /awards/<award_id> 
+    """ Handle  GET, DELETE /awards/<award_id> & GET /awards
     
     Arguments: 
         award_id: int. Default is None. URL Parameter. 
@@ -190,6 +190,10 @@ def awards(award_id=None):
 # POST /awards
 @awards_api.route('/awards', methods=['POST'])
 def awards_post():
+    """ Handle POST /awards
+    
+    Returns: see README for results expected for each endpoint 
+    """
     # Parse JSON request.data
     data = json.loads(request.data)
     ivt = InputValidatorTool()
@@ -216,6 +220,8 @@ def awards_post():
     # Insert query against database based on request data
     data['distributed'] = False
     post_result = query.post('awards', data)
+    
+    # If the post was successful and we have an award_id, save pdf to google storage bucket
     try: 
         if post_result['award_id']: 
             data['award_id'] = post_result['award_id']

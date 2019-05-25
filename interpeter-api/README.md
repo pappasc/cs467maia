@@ -18,7 +18,7 @@ This API addresses the fact that we cannot run LaTeX on the Standard Google AppE
 ``` 
 2. Login to docker if needed ```docker login```
 3. Pull down image ```docker pull kvavlen/cs467maia-backend:latest```
-4. Run on port 80 ```docker run -v interpreter_api:/app -p 80:8080 kvavlen/cs467maia-backend:latest```
+4. Run on port 80 ```docker run -v interpreter_api:/app -d -p 80:8080 kvavlen/cs467maia-backend:latest```
 
 ## Notes
 Data on Amazon AWS is stored in volume at: 
