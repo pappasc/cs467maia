@@ -4,7 +4,7 @@ module.exports = function(){
     const rp = require('request-promise');
 
     //Keep on this function, handle the null return
-    function getUsersExcept(req){
+    function getUsersExcept(userID){
         var options = {
 	    uri: 'https://cs467maia-backend.appspot.com/users',
 	    json: true, // Automatically parses the JSON string in the response
@@ -16,7 +16,7 @@ module.exports = function(){
 		var i;
 		var usersExcept = [];
 		for (i = 0; i < users.body.user_ids.length; i++) {
-		    if (users.body.user_ids[i].user_id != req.user.user_id) {
+		    if (users.body.user_ids[i].user_id != userID) {
 			usersExcept.push(users.body.user_ids[i]);
 		    }
 		}
@@ -29,9 +29,9 @@ module.exports = function(){
     }
     
     
-    function getAwards(req){
+    function getAwards(userID){
         var options = {
-	    uri: 'https://cs467maia-backend.appspot.com/awards/authorize/' + req.user.user_id,
+	    uri: 'https://cs467maia-backend.appspot.com/awards/authorize/' + userID,
 	    json: true, // Automatically parses the JSON string in the response
 	    resolveWithFullResponse: true
 	};
@@ -46,7 +46,6 @@ module.exports = function(){
 	});
     }
 
-    //create null return instance
     function getAwardedUsers(awards) {
 	var options = {
 	    uri: 'https://cs467maia-backend.appspot.com/users',
@@ -90,7 +89,7 @@ module.exports = function(){
 	
 	var options = {
 	    method: 'POST',
-	    uri: 'https://cs467maia-backend.appspot.com/awards',
+	    uri: 'https://cs467maia-backend.appspot.com/awards/no-email',
 	    json: true,
 	    body: newAward,
 	    resolveWithFullResponse: true
@@ -104,6 +103,26 @@ module.exports = function(){
 		else {
 		    return false;
 		}
+	    })
+	    .catch(function (saveReturn) {
+		return false;
+	    });
+    }
+
+    function deleteAward (awardID) {
+	var options = {
+            method: "DELETE",
+            uri: "https://cs467maia-backend.appspot.com/awards/" + awardID,
+            json: true,
+            resolveWithFullResponse: true
+	};
+	
+	return rp(options)
+	    .then(function (deleteReturn){
+		return deleteReturn.statusCode;
+	    })
+	    .catch(function (err) {
+                return 500;
 	    });
     }
 
@@ -118,7 +137,7 @@ module.exports = function(){
 	    if (req.user.type == 'user') {
 		context.jsscripts = ["logoutUser.js", "gotoAccount.js", "gotoAwards.js"];
 		if (req.params.pageOption == 'manage') {
-		    getAwards(req).then(function (awards) {
+		    getAwards(req.user.user_id).then(function (awards) {
 			//handle null return from getAwards
 			if (awards != null) {
 			    return getAwardedUsers(awards);
@@ -129,6 +148,12 @@ module.exports = function(){
 		    })
 			.then(function (namedAwards) {
 			    if (namedAwards != null) {
+				if (namedAwards.length != 0) {
+				    context.someAwards = true;
+				}
+				else {
+				    context.someAwards = false;
+				}
 				context.awards = namedAwards;
 				context.authorizer = req.user.user_id;
 				context.create = false;
@@ -146,9 +171,15 @@ module.exports = function(){
 			});
 		}
 		else if (req.params.pageOption == 'create') {
-		    getUsersExcept(req)
+		    getUsersExcept(req.user.user_id)
 			.then(function (users) {
 			    if (users != null) {
+				if (users.length != 0) {
+				    context.someUsers = true;
+				}
+				else {
+				    context.someUsers = false;
+				}
 				context.users = users;
 				context.create = true;
 				context.error = false;
@@ -196,9 +227,15 @@ module.exports = function(){
 			else {
 			    var context = {};
 			    context.jsscripts = ["logoutUser.js", "gotoAccount.js", "gotoAwards.js", "deleteAwards.js"];
-			    getUsersExcept(req)
+			    getUsersExcept(req.user.user_id)
 				.then(function (users) {
 				    if (users != null) {
+					if (users.length != 0) {
+					    context.someUsers = true;
+					}
+					else {
+					    context.someUsers = false;
+					}
 					context.users = users;
 					context.create = true;
 					context.createError = true;
@@ -237,24 +274,16 @@ module.exports = function(){
     router.delete('/:id', function(req, res){
         if (req.isAuthenticated()){
 	    if (req.user.type == 'user') {
-	        var options = {
-                    method: "DELETE",
-                    uri: "https://cs467maia-backend.appspot.com/awards/" + req.params.id,
-                    json: true,
-                    resolveWithFullResponse: true
-		};
-		
-		rp(options)
-		    .then(function (saveReturn){
-			if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
+		deleteAward(req.params.id)
+		    .then(function (deleteReturn) {
+			if (deleteReturn == 200 || deleteReturn == 204){
 			    res.redirect(303, '/awards');
 			}
-			else if (saveReturn.statusCode >= 400){
+			else if (deleteReturn >= 400){
 			    res.status(500).send("Malformed request. Contact your administrator.");
 			}
 		    })
 		    .catch(function (err) {
-			console.log("Something broke");
                         res.status(500).send("API Error.");
 		    });
 	    }

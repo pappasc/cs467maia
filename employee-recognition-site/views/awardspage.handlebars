@@ -28,6 +28,7 @@
 			      {{#if error}}
 			      	    <div>Error getting users - contact administrator</div>
 			      {{else}}
+			      {{#if someUsers}}
 		     	      	   <form action="/awards" method="post">
 		     	  	   	 <table>
 		     	  	 	 	<thead>
@@ -52,12 +53,19 @@
 					</select>
 					</div>
 					<input type="submit" value="Submit">
+					{{#if createError}}
+	    <div>Error creating award</div>
+	    {{/if}}
 				  </form>
+				  {{else}}
+					<div>No other users to award - tell management to hire more people</div>
+				  {{/if}}
 				  {{/if}}
 				{{else}}
 				{{#if error}}
 				<div>Error getting awards - contact administrator</div>
 				{{else}}
+				{{#if someAwards}}
 					<table>
 		     	    		       <thead>
 							<th>Recipient</th>
@@ -75,13 +83,13 @@
                 				</tr>
 						{{/each}}
 						</table>
+				{{else}}
+					<div>No awards have been issued by you - create some awards</div>
+				{{/if}}
 						{{/if}}
 						{{/if}}
 		</div>
             </article>
-	    {{#if createError}}
-	    <div>Error creating award</div>
-	    {{/if}}
         </section>
     </div>
 </div>
