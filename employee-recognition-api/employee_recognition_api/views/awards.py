@@ -8,6 +8,8 @@ from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
 from ..award_interface.builder import Builder
 from ..award_interface.interpreter import Interpreter
+from ..award_interface.distributer import Distributer
+
 # Allow awards_api to be accessible from main.py 
 awards_api = Blueprint('awards_api', __name__)
 
@@ -152,17 +154,38 @@ def check_award_does_not_exist(type_string, awarded_datetime):
 
 def create_pdf(data): 
     success_bool = False
-    builder_tool = Builder(connection_data, data['type'])
-    award_data = builder_tool.query_database_for_data(data)
-    modified_award_tex = builder_tool.generate_award_tex(award_data)
-    image = builder_tool.query_bucket_for_image(award_data['SignaturePath'])    
-    if image is not None: 
-        interpreter_tool = Interpreter()
-        pdf = interpreter_tool.interpret(award_data['SignaturePath'], modified_award_tex, image)
-        if pdf is not None:
-            success_bool = interpreter_tool.write_award_to_bucket(data['award_id'], pdf)
-        
-    return success_bool  
+
+    # Set up instances of helper classes
+    builder = Builder(connection_data, data['type'])
+    interpreter = Interpreter()
+    distributer = Distributer(data['award_id'])
+
+    # Build the Award Contents
+    award_data = builder.query_database_for_data(data)
+    modified_award_tex = builder.generate_award_tex(award_data)
+    image = builder_tool.query_bucket_for_image(award_data['SignaturePath'])
+
+    # TEX + JPG -> PDF
+    # Initialize variables to None
+    pdf, write, award = (None, None, None)
+    email, deletion = (False, False) 
+
+    if image is not None and modified_award_tex is not None: 
+        pdf = interpreter.interpret(award_data['SignaturePath'], modified_award_tex, image)
+    if pdf is not None:
+        # Technically don't NEED to write to bucket, but it allows for 
+        # us to not lose award data if something goes wrong in this function
+        write = interpreter.write_award_to_bucket(data['award_id'], pdf)
+
+    # Email & Clean-up
+    if award is not None: 
+        email = distributer.email_receiving_user(pdf)
+
+    if email is not False: 
+        deletion = distributer.delete_award_from_bucket
+
+    # Only returns true if email sent
+    return email
 
 @awards_api.route('/awards', methods=['GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])
@@ -428,3 +451,4 @@ def awards_distributed(distributed):
 # [4] https://stackoverflow.com/questions/2600775/how-to-get-week-number-in-python                              re: isocalendar
 # [5] https://stackoverflow.com/questions/6871016/adding-5-days-to-a-date-in-python?rq=1                        re: using timedelta
 # [6] https://stackoverflow.com/questions/19216334/python-give-start-and-end-of-week-data-from-a-given-date     re: ideas on how to accomplish getting first and last day of a week
+# [7] https://stackoverflow.com/questions/16348815/python-assigning-multiple-variables-to-same-value-list-behavior  re: assigning multiple variables in one line in python

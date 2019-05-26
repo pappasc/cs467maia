@@ -487,7 +487,7 @@ class QueryTool:
         # Execute query and return parsed dictionary result
         result = self.connxn.execute(query, id = int(data[key]))
         return self.build_json_delete(key, result)
-        
+
 # References:
 # [1] https://cloud.google.com/sql/docs/mysql/connect-app-engine                                                                        re: create_engine()
 # [2] https://flask-sqlalchemy.palletsprojects.com/en/2.x/
