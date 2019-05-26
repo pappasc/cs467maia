@@ -152,7 +152,7 @@ def check_award_does_not_exist(type_string, awarded_datetime):
     query.disconnect()
     return result
 
-def create_pdf(data): 
+def create_pdf(data, email_on=True): 
     success_bool = False
 
     # Set up instances of helper classes
@@ -163,11 +163,11 @@ def create_pdf(data):
     # Build the Award Contents
     award_data = builder.query_database_for_data(data)
     modified_award_tex = builder.generate_award_tex(award_data)
-    image = builder_tool.query_bucket_for_image(award_data['SignaturePath'])
+    image = builder.query_bucket_for_image(award_data['SignaturePath'])
 
     # TEX + JPG -> PDF
     # Initialize variables to None
-    pdf, write, award = (None, None, None)
+    pdf, write = (None, None)
     email, deletion = (False, False) 
 
     if image is not None and modified_award_tex is not None: 
@@ -177,11 +177,14 @@ def create_pdf(data):
         # us to not lose award data if something goes wrong in this function
         write = interpreter.write_award_to_bucket(data['award_id'], pdf)
 
-    # Email & Clean-up
-    if award is not None: 
-        email = distributer.email_receiving_user(pdf)
+        # Send email
+        if email_on is True: 
+            email = distributer.email_receiving_user(pdf, award_data['email_address'], data['type'])
+        else: 
+            email = True
 
-    if email is not False: 
+    # Clean-up
+    if email is True and email_on is True: 
         deletion = distributer.delete_award_from_bucket
 
     # Only returns true if email sent
@@ -284,8 +287,60 @@ def awards_post():
         if post_result['award_id']: 
             data['award_id'] = post_result['award_id']
             if create_pdf(data) is not True: 
-                logging.info('awards_api: Failed to post PDF to google storage bucket')
-                status_code = 400 # TODO: This should change 
+                logging.info('awards_api: Failed to make and email PDF')
+                status_code = 200 # TODO: This should change 
+            else: 
+                status_code = 200 
+    except KeyError as e:
+        logging.exception(e)
+        status_code = 400
+
+    query.disconnect()
+    logging.info('awards_api: returning result {}'.format(result))
+    logging.info('awards_api: returning status code {}'.format(status_code))
+    return Response(json.dumps(post_result), status=status_code, mimetype='application/json')
+
+# POST /awards
+@awards_api.route('/awards/no-email', methods=['POST'])
+def awards_post_no_email():
+    """ Handle POST /awards
+    
+    Returns: see README for results expected for each endpoint 
+    """
+    # Parse JSON request.data
+    data = json.loads(request.data)
+    ivt = InputValidatorTool()
+    query = QueryTool(connection_data)
+
+    # Validate the data provided
+    result = ivt.validate_awards(data)
+    if result is not None:
+        query.disconnect() 
+        return Response(json.dumps(result), status=400, mimetype='application/json')
+    
+    # Check both users exist
+    users_exists = check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
+    if users_exists is not True: 
+        return Response(json.dumps(users_exists), status=400, mimetype='application/json')
+
+    # Check the award is the first of it's kind in it's respective time range
+    award_dne = check_award_does_not_exist(data['type'], data['awarded_datetime'])
+    if award_dne is not True:
+        query.disconnect() 
+        return Response(json.dumps(award_dne), status=400, mimetype='application/json')
+    
+    # Continue with award POST 
+    # Insert query against database based on request data
+    data['distributed'] = False
+    post_result = query.post('awards', data)
+    
+    # If the post was successful and we have an award_id, save pdf to google storage bucket
+    try: 
+        if post_result['award_id']: 
+            data['award_id'] = post_result['award_id']
+            if create_pdf(data, False) is not True: 
+                logging.info('awards_api: Failed to make and email PDF')
+                status_code = 200 # TODO: This should change 
             else: 
                 status_code = 200 
     except KeyError as e:

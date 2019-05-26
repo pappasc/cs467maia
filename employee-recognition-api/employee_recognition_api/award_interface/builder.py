@@ -46,6 +46,7 @@ class Builder:
         result = query_tool.get_by_id('users', {'user_id': int(data['receiving_user_id'])})
         receiving_first_name = result['first_name']
         receiving_last_name = result['last_name']
+        email_address = result['email_address']
 
         # Retrieve award information
         # This is a bit overkill, as it's already passwed in data.
@@ -83,9 +84,6 @@ class Builder:
             month = 'December'
         day = parsed_datetime.day
 
-        # Get type of award
-        type_string = result['type']
-
         # Return a dict required for award tex generation from template
         return {
             'AuthorizeFirstName': authorizing_first_name, 
@@ -95,7 +93,8 @@ class Builder:
             'SignaturePath': signature_path, 
             'Month': month, 
             'Year': str(year), 
-            'Day': str(day)
+            'Day': str(day),
+            'email_address': email_address
         }
 
     
@@ -150,7 +149,7 @@ class Builder:
         self.file = self.file.replace('Month', data['Month'])
         self.file = self.file.replace('Day', data['Day'])
         self.file = self.file.replace('Year', data['Year'])
-        self.file = self.file.replace('Type', self.type_string)
+        self.file = self.file.replace('Type', self.type_string.capitalize())
         return bytes(self.file)
 
 # References

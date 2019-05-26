@@ -1,3 +1,4 @@
+import logging
 from google.appengine.api import mail, mail_errors
 from ..db_interface.query_bucket_tool import QueryBucketTool
 
@@ -7,14 +8,18 @@ class Distributer:
         logging.info('Distributer.__init__(): initializing Distributer class')
         self.file_name = 'award_{}.pdf'.format(award_id)
 
-    def email_receiving_user(self, email_address, type_string):
+    def email_receiving_user(self, attachment_bytes, email_address, type_string):
         logging.info('Distributer.email_receiving_user(): sending email to the receiving_user at {}'.format(email_address))
         try: 
             mail.send_mail(
                 sender='<Maia Group> kvavlen@oregonstate.edu',
                 to=email_address,
-                subject='Congratulations! You are Emloyee of the {}!'.format(capitalize(type_string)), 
-                attachments=[(self.file_name, self.file_contents)]
+                subject='Congratulations! You are Emloyee of the {}!'.format(type_string.capitalize()), 
+                body="""Congratulations! 
+
+                Your award is attached to this email. Keep up the good work!
+                """,
+                attachments=[('EmployeeOfThe{}.pdf'.format(type_string.capitalize()), attachment_bytes)]
             )
             return True 
 
