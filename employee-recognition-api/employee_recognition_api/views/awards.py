@@ -24,6 +24,18 @@ connection_data = {
 }
 
 def check_users_exist(authorizing_user_id, receiving_user_id):
+    """Check that the users involved in award exist
+
+    Arguments:
+        authorizing_user_id:    int. ID of authorizing user
+        receiving_user_id:      int. ID of receiving user
+
+    Returns:
+        True if both users exist
+        error dictionary if a user does not exist
+            will either return error re: authorizing_user_id or 
+            error re: receiving_user_id. Won't return both errors at this time.
+    """
     # Query database to determine if user ids exist, and continue if so; otherwise, return errors
     logging.info('awards_api: checking if user_ids {} and {} exist'.format(receiving_user_id, authorizing_user_id))
     query = QueryTool(connection_data)
@@ -34,11 +46,13 @@ def check_users_exist(authorizing_user_id, receiving_user_id):
         'user_id': receiving_user_id
     })
     
+    # Check authorizing user_id, if result had errors then return those errors
     try: 
         if result1['errors'] is not None:
             status_code = 400
             logging.info('awards_api.check_users_exist(): {}'.format(result1))
             result = result1
+    # If authorizing_user_id result did not have errors, check receiving_user_id 
     except KeyError:
         try: 
             if result2['errors'] is not None: 
@@ -51,10 +65,28 @@ def check_users_exist(authorizing_user_id, receiving_user_id):
     query.disconnect()
     return result 
 
-def check_award_does_not_exist(type_string, awarded_datetime): 
+def check_award_does_not_exist(type_string, awarded_datetime):
+    """Check the employee of the month/week awards do not 
+        already exist in the time period associated with our award
+        Example: 
+            - If award of type 'month' is awarded on '2019-05-01 0:00:00'
+                then checks that no other 'month' awards exist in May 2019.
+            - If award of type 'week' is awarded on '2019-05-01 0:00:00'
+                then checks that no other 'week' awards exist from Mon, April 29 2019
+                to Sun, May 5, 2019.
+    Arguments: 
+        type_string:        string. 'month', 'year'
+        awarded_datetime:   string. 'YYYY-mm-DD HH:MM:SS'
+
+    Returns:
+        True if no awards are found in the time period
+
+    """
     query = QueryTool(connection_data)
     # Check if more awards are acceptable during time period 
     result = True # default is to accept the award
+
+    # Employee of the Month
     if type_string == 'month': 
         # Identify date range for month to compare against
         month = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').month
@@ -71,14 +103,16 @@ def check_award_does_not_exist(type_string, awarded_datetime):
             'type': 'month'
         }
         existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
-
         logging.info('awards_api.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
+
+        # If awards found, return an error dictionary. Otherwise continue.
         if len(existing_awards['award_ids']) != 0:
             logging.info('awards_api.check_award_does_not_exist(): Awards found during time period')
             result = {'errors': [{'field': 'type', 'message': 'too many awards of month type in time period'}]}
         else: 
             logging.info('awards_api.check_award_does_not_exist(): No awards found during time period')
 
+    # Employee of the Week
     elif type_string == 'week':
         # Determine what day of the week our day is 
         # 1 2 3 4 5 6 7
@@ -104,8 +138,9 @@ def check_award_does_not_exist(type_string, awarded_datetime):
         }
         logging.info('blob: {}'.format(blob))
         existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
-
         logging.info('awards_api.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
+        
+        # If awards found, return error dictionary. Otherwise continue.
         if len(existing_awards['award_ids']) != 0:
             logging.info('awards_api.check_award_does_not_exist(): Awards found during time period')
             result = {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}
@@ -227,16 +262,18 @@ def awards_post():
             data['award_id'] = post_result['award_id']
             if create_pdf(data) is not True: 
                 logging.info('awards_api: Failed to post PDF to google storage bucket')
-                query.disconnect()
-                return Response(json.dumps(post_result), status=400, mimetype='application/json')
+                status_code = 400 # TODO: This should change 
             else: 
-                query.disconnect()
-                return Response(json.dumps(post_result), status=200, mimetype='application/json')
-
+                status_code = 200 
     except KeyError as e:
         logging.exception(e)
-        query.disconnect()
-        return Response(json.dumps(post_result), status=400, mimetype='application/json')
+        status_code = 400
+
+    query.disconnect()
+    logging.info('awards_api: returning result {}'.format(result))
+    logging.info('awards_api: returning status code {}'.format(status_code))
+    return Response(json.dumps(post_result), status=status_code, mimetype='application/json')
+
 
 @awards_api.route('/awards/authorize/<int:authorizing_user_id>', methods=['GET'])
 def awards_authorize(authorizing_user_id): 

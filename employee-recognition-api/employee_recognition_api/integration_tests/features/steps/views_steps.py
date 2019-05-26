@@ -165,7 +165,7 @@ def compare_number(self, number):
 
 @then('I clean up my POST to {endpoint}')
 def clean_up(self, endpoint):
-    """Delets POSTed entry, cleaning up test data.
+    """Deletes POSTed entry, cleaning up test data.
 
     Arguments: 
         self
