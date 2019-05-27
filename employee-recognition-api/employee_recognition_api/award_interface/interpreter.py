@@ -61,28 +61,23 @@ class Interpreter:
         Returns: 
             True on success, False on failure
         """
-
-        # If image is not None, then we can continue (not an empty image)
-        if image is not None: 
-            logging.info('Interpeter.delete_image_to_disk(): deleting image from AWS instance')
-            # POST image to AWS instance
-            url = 'http://54.203.128.106:80/image/{}'.format(signature_path)
-            try: 
-                result = urlfetch.fetch(
-                    url=url,
-                    method=urlfetch.DELETE
-                )
-                
-                # Log the result of the DELETE request, return True only if successful
-                logging.info('Interpreter.delete_image_to_disk(): POST /image result was {}'.format(result.content))
-                if result.status_code == 200: 
-                    return True       
-                else:
-                    return False
-            except urlfetch.Error as e:
-                logging.exception(e)
+        logging.info('Interpeter.delete_image_from_disk(): deleting image from AWS instance')
+        # POST image to AWS instance
+        url = 'http://54.203.128.106:80/image/{}'.format(signature_path)
+        try: 
+            result = urlfetch.fetch(
+                url=url,
+                method=urlfetch.DELETE
+            )
+            
+            # Log the result of the DELETE request, return True only if successful
+            logging.info('Interpreter.delete_image_from_disk(): POST /image result was {}'.format(result.content))
+            if result.status_code == 200: 
+                return True       
+            else:
                 return False
-        else: 
+        except urlfetch.Error as e:
+            logging.exception(e)
             return False
             
     def interpret(self, signature_path, modified_award_tex, image):
@@ -114,6 +109,8 @@ class Interpreter:
                 # Return PDF contents if successful, otherwise return None
                 logging.info('Interpreter.interpret(): POST /pdf result was {}'.format(result.content))
                 if result.status_code == 200: 
+                    self.delete_image_from_disk(signature_path)
+                    # Don't change what is returned based on success of clean-up efforts
                     return result.content 
                 else:
                     return None
