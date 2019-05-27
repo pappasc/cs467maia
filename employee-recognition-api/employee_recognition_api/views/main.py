@@ -13,4 +13,3 @@ app.register_blueprint(users_sig_api)
 app.register_blueprint(admins_api)
 app.register_blueprint(awards_api)
 app.register_blueprint(tests_api)
-

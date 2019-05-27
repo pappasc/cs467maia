@@ -5,6 +5,7 @@ import pymysql
 import json
 from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
+from threading import Thread
 
 # Allow users_api to be accessible to main.py
 users_api = Blueprint('users_api', __name__)
