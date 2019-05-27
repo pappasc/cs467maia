@@ -7,13 +7,36 @@ if os.environ.get('ENV') != 'local':
     from google.appengine.api import mail, mail_errors
 
 class Distributer:
-
+    """Distributes award via email to receiving_user
+    """
+    
     def __init__(self, award_id): 
+        """Initializes Distributer class' file_name and award_id variables
+    
+        Arguments:
+            self
+            award_id: int. ID of award to be distributed.
+
+        Returns: N/A
+        """
         logging.info('Distributer.__init__(): initializing Distributer class')
         self.file_name = 'award_{}.pdf'.format(award_id)
         self.award_id = award_id
 
     def email_receiving_user(self, attachment_bytes, email_address, type_string):
+        """Emails award to receiving user
+
+        Arguments: 
+            self
+            attachment_bytes:   bytes. PDF contents to be attached / sent via email.
+            email_address:      string. Email address of receiving user to send award to
+            type_string:        string. Type of award ('month' or 'week')
+
+        Returns: 
+            True on success, False on failure
+        """
+
+        # Send email
         logging.info('Distributer.email_receiving_user(): sending email to the receiving_user at {}'.format(email_address))
         try: 
             mail.send_mail(
@@ -26,27 +49,50 @@ class Distributer:
                 """,
                 attachments=[('EmployeeOfThe{}.pdf'.format(type_string.capitalize()), attachment_bytes)]
             )
+
+            # Return True on success
             return True 
 
         # Capture BadRequestError, it's unlikely any other exceptions will occur
         except mail_errors.BadRequestError as e:
             logging.info('Distributer.email_receiving_user(): something went wrong, email was not successful')
             logging.exception(e)
+
+            # Return False on failure
             return False
 
     def delete_award_from_bucket(self):
+        """Delete award from Google App Engine storage bucket
+
+        Arguments: self
+        Returns: True if successful, False is failure
+        """
         logging.info('Distributer.delete_award_from_bucket(): deleting {} from storage bucket'.format(self.file_name))
-        query_bucket_tool = QueryBucketTool()
         
+        # Call helper function to delete the award (named with award_id) from storage bucket
+        query_bucket_tool = QueryBucketTool()
         success_bool = query_bucket_tool.delete('awards/{}'.format(self.file_name))
 
         if success_bool is False: 
             logging.info('Distributer.delete_award_from_bucket(): an error occurred, file was not deleted from bucket. \
                             Continuing, but manual cleanup is required.')
-        
+
+        # Return True if successful, False if not        
         return success_bool 
 
     def update_distributed_in_database(self, connection_data):
+        """Update 'distributed' field in award entry (in SQL database) to true to 
+            indicate that award has been distributed
+            
+        Arguments: 
+            self
+            connection_data: dictionary with connection data for database
+                keys:   environment, username, password, conenction_name 
+        Returns:
+            True if successful, False if failure
+        """
+
+        # Update entry distributed column to 'true' based on award_id
         logging.info('Distributer.update_award_distributed(): updating distributed boolean in awards database')
         query_tool = QueryTool(connection_data)
         data = {
@@ -54,9 +100,13 @@ class Distributer:
         }
         result = query_tool.put_by_id('awards', data)
 
+        # Determine success based on presence of 'award_id' in result
         try: 
+            # If successful, return True
             if int(result['award_id']) == self.award_id:
                 return True 
+
+        # If unsuccessful, return False
         except KeyError as e:
             logging.exception(e)
             return False
