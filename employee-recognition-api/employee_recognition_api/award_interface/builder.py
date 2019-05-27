@@ -27,11 +27,12 @@ class Builder:
 
     def query_database_for_data(self, data):
         """Queries database for data required for the award
+        Assumes that users & award exist
 
         Arguments: 
             self
             data:   dict. POST request data, as well as data from the result of the post request
-                keys = award_id, authorizing_user_id, receiving_user_id
+                keys = award_id, authorizing_user_id, receiving_user_id, awarded_datetime
         Returns: dict for use in generate_award_tex()
         """
 
@@ -49,12 +50,8 @@ class Builder:
         email_address = result['email_address']
 
         # Retrieve award information
-        # TODO: Determine if this can be removed and replaced with data dict.
-        result = query_tool.get_by_id('awards', {'award_id': int(data['award_id'])})
-        awarded_datetime = result['awarded_datetime']
-        
         # Parse awarded_datetime to find year, month (in words) and day
-        parsed_datetime = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S')
+        parsed_datetime = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S')
         year = parsed_datetime.year
 
         if int(parsed_datetime.month) == 1: 

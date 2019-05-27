@@ -4,6 +4,7 @@ import logging
 import json
 from ..award_interface.builder import Builder
 from ..award_interface.interpreter import Interpreter
+from ..db_interface.query_tool import QueryTool 
 from awards import create_pdf
 
 if os.environ.get('ENV') != 'local':
@@ -32,9 +33,10 @@ connection_data = {
 @tests_api.route('/test/awards/create_pdf', methods=['GET'])
 def test_awards_create_pdf():
     """Test create_pdf(), used in POST /awards
-    Effectively tests integration of builder + interpreter
+    Effectively tests integration of builder + interpreter + distributer
 
     """
+    query_tool = QueryTool(connection_data)
     try:
         # Setup test 
         logging.info('tests_api: Setting up test data')
@@ -46,68 +48,66 @@ def test_awards_create_pdf():
                 'receiving_user_id': 2, 
                 'award_id': 1,
                 'type': 'week',
-            }], 
-            'sad_path': [{
-                'test': 1,
-                'authorizing_user_id': 2,
-                'receiving_user_id': 1, 
-                'award_id': 2,
-                'type': 'week',    
             }]
         }
+        # Sad path doesn't make sense to test, because the create_pdf function is already given good data.
 
         # Based on users_signature.py: 
         # For each test case in happy path
         for tc in data['happy_path']:
-            logging.info('tests_api: Testing create_pdf() Happy Path')
+            logging.debug('tests_api: Testing create_pdf() Happy Path')
 
-            # Run create_pdf()
-            result = create_pdf(tc)
+            # Run create_pdf() with email off
+            result = create_pdf(tc, False)
 
             # If create_pdf() failed, then the test failed
             if result is not True:
                 test_results.append({'test': tc['test'], 'result' : 'failure'})
             
-            # If create_pdf() was successful, check that there is an appropriately named award
-            # in google app engine storage bucket
+            # If create_pdf() was successful, check end state is expected
             else:
-                # Open read connection to cloud storage bucket & read file
-                connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/award_1.pdf', mode='r')
-                pdf = connection.read()
-                connection.close()
-                
-                if b'\x25\x50\x44\x46' in bytearray(pdf):
-                    test_results.append({'test': tc['test'], 'result' : 'success'})
+                # Keep track of checks that pass
+                checks_passed = 0
 
-        # For each test case in sad path
-        for tc in data['sad_path']:
-            logging.info('tests_api: Testing create_pdf() Sad Path')
+                # Perform checks
+                logging.debug('tests_api: Checking distributed == True')
+                get_result = query_tool.get_by_id('awards', {'award_id': tc['award_id']})
+                if bool(get_result['distributed']) == False: 
+                    test_results.append({'test': tc['test'], 'result' : 'failure: distributed bool not flipped'})
+                else: 
+                    logging.debug('tests_api: distributed == True')
+                    checks_passed += 1
 
-            # Run create_pdf()
-            result = create_pdf(tc)
-
-            # If create_pdf() failed, then test succdeded
-            if result is False:
-                # Check that there was no PDF File created/stored
-                # Open read connection to cloud storage bucket & read file
+                logging.debug('tests_api: Checking award removed from storage bucket')                
                 try: 
                     connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/award_1.pdf', mode='r')
-                    test_results.append({'test': tc['test'], 'result' : 'failure'})
+                    test_results.append({'test': tc['test'], 'result' : 'failure: award was not deleted'})
                 except Exception as e: 
+                    logging.debug('tests_api: award removed successfully from storage bucket')
+                    checks_passed += 1
+
+                logging.debug('tests_api: Checking signature file deleted from Amazon AWS instance')
+                url = 'http://54.203.128.106:80/image/kvavlen_sig.jpg'
+                
+                result = urlfetch.fetch(
+                    url=url,
+                    method=urlfetch.GET
+                )
+                if result.status_code != 400: 
+                    test_results.append({'test': tc['test'], 'result' : 'failure: signature image was not deleted'})
+                else: 
+                    logging.debug('tests_api: signature image removed successfully from Amazon AWS instance')
+                    checks_passed += 1
+
+                if checks_passed == 3: 
                     test_results.append({'test': tc['test'], 'result' : 'success'})
-            else: 
-                test_results.append({'test': tc['test'], 'result' : 'failure'})
 
     # Capture and return any exception
     except Exception as e:
         logging.exception(e)
         return Response(json.dumps({'errors': [ {'message': 'an error occurred: {}'.format(e)}]}), status=400, mimetype='application/json')
 
-    return Response(json.dumps(test_result), status=200, mimetype='application/json')
-
-@tests_api.route('/test/awards/distribute', methods=['GET'])
-def test_distributer(self): 
-    print('do nothing ... yet')
+    return Response(json.dumps(test_results), status=200, mimetype='application/json')
 
 # References
 # [1] References re: cloudstorage from users_signature.py
