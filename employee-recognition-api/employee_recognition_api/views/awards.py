@@ -181,10 +181,12 @@ def create_pdf(data, email_on=True):
         # Send email if we have a PDF
         if email_on is True: 
             email_successful = distributer.email_receiving_user(pdf, award_data['email_address'], data['type'])
-            if email_successful is True: 
-                distributed_updated = distributer.update_distributed_in_database()
         else: 
-            email = True
+            email_successful = True
+
+        # Show we sent email in database -- even if we're using no-email
+        if email_successful is True: 
+            distributed_updated = distributer.update_distributed_in_database(connection_data)
 
     # Clean-up PDF from bucket
     if email_successful is True and email_on is True: 

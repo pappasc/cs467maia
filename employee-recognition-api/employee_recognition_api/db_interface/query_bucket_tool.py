@@ -36,8 +36,9 @@ class QueryBucketTool:
             logging.exception(e)
             return None
 
-    def post(self, file_path):
+#    def post(self, file_path):
+#        logging.info('do something')
+
+
+    def delete(self, file_path):
         logging.info('do something')
-
-
-    def delete(self, file_path)

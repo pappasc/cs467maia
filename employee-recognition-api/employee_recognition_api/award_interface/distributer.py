@@ -8,6 +8,7 @@ class Distributer:
     def __init__(self, award_id): 
         logging.info('Distributer.__init__(): initializing Distributer class')
         self.file_name = 'award_{}.pdf'.format(award_id)
+        self.award_id = award_id
 
     def email_receiving_user(self, attachment_bytes, email_address, type_string):
         logging.info('Distributer.email_receiving_user(): sending email to the receiving_user at {}'.format(email_address))
@@ -51,7 +52,7 @@ class Distributer:
         result = query_tool.put_by_id('awards', data)
 
         try: 
-            if int(result['award_id']) == self.award_id
+            if int(result['award_id']) == self.award_id:
                 return True 
         except KeyError as e:
             logging.exception(e)
