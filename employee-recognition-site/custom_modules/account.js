@@ -3,7 +3,7 @@ module.exports = function(){
     var rp = require('request-promise');
     var router = express.Router();
 
-    function updateUser(firstName, lastName, sigPath, emailAddr, userID) {
+    router.updateUser = function updateUser(firstName, lastName, sigPath, emailAddr, userID) {
 	var userBody = {
 	    first_name: firstName,
 	    last_name: lastName,
@@ -38,7 +38,7 @@ module.exports = function(){
 		context.lastName = req.user.last_name;
 		context.signature = req.user.signature_path;
 		context.isView = true;
-		context.jsscripts = ["logoutUser.js", "gotoAwards.js", "updateUser.js"];
+		context.jsscripts = ["logoutUser.js", "gotoAwards.js", "updateUser.js", "gotoHome.js"];
 		res.status(200).render('userpage', context);
 	    }
 	    else if (req.user.type == 'admin'){
@@ -69,7 +69,7 @@ module.exports = function(){
 
     router.put('/', function (req, res) {
 	if (req.isAuthenticated ()){
-	    updateUser(req.body.first_name, req.body.last_name, req.user.signature_path, req.user.email_address, req.user.user_id)
+	    router.updateUser(req.body.first_name, req.body.last_name, req.user.signature_path, req.user.email_address, req.user.user_id)
 		.then(function (updateReturn) {
 		    if (updateReturn == 200) {
 			//Send a 303 status code so the browser handles the reload
