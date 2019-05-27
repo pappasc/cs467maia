@@ -67,9 +67,6 @@ class TestViews(unittest.TestCase):
         get_result = self.interpreter_api.get('/image/test_image.jpg')
         self.assertEqual(get_result.status_code, 400, 'Status code was {}'.format(get_result.status_code))
         
-    def test_pdf(self): 
-        logging.debug('pdf() cannot easily be tested locally as it requires a texlive distribution')
-
 if __name__ == '__main__': 
     unittest.main()
     
