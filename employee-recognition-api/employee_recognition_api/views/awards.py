@@ -191,7 +191,7 @@ def create_pdf(data, email_on=True):
         deletion_successful = distributer.delete_award_from_bucket
 
     # Only returns true if email sent
-    return email
+    return email_successful
 
 @awards_api.route('/awards', methods=['GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])
