@@ -35,7 +35,7 @@ class TestQueryTool(unittest.TestCase):
             'first_name': 'Natasha', 
             'last_name': 'Kvavle', 
             'email_address': 'kvavlen@oregonstate.edu', 
-            'created_timestamp': '2019-05-20 05:31:30', 
+            'created_timestamp': '2019-05-27 06:36:55', 
             'signature_path': 'kvavlen_sig.jpg',
             'password': 'encryptme'
         })
@@ -285,7 +285,7 @@ class TestQueryTool(unittest.TestCase):
         Arguments: self
         """
         logging.debug('Test: put_by_id()')
-        entities = ['user', 'admin']
+        entities = ['user', 'admin', 'award']
 
         for entity in entities: 
             logging.debug('Table: {}s'.format(entity))
@@ -294,11 +294,17 @@ class TestQueryTool(unittest.TestCase):
             result = self.query.post('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][0])
             id = int(result['{}_id'.format(entity)])
 
-            # Add user_id to dynamic test data for UPDATE command
-            self.dyn_test_data['{}s'.format(entity)][1]['{}_id'.format(entity)] = id
+            # award doesn't have as many test cases
+            if entity == 'award':
+                tc = 0 
+            else:
+                tc = 1
+
+            # Add id to dynamic test data for UPDATE command
+            self.dyn_test_data['{}s'.format(entity)][tc]['{}_id'.format(entity)] = id
 
             # Make UPDATE query
-            result = self.query.put_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][1])
+            result = self.query.put_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][tc])
             logging.debug('Function Result: {}'.format(result))
 
             # Test: Result is an id 

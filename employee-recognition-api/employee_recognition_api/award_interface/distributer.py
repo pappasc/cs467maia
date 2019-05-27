@@ -1,7 +1,10 @@
 import logging
-from google.appengine.api import mail, mail_errors
 from ..db_interface.query_bucket_tool import QueryBucketTool
 from ..db_interface.query_tool import QueryTool 
+import os 
+
+if os.environ.get('ENV') != 'local':
+    from google.appengine.api import mail, mail_errors
 
 class Distributer:
 

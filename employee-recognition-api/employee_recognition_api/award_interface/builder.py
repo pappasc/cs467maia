@@ -49,7 +49,6 @@ class Builder:
         email_address = result['email_address']
 
         # Retrieve award information
-        # This is a bit overkill, as it's already passwed in data.
         # TODO: Determine if this can be removed and replaced with data dict.
         result = query_tool.get_by_id('awards', {'award_id': int(data['award_id'])})
         awarded_datetime = result['awarded_datetime']
