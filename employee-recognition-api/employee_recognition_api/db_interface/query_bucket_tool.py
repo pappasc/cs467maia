@@ -1,6 +1,7 @@
 import os
 if os.environ.get('ENV') != 'local':
     import cloudstorage 
+    from cloudstorage import NotFoundError
 
 import logging
 
@@ -30,9 +31,7 @@ class QueryBucketTool:
 
             # Return bytes of image if successful
             return bytes(file_contents)
-
-        # Catch and log any exception - cloudstorage seems less predictable
-        except Exception as e: 
+        except NotFoundError as e: 
             logging.exception(e)
             return None
 
@@ -41,4 +40,22 @@ class QueryBucketTool:
 
 
     def delete(self, file_path):
-        logging.info('do something')
+        # Attempt deletion of file_path
+        try:      
+            logging.info('QueryBucketTool.delete_from_bucket(): Deleting file from storage bucket')
+            cloudstorage.delete('{}/{}'.format(self.bucket_path, file_path))
+            logging.info('QueryBucketTool.delete_from_bucket(): Deleting file from storage bucket was successful')
+            # Return True if successful
+            return True
+
+        # Return False if no file to delete in the first place / unsuccessful
+        except NotFoundError as e: 
+            logging.exception(e)
+            return False
+        except Exception as e:
+            logging.exception(e)
+            return False
+
+# References
+# [1] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/read-write-to-cloud-storage
+# [2] TODO: References from users_signature.py

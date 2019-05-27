@@ -96,7 +96,14 @@ def check_award_does_not_exist(type_string, awarded_datetime):
 
         # Find existing awards during month range identified. If found, return errors and do not continue
         greater = str(datetime.datetime(year, month, 1, 0, 0, 0, 0))
-        lesser = str(datetime.datetime(year, month + 1, 1, 0, 0, 0))
+        
+        # Handle December differently (can't just add 1 to 12)
+        if month == 12: 
+            lesser_month = 1
+        else: 
+            lesser_month = month + 1 
+        lesser = str(datetime.datetime(year, lesser_month, 1, 0, 0, 0))
+        
         blob = { 
             'awarded_datetime': {
                 'greater': greater, 
@@ -189,8 +196,8 @@ def create_pdf(data, email_on=True):
             distributed_updated = distributer.update_distributed_in_database(connection_data)
 
     # Clean-up PDF from bucket
-    if email_successful is True and email_on is True: 
-        deletion_successful = distributer.delete_award_from_bucket
+    if email_successful is True: 
+        deletion_successful = distributer.delete_award_from_bucket()
 
     # Only returns true if email sent
     return email_successful
@@ -301,7 +308,7 @@ def awards_post():
         status_code = 400
 
     query.disconnect()
-    logging.info('awards_api: returning result {}'.format(result))
+    logging.info('awards_api: returning result {}'.format(post_result))
     logging.info('awards_api: returning status code {}'.format(status_code))
     return Response(json.dumps(post_result), status=status_code, mimetype='application/json')
 
@@ -353,7 +360,7 @@ def awards_post_no_email():
         status_code = 400
 
     query.disconnect()
-    logging.info('awards_api: returning result {}'.format(result))
+    logging.info('awards_api: returning result {}'.format(post_result))
     logging.info('awards_api: returning status code {}'.format(status_code))
     return Response(json.dumps(post_result), status=status_code, mimetype='application/json')
 

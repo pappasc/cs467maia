@@ -38,7 +38,7 @@ class Distributer:
         success_bool = query_bucket_tool.delete('awards/{}'.format(self.file_name))
 
         if success_bool is False: 
-            logging.info('Distributer.query_bucket_for_award(): an error occurred, file was not deleted from bucket. \
+            logging.info('Distributer.delete_award_from_bucket(): an error occurred, file was not deleted from bucket. \
                             Continuing, but manual cleanup is required.')
         
         return success_bool 
