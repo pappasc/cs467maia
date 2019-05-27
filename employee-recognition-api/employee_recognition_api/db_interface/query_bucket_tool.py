@@ -1,7 +1,7 @@
 import os
 if os.environ.get('ENV') != 'local':
     import cloudstorage 
-    
+
 import logging
 
 class QueryBucketTool:
@@ -38,3 +38,6 @@ class QueryBucketTool:
 
     def post(self, file_path):
         logging.info('do something')
+
+
+    def delete(self, file_path)

@@ -152,6 +152,7 @@ def check_award_does_not_exist(type_string, awarded_datetime):
     query.disconnect()
     return result
 
+# TODO: Move this to a separate class?
 def create_pdf(data, email_on=True): 
     success_bool = False
 
@@ -165,27 +166,29 @@ def create_pdf(data, email_on=True):
     modified_award_tex = builder.generate_award_tex(award_data)
     image = builder.query_bucket_for_image(award_data['SignaturePath'])
 
-    # TEX + JPG -> PDF
+    # Build PDF from TEX + JPG 
     # Initialize variables to None
-    pdf, write = (None, None)
-    email, deletion = (False, False) 
+    pdf, write_successful = (None, None)
+    email_successful, deletion_successful = (False, False) 
 
     if image is not None and modified_award_tex is not None: 
         pdf = interpreter.interpret(award_data['SignaturePath'], modified_award_tex, image)
     if pdf is not None:
         # Technically don't NEED to write to bucket, but it allows for 
         # us to not lose award data if something goes wrong in this function
-        write = interpreter.write_award_to_bucket(data['award_id'], pdf)
+        write_successful = interpreter.write_award_to_bucket(data['award_id'], pdf)
 
-        # Send email
+        # Send email if we have a PDF
         if email_on is True: 
-            email = distributer.email_receiving_user(pdf, award_data['email_address'], data['type'])
+            email_successful = distributer.email_receiving_user(pdf, award_data['email_address'], data['type'])
+            if email_successful is True: 
+                distributed_updated = distributer.update_distributed_in_database()
         else: 
             email = True
 
-    # Clean-up
-    if email is True and email_on is True: 
-        deletion = distributer.delete_award_from_bucket
+    # Clean-up PDF from bucket
+    if email_successful is True and email_on is True: 
+        deletion_successful = distributer.delete_award_from_bucket
 
     # Only returns true if email sent
     return email

@@ -27,7 +27,7 @@ class Interpreter:
 
         # If image is not None, then we can continue (not an empty image)
         if image is not None: 
-            logging.info('Interpeter.save_image_to_disk(): Saving image to AWS instance')
+            logging.info('Interpeter.save_image_to_disk(): saving image to AWS instance')
             # POST image to AWS instance
             url = 'http://54.203.128.106:80/image/{}'.format(signature_path)
             try: 
@@ -51,6 +51,40 @@ class Interpreter:
         else: 
             return False
 
+    def delete_image_from_disk(self, signature_path):
+        """Delete signature image to disk from AWS instance 
+
+        Arguments: 
+            self
+            signature_path: string. name of signature file, not full path.
+
+        Returns: 
+            True on success, False on failure
+        """
+
+        # If image is not None, then we can continue (not an empty image)
+        if image is not None: 
+            logging.info('Interpeter.delete_image_to_disk(): deleting image from AWS instance')
+            # POST image to AWS instance
+            url = 'http://54.203.128.106:80/image/{}'.format(signature_path)
+            try: 
+                result = urlfetch.fetch(
+                    url=url,
+                    method=urlfetch.DELETE
+                )
+                
+                # Log the result of the DELETE request, return True only if successful
+                logging.info('Interpreter.delete_image_to_disk(): POST /image result was {}'.format(result.content))
+                if result.status_code == 200: 
+                    return True       
+                else:
+                    return False
+            except urlfetch.Error as e:
+                logging.exception(e)
+                return False
+        else: 
+            return False
+            
     def interpret(self, signature_path, modified_award_tex, image):
         """Render PDF award using AWS instance
 

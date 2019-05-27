@@ -435,6 +435,9 @@ class QueryTool:
                 data['email_address']: string
                 removed: data['created_timestamp']: string
 
+                awards
+                data['award_id']: int
+                
         Returns: Parsed dictionary result of update query in format { 'key': int(id) }
         """
         # Create UPDATE and SELECT query based on table, execute and return parsed dictionary result
@@ -450,6 +453,11 @@ class QueryTool:
             result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], admin_id=int(data['admin_id']))
             verify_query = sqlalchemy.text('select admin_id from admins where admin_id = :id;')
             key = 'admin_id'
+        elif table == 'awards':
+            query = sqlalchemy.text('update awards set distributed = true where award_id = :award_id;')
+            result = self.connxn.execute(query, award_id=int(data['award_id']))
+            verify_query = sqlalchemy.text('select award_id from awards where award_id = :id;')
+            key = 'award_id'
 
         logging.info('QueryTool.put(): update query is {}'.format(str(query)))
         logging.info('QueryTool.put(): select query is {}'.format(str(verify_query)))

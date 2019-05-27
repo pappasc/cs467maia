@@ -1,6 +1,7 @@
 import logging
 from google.appengine.api import mail, mail_errors
 from ..db_interface.query_bucket_tool import QueryBucketTool
+from ..db_interface.query_tool import QueryTool 
 
 class Distributer:
 
@@ -40,6 +41,21 @@ class Distributer:
                             Continuing, but manual cleanup is required.')
         
         return success_bool 
+
+    def update_distributed_in_database(self, connection_data):
+        logging.info('Distributer.update_award_distributed(): updating distributed boolean in awards database')
+        query_tool = QueryTool(connection_data)
+        data = {
+            'award_id': self.award_id
+        }
+        result = query_tool.put_by_id('awards', data)
+
+        try: 
+            if int(result['award_id']) == self.award_id
+                return True 
+        except KeyError as e:
+            logging.exception(e)
+            return False
 
 # References
 # [1] https://cloud.google.com/appengine/docs/standard/python/mail/sending-mail-with-mail-api                                                        re: google app engine mail library
