@@ -46,13 +46,13 @@ def test_awards_create_pdf():
                 'test': 1,
                 'authorizing_user_id': 1,
                 'receiving_user_id': 2, 
+                'awarded_datetime': '2019-04-27 10:00:00',
                 'award_id': 1,
                 'type': 'week',
             }]
         }
         # Sad path doesn't make sense to test, because the create_pdf function is already given good data.
 
-        # Based on users_signature.py: 
         # For each test case in happy path
         for tc in data['happy_path']:
             logging.debug('tests_api: Testing create_pdf() Happy Path')
@@ -70,6 +70,7 @@ def test_awards_create_pdf():
                 checks_passed = 0
 
                 # Perform checks
+                # Check: distribution == True
                 logging.debug('tests_api: Checking distributed == True')
                 get_result = query_tool.get_by_id('awards', {'award_id': tc['award_id']})
                 if bool(get_result['distributed']) == False: 
@@ -78,6 +79,7 @@ def test_awards_create_pdf():
                     logging.debug('tests_api: distributed == True')
                     checks_passed += 1
 
+                # Check: No award in storage bucket
                 logging.debug('tests_api: Checking award removed from storage bucket')                
                 try: 
                     connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/award_1.pdf', mode='r')
@@ -86,19 +88,21 @@ def test_awards_create_pdf():
                     logging.debug('tests_api: award removed successfully from storage bucket')
                     checks_passed += 1
 
+                # Check: No image in AWS instance
                 logging.debug('tests_api: Checking signature file deleted from Amazon AWS instance')
                 url = 'http://54.203.128.106:80/image/kvavlen_sig.jpg'
-                
                 result = urlfetch.fetch(
                     url=url,
                     method=urlfetch.GET
                 )
+
                 if result.status_code != 400: 
                     test_results.append({'test': tc['test'], 'result' : 'failure: signature image was not deleted'})
                 else: 
                     logging.debug('tests_api: signature image removed successfully from Amazon AWS instance')
                     checks_passed += 1
 
+                # If all checks passed, success
                 if checks_passed == 3: 
                     test_results.append({'test': tc['test'], 'result' : 'success'})
 

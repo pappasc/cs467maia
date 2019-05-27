@@ -293,6 +293,7 @@ def awards_post():
     # Continue with award POST 
     # Insert query against database based on request data
     data['distributed'] = False
+    logging.info('data is: {}'.format(data))
     post_result = query.post('awards', data)
     
     # If the post was successful and we have an award_id, save pdf to google storage bucket
