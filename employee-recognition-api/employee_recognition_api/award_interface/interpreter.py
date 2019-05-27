@@ -39,7 +39,7 @@ class Interpreter:
                         'Content-Type': 'image/jpeg'
                     })
                 
-                # Log the result of the POST request, return True only if successful
+                # Log the result of the POST request, return True only if successful -- otherwise return False
                 logging.info('Interpreter.save_image_to_disk(): POST /image result was {}'.format(result.content))
                 if result.status_code == 200: 
                     return True       
