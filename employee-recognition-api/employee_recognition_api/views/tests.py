@@ -117,5 +117,4 @@ def test_awards_create_pdf():
     return Response(json.dumps(test_results), status=200, mimetype='application/json')
 
 # References
-# [1] https://stackoverflow.com/questions/6186980/determine-if-a-byte-is-a-pdf-file re: determine if a file is PDF   TODO: MOVE THIS
-# [2] https://www.geeksforgeeks.org/python-bytearray-function/                      re: Dealing with bytes
+# [1] https://www.geeksforgeeks.org/python-bytearray-function/                      re: Dealing with bytes
