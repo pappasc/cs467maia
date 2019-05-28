@@ -1,6 +1,7 @@
 import json
 import logging
 import os 
+from ..db_interface.query_bucket_tool import QueryBucketTool
 
 if os.environ.get('ENV') != 'local':
     from google.appengine.api import urlfetch
@@ -132,23 +133,14 @@ class Interpreter:
             Returns True on success, False on failure
         """   
         logging.info('Interpeter.write_award_to_bucket(): writing to cloud storage')
-        try:        
-            # Make file name based on award id
-            filename = 'award_{}.pdf'.format(award_id)
-
-            # Open write connection to cloud storage bucket
-            connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/{}'.format(filename), mode='w', content_type='application/pdf')
-                
-            # Write raw image data & close connection to bucket
-            connection.write(pdf)
-            connection.close()
-            return True
-
-        # cloudstorage is unpredictable, log any exceptions and return false if captured
-        except Exception as e:
-            logging.exception(e)
-            return False
         
+        # Make file name based on award id
+        filename = 'award_{}.pdf'.format(award_id)
+        
+        # Write file to storage bucket & return resulting boolean
+        query_bucket_tool = QueryBucketTool()
+        write_result = query_bucket_tool.post('awards/{}'.format(filename), pdf, 'application/pdf')
+        return write_result
 
 # References
 # [1] https://cloud.google.com/appengine/docs/standard/python/issue-requests            re: code example for using urlfetch

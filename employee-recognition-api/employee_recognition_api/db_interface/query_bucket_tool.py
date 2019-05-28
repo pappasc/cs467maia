@@ -24,7 +24,7 @@ class QueryBucketTool:
 
         # Attempt connection
         try:      
-            logging.info('QueryBucketTool.get_from_bucket(): Retrieving file from storage bucket')
+            logging.info('QueryBucketTool.get(): retrieving file from storage bucket')
             connection = cloudstorage.open('{}/{}'.format(self.bucket_path, file_path))              
             file_contents = connection.read()
             connection.close()
@@ -35,16 +35,42 @@ class QueryBucketTool:
             logging.exception(e)
             return None
 
-#    def post(self, file_path):
-#        logging.info('do something')
+    def post(self, file_path, content, content_type):
+        """Write file to Google App Engine storage bucket
 
+        Arguments:
+            self
+            file_path:      string. '{folder}/{filename}'. no leading slash
+            content:        bytes. content of file to write
+            content_type:   string. 'application/pdf' or 'image/jpeg'
+
+        Returns: 
+            True if successful, False if unsuccessful
+        """
+        try: 
+            logging.info('QueryBucketTool.post(): writing file to storage bucket')
+
+            # Open write connection to cloud storage bucket
+            connection = cloudstorage.open('/cs467maia-backend.appspot.com/{}'.format(file_path), mode='w', content_type='{}'.format(content_type))
+            
+            # Write raw file data & close connection to bucket
+            connection.write(content)
+            connection.close()
+
+            # Return True if successful
+            return True
+
+        # Return False if any exceptions raised / unsuccessful
+        except Exception as e:
+            logging.exception(e) 
+            return False
 
     def delete(self, file_path):
         # Attempt deletion of file_path
         try:      
-            logging.info('QueryBucketTool.delete_from_bucket(): Deleting file from storage bucket')
+            logging.info('QueryBucketTool.delete(): deleting file from storage bucket')
             cloudstorage.delete('{}/{}'.format(self.bucket_path, file_path))
-            logging.info('QueryBucketTool.delete_from_bucket(): Deleting file from storage bucket was successful')
+            logging.info('QueryBucketTool.delete(): deleting file from storage bucket was successful')
             # Return True if successful
             return True
 
@@ -57,5 +83,17 @@ class QueryBucketTool:
             return False
 
 # References
-# [1] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/read-write-to-cloud-storage
-# [2] TODO: References from users_signature.py
+# Includes references that are no longer in use (for using URLfetch and JSON API)
+# [1] http://flask.pocoo.org/docs/1.0/patterns/fileuploads/                                                                 re: file upload
+# [2] https://cloud.google.com/storage/docs/uploading-objects 
+# [3] https://cloud.google.com/storage/docs/json_api/v1/how-tos/simple-upload
+# [4] https://cloud.google.com/appengine/docs/standard/python/issue-requests                                                re: urlfetch
+# [5] https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app                                           re: urlfetch
+# [6] https://stackoverflow.com/questions/22351254/python-script-to-convert-image-into-byte-array                           re: code example for reading image into byte array 
+# [7] https://cloud.google.com/appengine/docs/standard/python/issue-requests                                                re: getting attributes of urlfetch response
+# [8] https://cloud.google.com/docs/authentication/production?hl=en_US                                                      re: how to use application default credentials to access cloud storage upload json api
+# [9] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/read-write-to-cloud-storage          re: uploading to cloud storage
+# [10] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/setting-up-cloud-storage            re: how to run dev_appserver with default bucket name
+# [11] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/functions#open                      re: leading / before bucket name
+# [12] https://stackoverflow.com/questions/51179455/issue-with-using-cloudstorage-module-in-python                          re: help finding correct lib
+# [13] https://github.com/GoogleCloudPlatform/python-docs-samples/issues/853                                                re: some google tools are not expected to run locally, so cloudstorage may be one of those

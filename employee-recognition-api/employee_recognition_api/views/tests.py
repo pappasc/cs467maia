@@ -5,6 +5,7 @@ import json
 from ..award_interface.builder import Builder
 from ..award_interface.interpreter import Interpreter
 from ..db_interface.query_tool import QueryTool 
+from ..db_interface.query_bucket_tool import QueryBucketTool
 from awards import create_pdf
 
 if os.environ.get('ENV') != 'local':
@@ -81,10 +82,12 @@ def test_awards_create_pdf():
 
                 # Check: No award in storage bucket
                 logging.debug('tests_api: Checking award removed from storage bucket')                
-                try: 
-                    connection = cloudstorage.open('/cs467maia-backend.appspot.com/awards/award_1.pdf', mode='r')
+                query_bucket_tool = QueryBucketTool()
+                result = query_bucket_tool.get('awards/award_1.pdf')
+
+                if result == True: 
                     test_results.append({'test': tc['test'], 'result' : 'failure: award was not deleted'})
-                except Exception as e: 
+                else: 
                     logging.debug('tests_api: award removed successfully from storage bucket')
                     checks_passed += 1
 
@@ -114,6 +117,5 @@ def test_awards_create_pdf():
     return Response(json.dumps(test_results), status=200, mimetype='application/json')
 
 # References
-# [1] References re: cloudstorage from users_signature.py
-# [2] https://stackoverflow.com/questions/6186980/determine-if-a-byte-is-a-pdf-file re: determine if a file is PDF
-# [3] https://www.geeksforgeeks.org/python-bytearray-function/                      re: Dealing with bytes
+# [1] https://stackoverflow.com/questions/6186980/determine-if-a-byte-is-a-pdf-file re: determine if a file is PDF   TODO: MOVE THIS
+# [2] https://www.geeksforgeeks.org/python-bytearray-function/                      re: Dealing with bytes

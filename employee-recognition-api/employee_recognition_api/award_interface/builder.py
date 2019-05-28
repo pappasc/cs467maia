@@ -2,6 +2,7 @@ import os
 import logging
 import datetime
 from ..db_interface.query_tool import QueryTool
+from ..db_interface.query_bucket_tool import QueryBucketTool
 
 if os.environ.get('ENV') != 'local':
     import cloudstorage 
@@ -106,19 +107,10 @@ class Builder:
         Returns:
             bytes of image or None if unsuccessful
         """
-        # Connect to the Cloud Storage bucket, read image contents, and close connection 
-        try:      
-            connection = cloudstorage.open('/cs467maia-backend.appspot.com/signatures/{}'.format(signature_path))              
-            image = connection.read()
-            connection.close()
-
-            # Return bytes of image if successful
-            return bytes(image)
-
-        # Catch and log any exception - cloudstorage seems less predictable
-        except Exception as e: 
-            logging.exception(e)
-            return None
+        # Get and return image from storage bucket
+        query_bucket_tool = QueryBucketTool()
+        image = query_bucket_tool.get('signatures/{}'.format(signature_path))
+        return image
 
     def generate_award_tex(self, data):
         """Replaces values within the .tex template
@@ -152,6 +144,5 @@ class Builder:
 # [1] https://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files                             re: file I/O
 # [2] https://www.tutorialspoint.com/python/string_replace.htm                                                  re: replace()     
 # [3] https://stackoverflow.com/questions/3430372/how-to-get-full-path-of-current-files-directory-in-python     re: running pwd in python
-# [4] See references in views/users_signature.py re: uploading to bucket
-# [5] https://docs.python.org/2/library/datetime.html re: datetime
-# [6] https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                      re: can't run in dev w/o access token
+# [4] https://docs.python.org/2/library/datetime.html re: datetime
+# [5] https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                      re: can't run in dev w/o access token
