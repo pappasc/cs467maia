@@ -126,12 +126,18 @@ def check_award_does_not_exist(type_string, awarded_datetime):
         # Determine what day of the week our day is 
         # 1 2 3 4 5 6 7
         # M T W T F S S
-        weekday_number = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').isoweekday()
+        parsed_datetime = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S')
+        weekday_number = parsed_datetime.isoweekday()
+        year = parsed_datetime.year
+        month = parsed_datetime.month
+        day = parsed_datetime.day 
         logging.info('awards_api.check_award_does_not_exist(): weekday_number is {}'.format(weekday_number))
 
         # Get the beginning and end of week based on this
-        beg_of_week = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S') - datetime.timedelta(days=weekday_number - 1)
-        end_of_week = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(days=7 - weekday_number)
+
+
+        beg_of_week = datetime.datetime(year, month, day, 0, 0, 0) - datetime.timedelta(days=weekday_number - 1)
+        end_of_week = datetime.datetime(year, month, day, 0, 0, 0) + datetime.timedelta(days=8 - weekday_number)
         logging.info('awards_api.check_award_does_not_exist(): beginning of week: {}'.format(beg_of_week))
         logging.info('awards_api.check_award_does_not_exist(): end of week: {}'.format(end_of_week))
 

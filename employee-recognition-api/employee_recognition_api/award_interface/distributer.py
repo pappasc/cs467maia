@@ -42,7 +42,7 @@ class Distributer:
             mail.send_mail(
                 sender='<Maia Group> kvavlen@oregonstate.edu',
                 to=email_address,
-                subject='Congratulations! You are Emloyee of the {}!'.format(type_string.capitalize()), 
+                subject='Congratulations! You are Employee of the {}!'.format(type_string.capitalize()), 
                 body="""Congratulations! 
 
                 Your award is attached to this email. Keep up the good work!

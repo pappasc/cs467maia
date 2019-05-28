@@ -316,7 +316,7 @@ class QueryTool:
             result = self.connxn.execute(query, key = data[filter])
         elif filter == 'awarded_datetime' and between == True: 
             # This is only used internally to determine if too many awards for a given week/month
-            query = sqlalchemy.text('select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime <= :key2;')
+            query = sqlalchemy.text('select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;')
             result = self.connxn.execute(query, key1 = data[filter]['greater'], key2 = data[filter]['lesser'], key3 = data['type'])
         elif filter == 'distributed': 
             query = sqlalchemy.text('select * from awards where distributed = :key;')
