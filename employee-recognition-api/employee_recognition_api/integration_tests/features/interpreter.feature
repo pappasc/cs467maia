@@ -13,7 +13,7 @@ Scenario: POST, GET, DELETE /image, 200
     Then I get a status code of 200
     Then the result is success
 
-Scenario: POST /pdf, 200
+Scenario: POST /pdf (no test.jpg image), 200
     When I make an AWS POST /pdf request
     Then I get a status code of 200
     Then the result is a PDF
