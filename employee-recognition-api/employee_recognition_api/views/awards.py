@@ -6,9 +6,7 @@ import pymysql
 import json
 from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
-from ..award_interface.builder import Builder
-from ..award_interface.interpreter import Interpreter
-from ..award_interface.distributer import Distributer
+from ..award_interface.award_driver import AwardDriver
 
 # Allow awards_api to be accessible from main.py 
 awards_api = Blueprint('awards_api', __name__)
@@ -25,188 +23,7 @@ connection_data = {
     'connection_name': '{}'.format(connection_name) 
 }
 
-def check_users_exist(authorizing_user_id, receiving_user_id):
-    """Check that the users involved in award exist
 
-    Arguments:
-        authorizing_user_id:    int. ID of authorizing user
-        receiving_user_id:      int. ID of receiving user
-
-    Returns:
-        True if both users exist
-        error dictionary if a user does not exist
-            will either return error re: authorizing_user_id or 
-            error re: receiving_user_id. Won't return both errors at this time.
-    """
-    # Query database to determine if user ids exist, and continue if so; otherwise, return errors
-    logging.info('awards_api: checking if user_ids {} and {} exist'.format(receiving_user_id, authorizing_user_id))
-    query = QueryTool(connection_data)
-    result1 = query.get_by_id('users', {
-        'user_id': authorizing_user_id 
-    })    
-    result2 = query.get_by_id('users', {
-        'user_id': receiving_user_id
-    })
-    
-    # Check authorizing user_id, if result had errors then return those errors
-    try: 
-        if result1['errors'] is not None:
-            status_code = 400
-            logging.info('awards_api.check_users_exist(): {}'.format(result1))
-            result = result1
-    # If authorizing_user_id result did not have errors, check receiving_user_id 
-    except KeyError:
-        try: 
-            if result2['errors'] is not None: 
-                logging.info('awards_api.check_users_exist(): returning {}'.format(result2))
-                result = result2
-        except KeyError:
-            logging.info('awards_api: user_ids found')
-            result = True
-
-    query.disconnect()
-    return result 
-
-def check_award_does_not_exist(type_string, awarded_datetime):
-    """Check the employee of the month/week awards do not 
-        already exist in the time period associated with our award
-        Example: 
-            - If award of type 'month' is awarded on '2019-05-01 0:00:00'
-                then checks that no other 'month' awards exist in May 2019.
-            - If award of type 'week' is awarded on '2019-05-01 0:00:00'
-                then checks that no other 'week' awards exist from Mon, April 29 2019
-                to Sun, May 5, 2019.
-    Arguments: 
-        type_string:        string. 'month', 'year'
-        awarded_datetime:   string. 'YYYY-mm-DD HH:MM:SS'
-
-    Returns:
-        True if no awards are found in the time period
-
-    """
-    query = QueryTool(connection_data)
-    # Check if more awards are acceptable during time period 
-    result = True # default is to accept the award
-
-    # Employee of the Month
-    if type_string == 'month': 
-        # Identify date range for month to compare against
-        month = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').month
-        year = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').year
-
-        # Find existing awards during month range identified. If found, return errors and do not continue
-        greater = str(datetime.datetime(year, month, 1, 0, 0, 0, 0))
-        
-        # Handle December differently (can't just add 1 to 12)
-        if month == 12: 
-            lesser_month = 1
-        else: 
-            lesser_month = month + 1 
-        lesser = str(datetime.datetime(year, lesser_month, 1, 0, 0, 0))
-        
-        blob = { 
-            'awarded_datetime': {
-                'greater': greater, 
-                'lesser': lesser 
-            }, 
-            'type': 'month'
-        }
-        existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
-        logging.info('awards_api.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
-
-        # If awards found, return an error dictionary. Otherwise continue.
-        if len(existing_awards['award_ids']) != 0:
-            logging.info('awards_api.check_award_does_not_exist(): Awards found during time period')
-            result = {'errors': [{'field': 'type', 'message': 'too many awards of month type in time period'}]}
-        else: 
-            logging.info('awards_api.check_award_does_not_exist(): No awards found during time period')
-
-    # Employee of the Week
-    elif type_string == 'week':
-        # Determine what day of the week our day is 
-        # 1 2 3 4 5 6 7
-        # M T W T F S S
-        parsed_datetime = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S')
-        weekday_number = parsed_datetime.isoweekday()
-        year = parsed_datetime.year
-        month = parsed_datetime.month
-        day = parsed_datetime.day 
-        logging.info('awards_api.check_award_does_not_exist(): weekday_number is {}'.format(weekday_number))
-
-        # Get the beginning and end of week based on this
-
-
-        beg_of_week = datetime.datetime(year, month, day, 0, 0, 0) - datetime.timedelta(days=weekday_number - 1)
-        end_of_week = datetime.datetime(year, month, day, 0, 0, 0) + datetime.timedelta(days=8 - weekday_number)
-        logging.info('awards_api.check_award_does_not_exist(): beginning of week: {}'.format(beg_of_week))
-        logging.info('awards_api.check_award_does_not_exist(): end of week: {}'.format(end_of_week))
-
-        # Query database for awards that exist in this week time period
-        greater = str(beg_of_week)
-        lesser = str(end_of_week)
-        blob = { 
-            'awarded_datetime': {
-                'greater': greater, 
-                'lesser': lesser 
-            }, 
-            'type': 'week'
-        }
-        logging.info('blob: {}'.format(blob))
-        existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
-        logging.info('awards_api.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
-        
-        # If awards found, return error dictionary. Otherwise continue.
-        if len(existing_awards['award_ids']) != 0:
-            logging.info('awards_api.check_award_does_not_exist(): Awards found during time period')
-            result = {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}
-        else: 
-            logging.info('awards_api.check_award_does_not_exist(): No awards found during time period')
-
-    query.disconnect()
-    return result
-
-# TODO: Move this to a separate class?
-def create_pdf(data, email_on=True): 
-    success_bool = False
-
-    # Set up instances of helper classes
-    builder = Builder(connection_data, data['type'])
-    interpreter = Interpreter()
-    distributer = Distributer(data['award_id'])
-
-    # Build the Award Contents
-    award_data = builder.query_database_for_data(data)
-    modified_award_tex = builder.generate_award_tex(award_data)
-    image = builder.query_bucket_for_image(award_data['SignaturePath'])
-
-    # Build PDF from TEX + JPG 
-    # Initialize variables to None
-    pdf, write_successful = (None, None)
-    email_successful, deletion_successful = (False, False) 
-
-    if image is not None and modified_award_tex is not None: 
-        pdf = interpreter.interpret(award_data['SignaturePath'], modified_award_tex, image)
-    if pdf is not None:
-        # Technically don't NEED to write to bucket, but it allows for 
-        # us to not lose award data if something goes wrong in this function
-        write_successful = interpreter.write_award_to_bucket(data['award_id'], pdf)
-
-        # Send email if we have a PDF
-        if email_on is True: 
-            email_successful = distributer.email_receiving_user(pdf, award_data['email_address'], data['type'])
-        else: 
-            email_successful = True
-
-        # Show we sent email in database -- even if we're using no-email
-        if email_successful is True: 
-            distributed_updated = distributer.update_distributed_in_database(connection_data)
-
-    # Clean-up PDF from bucket
-    if email_successful is True: 
-        deletion_successful = distributer.delete_award_from_bucket()
-
-    # Only returns true if email sent
-    return email_successful
 
 @awards_api.route('/awards', methods=['GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])
@@ -277,6 +94,7 @@ def awards_post():
     data = json.loads(request.data)
     ivt = InputValidatorTool()
     query = QueryTool(connection_data)
+    driver = AwardDriver(True)
 
     # Validate the data provided
     result = ivt.validate_awards(data)
@@ -285,12 +103,12 @@ def awards_post():
         return Response(json.dumps(result), status=400, mimetype='application/json')
     
     # Check both users exist
-    users_exists = check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
+    users_exists = ivt.check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
     if users_exists is not True: 
         return Response(json.dumps(users_exists), status=400, mimetype='application/json')
 
     # Check the award is the first of it's kind in it's respective time range
-    award_dne = check_award_does_not_exist(data['type'], data['awarded_datetime'])
+    award_dne = ivt.check_award_does_not_exist(data['type'], data['awarded_datetime'])
     if award_dne is not True:
         query.disconnect() 
         return Response(json.dumps(award_dne), status=400, mimetype='application/json')
@@ -304,9 +122,9 @@ def awards_post():
     try: 
         if post_result['award_id']: 
             data['award_id'] = post_result['award_id']
-            if create_pdf(data) is not True: 
+            if driver.create_pdf(connection_data, data) is not True: 
                 logging.info('awards_api: Failed to make and email PDF')
-                status_code = 200 # TODO: This should change 
+                status_code = 200 # status code should be 200 regardless of the result of create_pdf, only based on POST to DB result
             else: 
                 status_code = 200 
     except KeyError as e:
@@ -329,6 +147,7 @@ def awards_post_no_email():
     data = json.loads(request.data)
     ivt = InputValidatorTool()
     query = QueryTool(connection_data)
+    driver = AwardDriver(False)
 
     # Validate the data provided
     result = ivt.validate_awards(data)
@@ -337,12 +156,12 @@ def awards_post_no_email():
         return Response(json.dumps(result), status=400, mimetype='application/json')
     
     # Check both users exist
-    users_exists = check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
+    users_exists = ivt.check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
     if users_exists is not True: 
         return Response(json.dumps(users_exists), status=400, mimetype='application/json')
 
     # Check the award is the first of it's kind in it's respective time range
-    award_dne = check_award_does_not_exist(data['type'], data['awarded_datetime'])
+    award_dne = ivt.check_award_does_not_exist(data['type'], data['awarded_datetime'])
     if award_dne is not True:
         query.disconnect() 
         return Response(json.dumps(award_dne), status=400, mimetype='application/json')
@@ -356,7 +175,7 @@ def awards_post_no_email():
     try: 
         if post_result['award_id']: 
             data['award_id'] = post_result['award_id']
-            if create_pdf(data, False) is not True: 
+            if driver.create_pdf(connection_data, data) is not True: 
                 logging.info('awards_api: Failed to make and email PDF')
                 status_code = 200 # TODO: This should change 
             else: 
@@ -517,11 +336,3 @@ def awards_distributed(distributed):
     logging.info('awards_api: returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
-# References 
-# [1] https://www.programiz.com/python-programming/methods/string/replace                                       re: python string replace()
-# [2] https://docs.python.org/2/library/datetime.html                                                           re: datetime obj
-# [3] https://stackoverflow.com/questions/19480028/attributeerror-datetime-module-has-no-attribute-strptime     re: use of strptime
-# [4] https://stackoverflow.com/questions/2600775/how-to-get-week-number-in-python                              re: isocalendar
-# [5] https://stackoverflow.com/questions/6871016/adding-5-days-to-a-date-in-python?rq=1                        re: using timedelta
-# [6] https://stackoverflow.com/questions/19216334/python-give-start-and-end-of-week-data-from-a-given-date     re: ideas on how to accomplish getting first and last day of a week
-# [7] https://stackoverflow.com/questions/16348815/python-assigning-multiple-variables-to-same-value-list-behavior  re: assigning multiple variables in one line in python

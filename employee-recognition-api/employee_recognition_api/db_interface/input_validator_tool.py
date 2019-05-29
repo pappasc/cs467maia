@@ -285,8 +285,152 @@ class InputValidatorTool:
             logging.info('returning {}'.format(result))
             return result
 
+    def check_users_exist(self, authorizing_user_id, receiving_user_id):
+        """Check that the users involved in award exist
+
+        Arguments:
+            authorizing_user_id:    int. ID of authorizing user
+            receiving_user_id:      int. ID of receiving user
+
+        Returns:
+            True if both users exist
+            error dictionary if a user does not exist
+                will either return error re: authorizing_user_id or 
+                error re: receiving_user_id. Won't return both errors at this time.
+        """
+        # Query database to determine if user ids exist, and continue if so; otherwise, return errors
+        logging.info('awards_api: checking if user_ids {} and {} exist'.format(receiving_user_id, authorizing_user_id))
+        query = QueryTool(connection_data)
+        result1 = query.get_by_id('users', {
+            'user_id': authorizing_user_id 
+        })    
+        result2 = query.get_by_id('users', {
+            'user_id': receiving_user_id
+        })
+        
+        # Check authorizing user_id, if result had errors then return those errors
+        try: 
+            if result1['errors'] is not None:
+                status_code = 400
+                logging.info('awards_api.check_users_exist(): {}'.format(result1))
+                result = result1
+        # If authorizing_user_id result did not have errors, check receiving_user_id 
+        except KeyError:
+            try: 
+                if result2['errors'] is not None: 
+                    logging.info('awards_api.check_users_exist(): returning {}'.format(result2))
+                    result = result2
+            except KeyError:
+                logging.info('awards_api: user_ids found')
+                result = True
+
+        query.disconnect()
+        return result 
+
+    def check_award_does_not_exist(self, type_string, awarded_datetime):
+        """Check the employee of the month/week awards do not 
+            already exist in the time period associated with our award
+            Example: 
+                - If award of type 'month' is awarded on '2019-05-01 0:00:00'
+                    then checks that no other 'month' awards exist in May 2019.
+                - If award of type 'week' is awarded on '2019-05-01 0:00:00'
+                    then checks that no other 'week' awards exist from Mon, April 29 2019
+                    to Sun, May 5, 2019.
+        Arguments: 
+            type_string:        string. 'month', 'year'
+            awarded_datetime:   string. 'YYYY-mm-DD HH:MM:SS'
+
+        Returns:
+            True if no awards are found in the time period
+
+        """
+        query = QueryTool(connection_data)
+        # Check if more awards are acceptable during time period 
+        result = True # default is to accept the award
+
+        # Employee of the Month
+        if type_string == 'month': 
+            # Identify date range for month to compare against
+            month = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').month
+            year = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').year
+
+            # Find existing awards during month range identified. If found, return errors and do not continue
+            greater = str(datetime.datetime(year, month, 1, 0, 0, 0, 0))
+            
+            # Handle December differently (can't just add 1 to 12)
+            if month == 12: 
+                lesser_month = 1
+            else: 
+                lesser_month = month + 1 
+            lesser = str(datetime.datetime(year, lesser_month, 1, 0, 0, 0))
+            
+            blob = { 
+                'awarded_datetime': {
+                    'greater': greater, 
+                    'lesser': lesser 
+                }, 
+                'type': 'month'
+            }
+            existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
+            logging.info('awards_api.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
+
+            # If awards found, return an error dictionary. Otherwise continue.
+            if len(existing_awards['award_ids']) != 0:
+                logging.info('awards_api.check_award_does_not_exist(): Awards found during time period')
+                result = {'errors': [{'field': 'type', 'message': 'too many awards of month type in time period'}]}
+            else: 
+                logging.info('awards_api.check_award_does_not_exist(): No awards found during time period')
+
+        # Employee of the Week
+        elif type_string == 'week':
+            # Determine what day of the week our day is 
+            # 1 2 3 4 5 6 7
+            # M T W T F S S
+            parsed_datetime = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S')
+            weekday_number = parsed_datetime.isoweekday()
+            year = parsed_datetime.year
+            month = parsed_datetime.month
+            day = parsed_datetime.day 
+            logging.info('awards_api.check_award_does_not_exist(): weekday_number is {}'.format(weekday_number))
+
+            # Get the beginning and end of week based on this
+
+
+            beg_of_week = datetime.datetime(year, month, day, 0, 0, 0) - datetime.timedelta(days=weekday_number - 1)
+            end_of_week = datetime.datetime(year, month, day, 0, 0, 0) + datetime.timedelta(days=8 - weekday_number)
+            logging.info('awards_api.check_award_does_not_exist(): beginning of week: {}'.format(beg_of_week))
+            logging.info('awards_api.check_award_does_not_exist(): end of week: {}'.format(end_of_week))
+
+            # Query database for awards that exist in this week time period
+            greater = str(beg_of_week)
+            lesser = str(end_of_week)
+            blob = { 
+                'awarded_datetime': {
+                    'greater': greater, 
+                    'lesser': lesser 
+                }, 
+                'type': 'week'
+            }
+            logging.info('blob: {}'.format(blob))
+            existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
+            logging.info('awards_api.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
+            
+            # If awards found, return error dictionary. Otherwise continue.
+            if len(existing_awards['award_ids']) != 0:
+                logging.info('awards_api.check_award_does_not_exist(): Awards found during time period')
+                result = {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}
+            else: 
+                logging.info('awards_api.check_award_does_not_exist(): No awards found during time period')
+
+        query.disconnect()
+        return result
 
 # [1] https://stackabuse.com/converting-strings-to-datetime-in-python/                                        re: parsing timestamp/datetime
 # [2] https://stackoverflow.com/questions/8056496/python-get-unicode-string-size                             re: len()
 # [3] https://www.afternerd.com/blog/python-string-contains/                                                re: contains string
 # [4] https://stackoverflow.com/questions/41862525/valueerror-time-data-does-not-match-format-y-m-d-hms-f     re: use of ValueError as an exception to catch for time validation
+# [5] https://docs.python.org/2/library/datetime.html                                                           re: datetime obj
+# [6] https://stackoverflow.com/questions/19480028/attributeerror-datetime-module-has-no-attribute-strptime     re: use of strptime
+# [7] https://stackoverflow.com/questions/2600775/how-to-get-week-number-in-python                              re: isocalendar
+# [8] https://stackoverflow.com/questions/6871016/adding-5-days-to-a-date-in-python?rq=1                        re: using timedelta
+# [9] https://stackoverflow.com/questions/19216334/python-give-start-and-end-of-week-data-from-a-given-date     re: ideas on how to accomplish getting first and last day of a week

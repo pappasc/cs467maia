@@ -2,11 +2,9 @@ from flask import Blueprint, request, Response
 import os 
 import logging
 import json
-from ..award_interface.builder import Builder
-from ..award_interface.interpreter import Interpreter
 from ..db_interface.query_tool import QueryTool 
 from ..db_interface.query_bucket_tool import QueryBucketTool
-from awards import create_pdf
+from ..award_interface.award_driver import AwardDriver
 
 if os.environ.get('ENV') != 'local':
     from google.appengine.api import urlfetch
@@ -52,14 +50,15 @@ def test_awards_create_pdf():
                 'type': 'week',
             }]
         }
-        # Sad path doesn't make sense to test, because the create_pdf function is already given good data.
+        # Sad path doesn't make sense to test, because the driver.create_pdf function expects to get vetted data.
 
         # For each test case in happy path
         for tc in data['happy_path']:
             logging.debug('tests_api: Testing create_pdf() Happy Path')
 
+            driver = AwardDriver(False)
             # Run create_pdf() with email off
-            result = create_pdf(tc, False)
+            result = driver.create_pdf(connection_data, tc)
 
             # If create_pdf() failed, then the test failed
             if result is not True:
