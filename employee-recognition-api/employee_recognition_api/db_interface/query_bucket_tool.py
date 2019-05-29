@@ -7,7 +7,10 @@ if os.environ.get('ENV') != 'local':
 import logging
 
 class QueryBucketTool:
+    """Queries Google App Engine Storage Bucket
 
+        Note: Generally uses more catch-all Exceptions because Google App Engine seems less predictable
+    """
     def __init__(self):
         self.bucket_path = '/cs467maia-backend.appspot.com'
 
@@ -41,6 +44,9 @@ class QueryBucketTool:
     def post(self, file_path, content, content_type):
         """Write file to Google App Engine storage bucket
 
+        Only ever use this for temporary file storage, since we can't write to the App Engine instance, or
+        for long-term signature image storage as it's not best practice to store entire images in SQL databases.
+
         Arguments:
             self
             file_path:      string. '{folder}/{filename}'. no leading slash
@@ -54,6 +60,7 @@ class QueryBucketTool:
             logging.info('QueryBucketTool.post(): writing file to storage bucket')
 
             # Open write connection to cloud storage bucket
+            # Not using chunks because we're working with small enough files
             connection = cloudstorage.open('/cs467maia-backend.appspot.com/{}'.format(file_path), mode='w', content_type='{}'.format(content_type))
             
             # Write raw file data & close connection to bucket
