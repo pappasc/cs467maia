@@ -14,7 +14,7 @@ Scenario: POST, GET, DELETE /image, 200
     Then the result is success
 
 Scenario: POST /pdf, 200
-   	When I make an AWS POST /pdf request
+    When I make an AWS POST /pdf request
     Then I get a status code of 200
     Then the result is a PDF
 
@@ -24,8 +24,8 @@ Scenario: GET /image, 400
     Then the result is failure
 
 Scenario: POST /pdf, 400 
-	When I make a bad AWS POST /pdf request
-	Then I get a status code of 400 
-	Then the result is empty
+    When I make a bad AWS POST /pdf request
+    Then I get a status code of 400 
+    Then the result is empty
 
 # DELETE doesn't have a 400 response at this time
