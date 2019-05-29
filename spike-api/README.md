@@ -1,6 +1,6 @@
 # spike-api
 
-This folder contains code for the spike API created during Week 3. 
+This folder contains code for the spike API created during Weeks 3 and 7. We're only submitting this as proof of the spike -- it's not part of what is hosted on the Google App Engine or Amazon AWS instance.
 
 
 ## results of spike
