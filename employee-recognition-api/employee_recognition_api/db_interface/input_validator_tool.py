@@ -1,6 +1,8 @@
 import logging 
 import datetime
 import json
+import os
+from query_tool import QueryTool
 
 class InputValidatorTool:
     """Validates inputs to the employee-recognition-api.
@@ -14,6 +16,18 @@ class InputValidatorTool:
         Returns: void
         """
         logging.info('InputValidatorTool.__init__(): creating InputValidatorTool instance')  
+        # Define connection data
+        connection_name = 'cs467maia-backend:us-west1:employee-recognition-database'
+        if os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == 'local': 
+            connection_name = '127.0.0.1'
+        self.connection_data = { 
+            'environment': os.environ.get('ENV'),
+            'username': 'api_user', 
+            'password': 'tj348$', 
+            'database': 'maia',
+            'connection_name': '{}'.format(connection_name) 
+        }
+
 
     def template_response(self, field):
         """Creates a template error response to be added to 'errors' list and 
@@ -300,7 +314,7 @@ class InputValidatorTool:
         """
         # Query database to determine if user ids exist, and continue if so; otherwise, return errors
         logging.info('awards_api: checking if user_ids {} and {} exist'.format(receiving_user_id, authorizing_user_id))
-        query = QueryTool(connection_data)
+        query = QueryTool(self.connection_data)
         result1 = query.get_by_id('users', {
             'user_id': authorizing_user_id 
         })    
@@ -344,7 +358,7 @@ class InputValidatorTool:
             True if no awards are found in the time period
 
         """
-        query = QueryTool(connection_data)
+        query = QueryTool(self.connection_data)
         # Check if more awards are acceptable during time period 
         result = True # default is to accept the award
 

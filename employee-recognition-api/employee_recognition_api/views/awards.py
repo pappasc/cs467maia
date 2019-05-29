@@ -94,7 +94,7 @@ def awards_post():
     data = json.loads(request.data)
     ivt = InputValidatorTool()
     query = QueryTool(connection_data)
-    driver = AwardDriver(True)
+    driver = AwardDriver(connection_data, True)
 
     # Validate the data provided
     result = ivt.validate_awards(data)
@@ -122,7 +122,7 @@ def awards_post():
     try: 
         if post_result['award_id']: 
             data['award_id'] = post_result['award_id']
-            if driver.create_pdf(connection_data, data) is not True: 
+            if driver.create_pdf(data) is not True: 
                 logging.info('awards_api: Failed to make and email PDF')
                 status_code = 200 # status code should be 200 regardless of the result of create_pdf, only based on POST to DB result
             else: 
@@ -147,12 +147,11 @@ def awards_post_no_email():
     data = json.loads(request.data)
     ivt = InputValidatorTool()
     query = QueryTool(connection_data)
-    driver = AwardDriver(False)
+    driver = AwardDriver(connection_data, False)
 
     # Validate the data provided
     result = ivt.validate_awards(data)
     if result is not None:
-        query.disconnect() 
         return Response(json.dumps(result), status=400, mimetype='application/json')
     
     # Check both users exist

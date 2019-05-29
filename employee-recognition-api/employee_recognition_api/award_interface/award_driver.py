@@ -8,28 +8,29 @@ class AwardDriver:
         create PDF award & email out to receiving user
     """
 
-    def __init__(self, email_on=True):
+    def __init__(self, connection_data, email_on=True):
         """Initializes AwardDriver by setting email_on variable
 
         Arguments:
             self
+            connection_data: dictionary. connection data to interact with database.
             email_on: boolean. default is True. True = emails sent. False = emails not sent.
         """
         self.email_on = True 
+        self.connection_data = connection_data
 
-    def create_pdf(self, connection_data, request_data): 
+    def create_pdf(self, data): 
         """Build, interpret, and distribute PDF award
 
         Arguments: 
             self
-            connection_data: dictionary. connection data to interact with database.
-            request_data:    dictionary. POST award request data.
+            data:    dictionary. POST award request data.
 
         Returns: 
             True if email was successful. False if unsuccessful.
         """
         # Set up instances of helper classes
-        builder = Builder(connection_data, data['type'])
+        builder = Builder(self.connection_data, data['type'])
         interpreter = Interpreter()
         distributer = Distributer(data['award_id'])
 
@@ -61,7 +62,7 @@ class AwardDriver:
 
             # Show we sent email in database -- even if we're using no-email
             if email_successful is True: 
-                distributed_updated = distributer.update_distributed_in_database(connection_data)
+                distributed_updated = distributer.update_distributed_in_database(self.connection_data)
 
         # Clean-up PDF from bucket
         if email_successful is True: 
