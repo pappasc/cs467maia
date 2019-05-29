@@ -56,9 +56,9 @@ def test_awards_create_pdf():
         for tc in data['happy_path']:
             logging.debug('tests_api: Testing create_pdf() Happy Path')
 
-            driver = AwardDriver(False)
+            driver = AwardDriver(connection_data, False)
             # Run create_pdf() with email off
-            result = driver.create_pdf(connection_data, tc)
+            result = driver.create_pdf(tc)
 
             # If create_pdf() failed, then the test failed
             if result is not True:

@@ -16,7 +16,7 @@ class AwardDriver:
             connection_data: dictionary. connection data to interact with database.
             email_on: boolean. default is True. True = emails sent. False = emails not sent.
         """
-        self.email_on = True 
+        self.email_on = email_on 
         self.connection_data = connection_data
 
     def create_pdf(self, data): 

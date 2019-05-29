@@ -174,7 +174,7 @@ def awards_post_no_email():
     try: 
         if post_result['award_id']: 
             data['award_id'] = post_result['award_id']
-            if driver.create_pdf(connection_data, data) is not True: 
+            if driver.create_pdf(data) is not True: 
                 logging.info('awards_api: Failed to make and email PDF')
                 status_code = 200 # TODO: This should change 
             else: 
