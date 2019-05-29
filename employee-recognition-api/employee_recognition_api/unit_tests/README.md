@@ -9,8 +9,10 @@
 	- Test views: ```python -m unittest.employee_recognition_api.unit_tests.views.test_views```
 	- Test db_interface QueryTool: ```python -m unittest.employee_recognition_api.unit_tests.db_interface.test_query_tool```
 	- Test db_interface InputValidatorTool: ```python -m unittest.employee_recognition_api.unit_tests.db_interface.test_input_validator_tool```
-	- Test awrad_interface Builder: 
+	- Test award_interface Builder: 
 	```python -m unittest employee_recognition_api.unit_tests.award_interface.test_builder```
+	- Test award_interface Distributer: 
+	```python -m unittest employee_recognition_api.unit_tests.award_interface.test_distributer```
 
 ## Note
 There are several classes that do not have unit tests becase it isn't feasible to test them in a local environment -- particularly, those classes that use cloudstorage or google.appengine.api libraries. 
