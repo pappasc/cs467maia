@@ -29,6 +29,7 @@ class TestBuilder(unittest.TestCase):
             request = { 
                 'authorizing_user_id': 1,
                 'receiving_user_id': 2,
+                'awarded_datetime': '2019-04-27 10:00:00',
                 'award_id': 1,
             }
             result = builder_tool.query_database_for_data(request)

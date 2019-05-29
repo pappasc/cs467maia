@@ -63,7 +63,7 @@ class TestQueryTool(unittest.TestCase):
             'authorizing_user_id': 1,
             'receiving_user_id': 2, 
             'type': 'week', 
-            'distributed': False, 
+            'distributed': True, 
             'awarded_datetime': '2019-04-27 10:00:00'
         })
 
@@ -194,7 +194,7 @@ class TestQueryTool(unittest.TestCase):
             'receiving_user_id': 2, 
             'type': 'week',
             'awarded_datetime': '2018-04-01 00:00:00', 
-            'distributed': False
+            'distributed': True
         }
 
         for column in filters:

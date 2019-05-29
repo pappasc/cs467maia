@@ -311,5 +311,61 @@ class TestInputValidatorTool(unittest.TestCase):
 
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
     
+    def test_check_users_exist(self):
+        """Tests check_users_exist() 
+
+        Arguments: self
+        """
+        logging.debug('Test: check_users_exist()')
+
+        happy_path = [[1, 2], [2, 1]]
+        sad_path = [[1, 10000000], [1000000, 1], [100000, 100000]]
+
+        # Check each happy path TC returns True
+        for tc in happy_path:
+            logging.debug('HAPPY TC: {}'.format(tc))
+            response = self.input_validator.check_users_exist(tc[0], tc[1])
+            self.assertEquals(response, True, msg='Response was not True: {}'.format(response))
+
+        # Check each sad path TC returns an error dict
+        for tc in sad_path: 
+            logging.debug('SAD TC: {}'.format(tc))
+            response = self.input_validator.check_users_exist(tc[0], tc[1])
+            self.assertEquals(len(response['errors']), 1, msg='Response was did not have 1 error: {}'.format(response))
+
+    def test_check_award_does_not_exist(self):
+        """Tests check_award_does_not_exist()
+
+        Arguments: self
+        """
+        logging.debug('Test: check_award_does_not_exist()')
+
+        happy_path = [ 
+            {'type': 'week', 'datetime': '2019-04-29 00:00:00'}, 
+            {'type': 'week', 'datetime': '2019-04-21 11:59:59'}, 
+            {'type': 'month', 'datetime': '2019-05-01 0:00:00'}, 
+            {'type': 'month', 'datetime': '2019-04-27 10:00:00'},
+            {'type': 'month', 'datetime': '2019-03-31 11:59:59'}
+        ]
+
+        sad_path = [ 
+            {'type': 'week', 'datetime': '2019-04-27 08:00:00'}, 
+            {'type': 'week', 'datetime': '2019-04-28 11:59:59'},
+            {'type': 'week', 'datetime': '2019-04-22 00:00:00'},
+        ]
+        # Based on the fact that award 1 will be in the DB with weekly award / awarded_datetime 2019-04-07 10:00:00
+        
+        # Check each happy path TC returns True
+        for tc in happy_path: 
+            logging.debug('HAPPY TC: {}'.format(tc))
+            response = self.input_validator.check_award_does_not_exist(tc['type'], tc['datetime'])
+            self.assertEquals(response, True, msg='Response was not True: {}'.format(response))
+
+        # Check each sad path TC returns an error dict
+        for tc in sad_path: 
+            logging.debug('SAD TC: {}'.format(tc))
+            response = self.input_validator.check_award_does_not_exist(tc['type'], tc['datetime'])
+            self.assertEquals(response, {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}, msg='Response was not the correct error: {}'.format(response))
+
 if __name__ == '__main__': 
     unittest.main()
