@@ -1,50 +1,77 @@
-\documentclass{article}
+\documentclass{extarticle}
+\usepackage{extsizes}
 \usepackage{graphicx}
+
+% Specify margin of page
 \topmargin .25in
+
 % Take out headers
 \pagestyle{empty}
 
 \begin{document}
 
+% In center of page, print 'Employee of the {Type}'
 \begin{center}
-{\fontsize{50}{60}\selectfont Employee of the Type}
+% Use fontsize 35.83 with base-line skip 50
+{\fontsize{35.83}{50}\selectfont Employee of the Type}
 \end{center}
 
+% .25 cm of empty vertical space
 \vskip .25cm
 
+% In center of page, print a straight line 
 \begin{center}
 \rule{12cm}{0.5pt}
 \end{center}
 
+% .5 cm of empty vertical space
 \vskip .5cm
 
+% In center of page, print 'The Maia Group would like to honor'
 \begin{center}
-{\fontsize{12}{15}\selectfont The Maia Group would like to honor}
+% Use fontsize 14.4 with base-line skip 18
+{\fontsize{14.4}{18}\selectfont The Maia Group would like to honor}
 \end{center}
 
+% 2 cm of empty vertical space
 \vskip 2cm
 
+% In center of page, print '{ReceiveFirstName} {ReceiveLastName}' 
 \begin{center}
-{\fontsize{40}{50}\selectfont ReceiveFirstName ReceiveLastName}
+% Use fontsize 30 with base-line skip 40
+{\fontsize{30}{40}\selectfont ReceiveFirstName ReceiveLastName}
 \end{center}
 
+% .25 cm of empty vertical space
 \vskip .25cm
 
+% In center of page, print 'on {Month}, {Day}, {Year}'
 \begin{center}
-{\fontsize{12}{15}\selectfont on Month Day, Year}
+% Use fontsize 14.4 with base-line skip 18
+{\fontsize{14.4}{18}\selectfont on Month Day, Year}
 \end{center}
 
+% 4 cm of empty vertical space
 \vskip 4cm
 
-%\begin{flushright}
-%\includegraphics[width=8cm,height=4cm, keepaspectratio]{/app/SignaturePath}
-%\end{flushright}
+% In the center of the page..
+\begin{center}
+% Print Maia logo, which is a square shape logo, with size 4cm x 4cm 
+\includegraphics[width=4cm,height=4cm, keepaspectratio]{app/maia.jpg}
+% 2 cm of empty vertical space so each image appears to be left or right justified
+\hskip 2cm
+% Print signature image file, which is NOT a square shape and should roughly be 8cm x 4cm
+\includegraphics[width=8cm,height=4cm, keepaspectratio]{app/SignaturePath}
+\end{center}
 
+% Right-justified line of 5 cm in length, .5pt thick
 \begin{flushright}
 \rule{5cm}{0.5pt}
 \end{flushright}
 
+% Right-justified on page, print 'Nominated By {AuthorizeFirstName} {AuthorizeLastName}'
 \begin{flushright}
+% Use fontsize 12 with base-line skip 15
 {\fontsize{12}{15}\selectfont Nominated By AuthorizeFirstName AuthorizeLastName}
 \end{flushright}
 \end{document}
@@ -57,3 +84,6 @@
 % [5] https://tex.stackexchange.com/questions/371286/draw-a-horizontal-line-in-latex/371469 		re: Use of \rule 			
 % [6] https://tex.stackexchange.com/questions/135134/how-to-add-an-empty-line-between-paragraphs 	re: control of line breaks				
 % [7] https://tex.stackexchange.com/questions/47245/set-a-maximum-width-and-height-for-an-image 	re: limiting size of image
+% [8] https://tex.stackexchange.com/questions/74353/what-commands-are-there-for-horizontal-spacing 	re: horizontal spacing
+% [9] Recommendations from TexMaker when using Tools->PDFLaTeX to render PDF 						re: font sizes to choose
+% [10] https://tex.stackexchange.com/questions/371983/some-definitions-parskip-baselineskip-topskip	re: clarifications on \baselineskip
