@@ -45,6 +45,27 @@
 								<td align="center">{{created_timestamp}}</td>
                 					 </tr>
 						{{/each}}
+							<tr></tr>
+							<tr>
+								<td align="center">Date/time to award:</td>
+								<td align="center">Date: <input type="date" id="awarddate" name="awarddate" value="2019-04-01" min="2000-01-01" max="2100-12-31"></td>
+								<td align="center">Time: <select class="timepicker" name="timepicker">
+									    <option value="1:00:00">1:00</option>
+									    <option value="2:00:00">2:00</option>
+									    <option value="3:00:00">3:00</option>
+									    <option value="4:00:00">4:00</option>
+									    <option value="5:00:00">5:00</option>
+									    <option value="6:00:00">6:00</option>
+									    <option value="7:00:00">7:00</option>
+									    <option value="8:00:00">8:00</option>
+									    <option value="9:00:00">9:00</option>
+									    <option value="10:00:00">10:00</option>
+									    <option value="11:00:00">11:00</option>
+									    <option value="12:00:00">12:00</option></select>
+								<select class="meridianpicker" name="meridianpicker">
+									    <option value="AM">AM</option>
+									    <option value="PM">PM</option></select></td>
+							</tr>
 					</table>
 					<div>Award Type:
 					<select class="typepicker" name="typepicker">

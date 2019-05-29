@@ -50,6 +50,7 @@ module.exports = function(){
 		}
 	    })
 	    .catch(function (err) {
+		console.log(err);
 		return null;
 	    });
     }
@@ -83,14 +84,16 @@ module.exports = function(){
 	    });
     }
 
-    router.createAward = function createAward (awardType, receivingUser, authorizingUser) {
-	var d = new Date,
+    router.createAward = function createAward (awardType, receivingUser, authorizingUser, awarddate, timepicker, meridianpicker) {
+	/*var d = new Date,
 		timestamp = [d.getFullYear(),
 			     d.getMonth()+1,
 			     d.getDate()].join('-')+' '+
 		[d.getHours(),
 		 d.getMinutes(),
-		 d.getSeconds()].join(':');
+		 d.getSeconds()].join(':');*/
+
+	var timestamp = awarddate + " " + timepicker;
 	
 	var newAward = {
 	    authorizing_user_id: authorizingUser,
@@ -231,7 +234,7 @@ module.exports = function(){
     router.post('/', function (req,res) {
 	if (req.isAuthenticated()) {
 	    if (req.user.type == 'user') {
-		router.createAward(req.body.typepicker, req.body.employee, req.user.user_id)
+		router.createAward(req.body.typepicker, req.body.employee, req.user.user_id, req.body.awarddate, req.body.timepicker, req.body.meridianpicker)
 		    .then(function (createReturn) {
 			if (createReturn) {
 			    res.redirect(303, '/awards');
