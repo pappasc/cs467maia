@@ -84,7 +84,7 @@ def test_awards_create_pdf():
                 query_bucket_tool = QueryBucketTool()
                 result = query_bucket_tool.get('awards/award_1.pdf')
 
-                if result == True: 
+                if result is not None: 
                     test_results.append({'test': tc['test'], 'result' : 'failure: award was not deleted'})
                 else: 
                     logging.debug('tests_api: award removed successfully from storage bucket')
