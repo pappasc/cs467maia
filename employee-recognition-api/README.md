@@ -19,8 +19,8 @@ Natasha Kvavle
 employee-recognition-api will send the following status codes in these situations:
 - 200: successful api request & response
 - 400: malformed api request, or api request can't be performed (i.e. trying to select, update, or delete something that doesn't exist)
-- 401: stretch goal, implemented if api keys are implemented 
-- 403: stretch goal, user / admin attempts to access api they don't have access to 
+- 401: stretch goal, implemented if api keys are implemented [ not implemented ]
+- 403: stretch goal, user / admin attempts to access api they don't have access to [ not implemented ] 
 - 500: internal service error (service isn't up)
 
 ## Endpoints
@@ -312,24 +312,30 @@ If time allows, I will be implementing some way to prevent anyone but the maia g
 ### re: Setting Up Environment
 13. https://cloud.google.com/appengine/docs/standard/python/quickstart 
 14. https://console.cloud.google.com/appengine/start/deploy?language=python&environment=standard&project=maia-backend&organizationId=717626756570
-15. https://github.com/pypa/pip/issues/3826#issuecomment-232080694        re: use of --system to get pip install of third party libraries to work
+15. https://github.com/pypa/pip/issues/3826#issuecomment-232080694                                                  re: use of --system to get pip install of third party libraries to work
 16. http://www.tug.org/texlive/quickinstall.html re: downloading LaTeX binary
+17. https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                            re: can't run storage bucket commands in dev w/o access token
+18. https://github.com/GoogleCloudPlatform/python-docs-samples/issues/853                                           re: some google tools are not expected to run locally, so cloudstorage may be one of those
 
 ### re: General References for employee-recognition-api 
-16. https://www.python.org/dev/peps/pep-0008/
-17. https://docs.python.org/3.3/tutorial/classes.html
-18. https://docs.python.org/3/tutorial/datastructures.html
-19. https://docs.python.org/2/tutorial/classes.html
-20. https://stackoverflow.com/questions/3434581/accessing-a-class-member-variables-in-python
-21. https://stackoverflow.com/questions/456481/cant-get-python-to-import-from-a-different-folder    re: \__init\__.py usage
-22. https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27             re: libraries to use
-23. https://github.com/pallets/flask-sqlalchemy                                                     re: how to use flask-sqlalchemy, source for flask-sqlalchemy lib copied into project 
-24. https://docs.python.org/2/library/logging.html                                                  re: logging
-25. https://stackoverflow.com/questions/415511/how-to-get-the-current-time-in-python                re: getting current time in python
-26. https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27         re: downloading & using third-party libraries in app engine
-27. https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project         re: removing git repo from 3rd party libraries
-28. https://stackoverflow.com/questions/3128393/google-app-engine-logging-in-dev-console            re: how to log to console
-29. http://flask.pocoo.org/docs/1.0/api/#incoming-request-data                                      re: use of request.data for getting body of POST request
-30. https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/appengine/standard/storage/appengine-client/requirements.txt re: requirements for storage client lib
-31. https://github.com/dkalpakchi/rel_import/blob/master/__init__.py  								re: \__init\__.py usage
-32. https://www.google.com/search?q=signature&client=ubuntu&hs=Se2&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiW1ejUua7iAhXHilQKHRVrAuoQ_AUIDigB&biw=635&bih=385#imgrc=2OON3FzNBqcOVM: re: test signature
+19. https://www.python.org/dev/peps/pep-0008/
+20. https://docs.python.org/3.3/tutorial/classes.html
+21. https://docs.python.org/3/tutorial/datastructures.html
+22. https://docs.python.org/2/tutorial/classes.html
+23. https://stackoverflow.com/questions/3434581/accessing-a-class-member-variables-in-python
+24. https://stackoverflow.com/questions/456481/cant-get-python-to-import-from-a-different-folder    re: \__init\__.py usage
+25. https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27             re: libraries to use
+26. https://github.com/pallets/flask-sqlalchemy                                                     re: how to use flask-sqlalchemy, source for flask-sqlalchemy lib copied into project 
+27. https://docs.python.org/2/library/logging.html                                                  re: logging
+28. https://stackoverflow.com/questions/415511/how-to-get-the-current-time-in-python                re: getting current time in python
+29. https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27         re: downloading & using third-party libraries in app engine
+30. https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project         re: removing git repo from 3rd party libraries
+31. https://stackoverflow.com/questions/3128393/google-app-engine-logging-in-dev-console            re: how to log to console
+32. http://flask.pocoo.org/docs/1.0/api/#incoming-request-data                                      re: use of request.data for getting body of POST request
+33. https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/appengine/standard/storage/appengine-client/requirements.txt re: requirements for storage client lib
+34. https://github.com/dkalpakchi/rel_import/blob/master/__init__.py  								re: \__init\__.py usage
+35. https://www.google.com/search?q=signature&client=ubuntu&hs=Se2&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiW1ejUua7iAhXHilQKHRVrAuoQ_AUIDigB&biw=635&bih=385#imgrc=2OON3FzNBqcOVM: re: example signature jpg to use for tests
+36. https://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files                   re: file I/O
+37. https://docs.python.org/2/library/datetime.html                                                 re: datetime
+38. https://www.programiz.com/python-programming/methods/built-in/bytes                             re: use of bytes()
+39. https://cloud.google.com/appengine/docs/standard/python/issue-requests                          re: code example for using urlfetch

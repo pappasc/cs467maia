@@ -1,3 +1,4 @@
+# test_input_validator_tool
 import datetime
 import json
 import logging
@@ -7,7 +8,9 @@ import unittest
 import os 
 
 class TestInputValidatorTool(unittest.TestCase): 
-
+    """Test InputValidatorTool class
+    """
+    
     @classmethod
     def setUpClass(cls):
         """Sets up TestInputValidatorTool class

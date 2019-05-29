@@ -1,9 +1,12 @@
+# interp_steps.py
+# step definitions for interpreter.feature, testing interpreter-api directly
 from behave import given, when, then, step
 import requests
 import json
 import logging
 import datetime
 
+# global-level variables
 url = 'http://54.203.128.106:80/'
 logging.basicConfig(filename='IntegrationTest-Interpreter-{}.log'.format(datetime.datetime.now()), level=logging.INFO)
 
@@ -59,6 +62,6 @@ def check_result(self, value):
     elif value == 'empty':
         assert self.r.content is '', 'result was not empty: {}'.format(self.r.content)
 
-# [1] https://stackoverflow.com/questions/6186980/determine-if-a-byte-is-a-pdf-file re: determine if a file is PDF
+# [1] https://stackoverflow.com/questions/6186980/determine-if-a-byte-is-a-pdf-file re: byte string to use to determine if a file is PDF
 # [2] https://realpython.com/python-requests/                                       re: using result.content
 # [3] https://www.geeksforgeeks.org/python-bytearray-function/                      re: Dealing with bytes

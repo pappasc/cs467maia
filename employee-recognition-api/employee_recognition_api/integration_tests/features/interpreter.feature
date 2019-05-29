@@ -1,5 +1,5 @@
+# interpreter.feature
 @interp
-
 Feature: Integration Tests - INTERPRETER (Amazon AWS)
 
 Scenario: POST, GET, DELETE /image, 200

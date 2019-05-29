@@ -1,7 +1,8 @@
-# Note: Separating out signature endpoint from other endpoints
+# users_signature.py
+# Note: Originally separated out signature endpoint from other endpoints
 #       as a workaround to errors surrounding importing cloudstorage package. 
-#       This issue only arises locally when trying to create modules, and is well-documented 
-#       as a common issue online and may actually be expected when running locally. 
+#       Now only keeping separate since functionality is considerably different 
+#       from other /users endpoints (since cloudstorage dependencies were moved elsewhere)
 
 from flask import Blueprint, request, Response
 import os 
@@ -9,9 +10,6 @@ from ..db_interface.query_bucket_tool import QueryBucketTool
 
 # Allow users_sig_api to be accessible from main.py
 users_sig_api = Blueprint('users_sig_api', __name__)
-
-if os.environ.get('ENV') != 'local':
-    import cloudstorage 
 
 import logging
 import pymysql
@@ -30,9 +28,10 @@ connection_data = {
     'connection_name': '{}'.format(connection_name) 
 }
 
+# PUT /users/<user_id>/signature
 @users_sig_api.route('/users/<int:user_id>/signature', methods=['PUT'])
 def users_signature(user_id): 
-    """ Handle GET /users/<user_id>/signature
+    """ Handle PUT /users/<user_id>/signature
     
     Arguments: 
         user_id: int. Default is None. URL Parameter. 
@@ -54,22 +53,20 @@ def users_signature(user_id):
         except KeyError:
             if result['errors']:
                 status_code = 400 
-                logging.info('users.py: returning {}'.format(result))
-                logging.info('users.py: status code {}'.format(status_code))
+                logging.info('users.py: returning result {}'.format(result))
+                logging.info('users.py: returning status code {}'.format(status_code))
                 return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
         # Write image to Google Cloud Storage
-        logging.info('users_signature.py (users_signature()): writing to cloud storage')
-
         query_bucket_tool = QueryBucketTool()
         write_result = query_bucket_tool.post('signatures/{}'.format(filename), request.data, 'image/jpeg')
         
         # If write is successful, return user_id; otherwise return errors
         if write_result == True:
+            logging.info('users.py: returning result {}'.format(result))
+            logging.info('users.py: returning status code {}'.format(status_code))
             return Response(json.dumps({'user_id': '{}'.format(user_id)}), status=200, mimetype='application/json')
         else: 
+            logging.info('users.py: returning result {}'.format(result))
+            logging.info('users.py: returning status code {}'.format(status_code))
             return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error: {}'.format(e)}]}), status=400, mimetype='application/json')
-
-# References
-# [1] http://flask.pocoo.org/docs/1.0/patterns/fileuploads/                                                                 re: file upload
-# [2] https://stackoverflow.com/questions/22351254/python-script-to-convert-image-into-byte-array                           re: code example for reading image into byte array 

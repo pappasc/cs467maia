@@ -1,5 +1,6 @@
+# admins.feature
+@admins
 Feature: Integration Tests - ADMINS
-
 
 # 200 OK
 Scenario Outline: GET /admins, 200

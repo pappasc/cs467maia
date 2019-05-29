@@ -12,6 +12,9 @@
 	- Test awrad_interface Builder: 
 	```python -m unittest employee_recognition_api.unit_tests.award_interface.test_builder```
 
+## Note
+There are several classes that do not have unit tests becase it isn't feasible to test them in a local environment -- particularly, those classes that use cloudstorage or google.appengine.api libraries. 
+
 ## References 
 1. https://docs.python.org/2.7/library/unittest.html
 2. https://docs.python.org/2.7/library/unittest.html#unittest.TestCase.setUp

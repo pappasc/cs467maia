@@ -1,9 +1,12 @@
+# views_steps.py
+# step definitions for admins, awards, users.feature, testing employee-recognition-api directly
 from behave import given, when, then, step
 import requests
 import json
 import logging
 import datetime
 
+# global-level variables
 url = 'https://cs467maia-backend.appspot.com'
 logging.basicConfig(filename='IntegrationTest-Views-{}.log'.format(datetime.datetime.now()), level=logging.INFO)
 
@@ -42,7 +45,7 @@ def make_post_request(self, endpoint, body):
         self.id_created = self.r.json()[key]    
     else: 
         self.id_created = None 
-    logging.info('ID Created: {}'.format(self.id_created))
+    logging.debug('ID Created: {}'.format(self.id_created))
 
 @when('I make another POST {endpoint} request with body {body}')
 def make_post_request_2(self, endpoint, body):
@@ -54,7 +57,7 @@ def make_post_request_2(self, endpoint, body):
         body: JSON obj. body of request to make
     """
     logging.debug('POST {}/{}'.format(url, endpoint))
-    logging.info('Body: {}'.format(body))
+    logging.debug('Body: {}'.format(body))
     if 'users' in endpoint: 
         key = 'user_id'
     elif 'admins' in endpoint: 
@@ -69,7 +72,7 @@ def make_post_request_2(self, endpoint, body):
         self.id_2_created = self.r.json()[key]  
     else: 
         self.id_2_created = None 
-    logging.info('ID Created: {}'.format(self.id_2_created))
+    logging.debug('ID Created: {}'.format(self.id_2_created))
 
 
 @when('I make a PUT {endpoint} request with body {body}')
@@ -81,8 +84,8 @@ def make_put_request(self, endpoint, body):
         endpoint: string. endpoint to make a request against.
         body: JSON obj. body of request to make
     """
-    logging.info('PUT {}/{}/{}'.format(url, endpoint, self.id_created))
-    logging.info('Body: {}'.format(body))
+    logging.debug('PUT {}/{}/{}'.format(url, endpoint, self.id_created))
+    logging.debug('Body: {}'.format(body))
     if self.id_created is not None: 
         self.r = requests.put('{}/{}/{}'.format(url, endpoint, self.id_created), data=body, headers={'Content-Type': 'application/json'})
 
@@ -95,8 +98,8 @@ def make_put_login_request(self, endpoint, body):
         endpoint: string. endpoint to make a request against.
         body: JSON obj. body of request to make
     """
-    logging.info('PUT {}/{}/{}/login'.format(url, endpoint, self.id_created).strip())
-    logging.info('Body: {}'.format(body))
+    logging.debug('PUT {}/{}/{}/login'.format(url, endpoint, self.id_created).strip())
+    logging.debug('Body: {}'.format(body))
     if self.id_created is not None: 
         self.r = requests.put('{}/{}/{}/login'.format(url, endpoint, self.id_created).strip(), data=body, headers={'Content-Type': 'application/json'})
 
@@ -108,7 +111,7 @@ def make_delete_request(self, endpoint):
         self
         endpoint: string. endpoint to make a request against.
     """
-    logging.info('URL: {}/{}'.format(url, endpoint))
+    logging.debug('URL: {}/{}'.format(url, endpoint))
     self.r = requests.delete('{}/{}'.format(url, endpoint))
 
 @then('I get a status code of {status_code}')
@@ -119,7 +122,6 @@ def get_status_code(self, status_code):
         self
         status_code: int. Expected status code.
     """
-    logging.info('STATUS: {}'.format(self.r.status_code))
     assert int(self.r.status_code) == int(status_code), 'status_code: {}'.format(self.r.status_code)
 
 @then('the result has keys {keys}')
@@ -177,5 +179,6 @@ def clean_up(self, endpoint):
         key = 'admin_id'
     elif endpoint == 'awards': 
         key = 'award_id'
+    logging.debug('URL: {}/{}/{}'.format(url, endpoint, self.id_created))
     result = requests.delete('{}/{}/{}'.format(url, endpoint, self.id_created))
     assert result.json()[key] is None, 'result: {}'.format(result.json()[key]) 

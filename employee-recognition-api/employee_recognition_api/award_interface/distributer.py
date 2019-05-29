@@ -1,3 +1,4 @@
+# distributer.py
 import logging
 from ..db_interface.query_bucket_tool import QueryBucketTool
 from ..db_interface.query_tool import QueryTool 
@@ -19,7 +20,7 @@ class Distributer:
 
         Returns: N/A
         """
-        logging.info('Distributer.__init__(): initializing Distributer class')
+        logging.debug('Distributer.__init__(): initializing Distributer class')
         self.file_name = 'award_{}.pdf'.format(award_id)
         self.award_id = award_id
 
@@ -37,7 +38,7 @@ class Distributer:
         """
 
         # Send email
-        logging.info('Distributer.email_receiving_user(): sending email to the receiving_user at {}'.format(email_address))
+        logging.debug('Distributer.email_receiving_user(): sending email to the receiving_user at {}'.format(email_address))
         try: 
             mail.send_mail(
                 sender='<Maia Group> kvavlen@oregonstate.edu',
@@ -49,15 +50,14 @@ class Distributer:
                 """,
                 attachments=[('EmployeeOfThe{}.pdf'.format(type_string.capitalize()), attachment_bytes)]
             )
-
+            logging.debug('Distributer.email_receiving_user(): email was successful')
             # Return True on success
             return True 
 
         # Capture BadRequestError, it's unlikely any other exceptions will occur
         except mail_errors.BadRequestError as e:
-            logging.info('Distributer.email_receiving_user(): something went wrong, email was not successful')
+            logging.info('Distributer.email_receiving_user(): email was not successful')
             logging.exception(e)
-
             # Return False on failure
             return False
 
@@ -67,7 +67,7 @@ class Distributer:
         Arguments: self
         Returns: True if successful, False is failure
         """
-        logging.info('Distributer.delete_award_from_bucket(): deleting {} from storage bucket'.format(self.file_name))
+        logging.debug('Distributer.delete_award_from_bucket(): deleting {} from storage bucket'.format(self.file_name))
         
         # Call helper function to delete the award (named with award_id) from storage bucket
         query_bucket_tool = QueryBucketTool()
@@ -93,7 +93,7 @@ class Distributer:
         """
 
         # Update entry distributed column to 'true' based on award_id
-        logging.info('Distributer.update_award_distributed(): updating distributed boolean in awards database')
+        logging.debug('Distributer.update_award_distributed(): updating distributed boolean in awards database')
         query_tool = QueryTool(connection_data)
         data = {
             'award_id': self.award_id
@@ -104,10 +104,12 @@ class Distributer:
         try: 
             # If successful, return True
             if int(result['award_id']) == self.award_id:
+                logging.debug('Distributer.update_award_distributed(): updating distributed boolean was successful')
                 return True 
 
         # If unsuccessful, return False
         except KeyError as e:
+            logging.info('Distributer.update_award_distributed(): updating distributed boolean was not successful')
             logging.exception(e)
             return False
 

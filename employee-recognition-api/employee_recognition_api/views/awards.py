@@ -1,3 +1,4 @@
+# awards.py
 from flask import Blueprint, request, Response
 import datetime 
 import logging
@@ -22,8 +23,6 @@ connection_data = {
     'database': 'maia',
     'connection_name': '{}'.format(connection_name) 
 }
-
-
 
 @awards_api.route('/awards', methods=['GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])

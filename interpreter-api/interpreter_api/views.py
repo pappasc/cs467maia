@@ -1,3 +1,4 @@
+# views.py
 import json
 import os
 import logging
@@ -12,29 +13,39 @@ def image(signature_path):
 	# POST /image/<signature_path>
 	# Saves an image to disk with signature_path as filename
 	if request.method == 'POST':  
-		logging.info('interpreter_api.image(): saving image {}'.format(signature_path))
+		logging.debug('interpreter_api.image(): saving image {}'.format(signature_path))
 		try: 
 			image = open(signature_path, 'w')
 			image.write(request.data)
+			logging.debug('interpreter_api.image(): POST was successful')
 			return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
 		except IOError as e: 
+			logging.info('interpreter_api.image(): POST was not successful')
 			logging.exception('interpeter_api.image(): {}'.format(e))
 			return Response(json.dumps({'result': 'failure'}), status=400, mimetype='application/json')
 	# DELETE /image/<signature_path>
 	# Deletes image with signature_path as filename
 	elif request.method == 'DELETE': 
-		logging.info('interpeter_api.image(): deleting image {}'.format(signature_path))
-		os.remove(signature_path)
-		return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
+		logging.debug('interpreter_api.image(): deleting image {}'.format(signature_path)) 
+		try: 
+			os.remove(signature_path)
+			logging.debug('interpreter_api.image(): DELETE was successful')
+			return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
+		except IOError as e: 
+			logging.info('interpreter_api.image(): DELETE was not successful')
+			logging.exception('interpreter_api.image(): {}'.format(e))
+			return Response(json.dumps({'result': 'failure'}), status=400, mimetype='application/json')
 	# GET /image/<signature_path>
 	# Simply tells us if image exists
 	elif request.method == 'GET': 
-		logging.info('interpeter_api.image(): retrieving image {}'.format(signature_path))
+		logging.debug('interpeter_api.image(): retrieving image {}'.format(signature_path))
 		try: 
 			image = open(signature_path, 'r')
+			logging.debug('interpreter_api.image(): GET was successful')
 			return Response(json.dumps({'result': 'success'}), status=200, mimetype='application/json')
 		except IOError as e: 
-			logging.exception('interpeter_api.image(): {}'.format(e))
+			logging.info('interpreter_api.image(): GET was not successful')
+			logging.exception('interpreter_api.image(): {}'.format(e))
 			return Response(json.dumps({'result': 'failure'}), status=400, mimetype='application/json')
 
 # POST /pdf
@@ -43,8 +54,10 @@ def pdf():
 	try: 
 		logging.info('interpreter_api.pdf(): building pdf')
 		pdf = build_pdf(request.data)
+		logging.debug('interpreter_api.pdf(): PDF creation was successful')
 		return Response(bytes(pdf), status=200, mimetype='application/pdf')
 	except LatexBuildError as e: 
+		logging.info('interpreter_api.pdf(): PDF creation was not successful')
 		logging.exception(e) 
 		return Response(None, status=400, mimetype='application/pdf')
 
@@ -52,6 +65,7 @@ if __name__ == '__main__':
 	# Host 0.0.0.0 because we're in a container
 	interpreter_api.run(host='0.0.0.0', port=8080)
 
+# References
 # [1] https://cloud.google.com/appengine/docs/standard/python/tools/using-local-server re: pdb
 # [2] https://guides.lib.wayne.edu/latex/compiling 																re: bypassing latex lib
 # [3] https://stackoverflow.com/questions/2559076/how-do-i-redirect-output-to-a-variable-in-shell 				re: redirecting file to var

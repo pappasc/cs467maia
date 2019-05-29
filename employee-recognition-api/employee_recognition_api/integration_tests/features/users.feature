@@ -1,3 +1,5 @@
+# users.feature
+@users
 Feature: Integration Tests - USERS
 # Skipping PUT /users/<user_id>/signature, as this would be a highly complex automated test.
 

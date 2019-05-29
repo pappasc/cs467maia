@@ -1,3 +1,4 @@
+# query_bucket_tool.py
 import os
 if os.environ.get('ENV') != 'local':
     import cloudstorage 
@@ -30,8 +31,10 @@ class QueryBucketTool:
             connection.close()
 
             # Return bytes of image if successful
+            logging.debug('QueryBucketTool.get(): retrieving file from storage bucket was successful')
             return bytes(file_contents)
         except NotFoundError as e: 
+            logging.info('QueryBucketTool.get(): retrieving file from storage bucket was not successful')
             logging.exception(e)
             return None
 
@@ -58,27 +61,40 @@ class QueryBucketTool:
             connection.close()
 
             # Return True if successful
+            logging.debug('QueryBucketTool.delete(): writing file to storage bucket was successful')
             return True
 
         # Return False if any exceptions raised / unsuccessful
         except Exception as e:
+            logging.info('QueryBucketTool.post(): writing file to storage bucket was not successful')
             logging.exception(e) 
             return False
 
     def delete(self, file_path):
+        """Delete file from Google App Engine storage bucket
+
+        Arguments:
+            self
+            file_path:      string. '{folder}/{filename}'. no leading slash
+        
+        Returns: 
+            True if successful, False if unsuccessful
+        """
         # Attempt deletion of file_path
         try:      
-            logging.info('QueryBucketTool.delete(): deleting file from storage bucket')
+            logging.debug('QueryBucketTool.delete(): deleting file from storage bucket')
             cloudstorage.delete('{}/{}'.format(self.bucket_path, file_path))
-            logging.info('QueryBucketTool.delete(): deleting file from storage bucket was successful')
+            logging.debug('QueryBucketTool.delete(): deleting file from storage bucket was successful')
             # Return True if successful
             return True
 
         # Return False if no file to delete in the first place / unsuccessful
         except NotFoundError as e: 
+            logging.info('QueryBucketTool.delete(): deleting file from storage bucket was not successful')
             logging.exception(e)
             return False
         except Exception as e:
+            logging.info('QueryBucketTool.delete(): deleting file from storage bucket was not successful')
             logging.exception(e)
             return False
 
@@ -96,4 +112,3 @@ class QueryBucketTool:
 # [10] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/setting-up-cloud-storage            re: how to run dev_appserver with default bucket name
 # [11] https://cloud.google.com/appengine/docs/standard/python/googlecloudstorageclient/functions#open                      re: leading / before bucket name
 # [12] https://stackoverflow.com/questions/51179455/issue-with-using-cloudstorage-module-in-python                          re: help finding correct lib
-# [13] https://github.com/GoogleCloudPlatform/python-docs-samples/issues/853                                                re: some google tools are not expected to run locally, so cloudstorage may be one of those

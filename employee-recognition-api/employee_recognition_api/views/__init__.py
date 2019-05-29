@@ -1,3 +1,4 @@
+# __init__.py
 from . import admins
 from . import awards
 from . import main

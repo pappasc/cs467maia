@@ -7,7 +7,8 @@ import unittest
 import os 
 
 class TestQueryTool(unittest.TestCase): 
-
+    """Test QueryTool class
+    """
     @classmethod
     def setUpClass(cls): 
         """Sets up class for unit tests, creating query variable & 

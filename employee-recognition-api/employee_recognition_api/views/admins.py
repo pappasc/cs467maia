@@ -1,5 +1,7 @@
+# admins.py
 from flask import Blueprint, request, Response
 import os 
+import logging
 import json
 from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
@@ -117,7 +119,9 @@ def admins(admin_id=None):
         except KeyError:
             status_code = 200
 
-    query.disconnect() 
+    query.disconnect()
+    logging.info('admins_api: returning result {}'.format(result))
+    logging.info('admins_api: returning status code {}'.format(status_code)) 
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
 @admins_api.route('/admins/<int:admin_id>/login', methods=['GET', 'PUT'])
@@ -167,4 +171,6 @@ def admins_login(admin_id):
             status_code = 400
         
     query.disconnect()
+    logging.info('admins_api: returning result {}'.format(result))
+    logging.info('admins_api: returning status code {}'.format(status_code)) 
     return Response(json.dumps(result), status=status_code, mimetype='application/json')

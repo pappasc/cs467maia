@@ -26,5 +26,5 @@ Data on Amazon AWS is stored in volume at:
 
 
 ## References
-1. https://www.ybrikman.com/writing/2015/11/11/running-docker-aws-ground-up/ re: setup ec2 and install docker 
-2. https://docs.docker.com/storage/volumes/#start-a-service-with-volumes re: use of volumes
+1. https://www.ybrikman.com/writing/2015/11/11/running-docker-aws-ground-up/    re: setup ec2 and install docker 
+2. https://docs.docker.com/storage/volumes/#start-a-service-with-volumes        re: use of volumes

@@ -1,3 +1,4 @@
+# test_distributer.py
 import datetime
 import logging
 import unittest
@@ -5,9 +6,13 @@ from ...award_interface.distributer import Distributer
 from ...db_interface.query_tool import QueryTool
 
 class TestDistributer(unittest.TestCase):
-
+    """Test Distributer class
+    """
+	
     @classmethod
     def setUp(cls): 
+		"""Set up test
+		"""
         logging.basicConfig(filename='TestBuilder-{}.log'.format(datetime.datetime.now()), level=logging.DEBUG)
         cls.connection_data = { 
             'environment': 'dev',
@@ -18,8 +23,9 @@ class TestDistributer(unittest.TestCase):
         }
 
     def test_update_distributed_in_database(self): 
-
-    	logging.debug('Test: update_distributed_in_database')
+        """Tests updated_distributed_in_database()
+        """
+        logging.debug('Test: update_distributed_in_database')
 
     	# Post a test award (without any validation)
     	query = QueryTool(self.connection_data)
