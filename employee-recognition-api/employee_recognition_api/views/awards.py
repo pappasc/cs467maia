@@ -175,7 +175,7 @@ def awards_post_no_email():
             data['award_id'] = post_result['award_id']
             if driver.create_pdf(data) is not True: 
                 logging.info('awards_api: Failed to make and email PDF')
-                status_code = 200 # TODO: This should change 
+                status_code = 200 
             else: 
                 status_code = 200 
     except KeyError as e:
