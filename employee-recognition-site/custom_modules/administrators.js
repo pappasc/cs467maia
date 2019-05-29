@@ -5,7 +5,7 @@ module.exports = function(){
     
     function getAdmins(req){
         var options = {
-          uri: 'https://maia-backend.appspot.com/admins', 
+          uri: 'https://cs467maia-backend.appspot.com/admins', 
           json: true,
         };
 
