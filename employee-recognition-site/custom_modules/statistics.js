@@ -3,6 +3,7 @@ module.exports = function(){
     var router  = express.Router();
     const rp    = require('request-promise');
     
+    //Determine the number of awards by Authorizers
     function getAwardsBy(){
         var optUsers = {
             uri: 'https://cs467maia-backend.appspot.com/users',
@@ -12,7 +13,11 @@ module.exports = function(){
         return rp(optUsers).then(function (users) {
             var type = [];
             var vals = [];
+            var wks  = [];
+            var mos  = [];
             var ret  = [];
+            var week = 0;
+            var month = 0;
             var awardby = 0;
                             
             //users.user_ids.forEach(function(user){
@@ -29,16 +34,26 @@ module.exports = function(){
                     type.push(user.first_name + ' ' + user.last_name)
 
                     awardby = 0;
+                    week    = 0;
+                    month   = 0;
                     awards.award_ids.forEach(function(award){
                         if (award.authorizing_user_id == user.user_id){
                            awardby++;
+                            if (award.type == "week"){
+                                week++;
+                            }
+                            else{
+                                month++;   
+                            }
                         }
                     });
-                    console.log(awardby);
+                    //console.log(awardby);
                     vals.push(awardby);
+                    wks.push(week);
+                    mos.push(month);
                 });
                 
-                ret  = [type,vals];
+                ret  = [type,vals,wks,mos];
                 console.log(ret);
 
                 return ret;
@@ -59,7 +74,11 @@ module.exports = function(){
         return rp(optUsers).then(function (users) {
             var type = [];
             var vals = [];
+            var wks  = [];
+            var mos  = [];
             var ret  = [];
+            var week = 0;
+            var month = 0;
             var awardtocnt = 0;
                             
             var optRecvby = {
@@ -71,16 +90,27 @@ module.exports = function(){
                 users.user_ids.forEach(function(user){
                     type.push(user.first_name + ' ' + user.last_name);
                     
-                    awardtocnt = 0;
+                    //initialize counts
+                    awardtocnt  = 0;
+                    week        = 0;
+                    month       = 0;
                     awards.award_ids.forEach(function(award){
                         if (award.receiving_user_id == user.user_id){
                             awardtocnt++;
+                            if (award.type == "week"){
+                                week++;
+                            }
+                            else{
+                                month++;   
+                            }
                         }
                     });
                     vals.push(awardtocnt);
+                    wks.push(week);
+                    mos.push(month);
                 });
                 
-                ret = [type,vals];
+                ret  = [type,vals,wks,mos];
                 console.log(ret);
                 
                 return ret;
@@ -128,7 +158,6 @@ module.exports = function(){
     
     router.get('/', function(req,res){
         var context = {};
-        //context.jsscripts = ["showOverview.js", "showAssignBy.js", "showByReceipt.js","gotoHome.js"];
         context.jsscripts = ["gotohome.js", "statsOverview.js", "statsAssignBy.js", "statsRecvBy.js"];
         context.needQuery = true;
         res.status(200).render('statspage',context);        
@@ -147,7 +176,7 @@ module.exports = function(){
         console.log(req.body);
         
         getAwardsBy(req).then(function (byStat){
-            console.log('Overview1: ' + byStat);
+            //console.log('Overview1: ' + byStat);
             res.send(byStat);
         });
     });

@@ -72,6 +72,10 @@ th{
 	
 }
 
+div.wrapperpane{
+    width:80%;
+    overflow: hidden;
+}
 div.leftpane{
     width:33%;
     min-width: 200px;
@@ -79,25 +83,33 @@ div.leftpane{
     min-height: 200px;
     float:left;
     padding-right: 10px;
+    border: 1px;
 }
 
 div.midpane{
-    width: 33%;
-    min-width: 200px;
+    width: 25%;
+    min-width: 100px;
     height: available;
     min-height: 200px;
     float:left;
     padding-right: 10px;
     padding-left: 50px;
+    border-left: 5px;
     position: relative;
+    display: inline-block;
 }
 
 div.rightpane{
-    width: available;
-    min-width: 200px;
+    width: 25%;
+    min-width: 100px;
     height: available;
-    position: relative;
-    float:right;
+    min-height: 200px;
+    padding-right: 10px;
+    padding-left: 50px;
+    border-left: 5px;
+    position:relative;
+    float:left;
+    display: inline-block;
 }
 
 #Congrats{
@@ -273,14 +285,6 @@ input#SigPath{
 	
 }
 
-/*
-div.spacer{
-	
-	display:inline-block;
-	width:10px;
-	
-}
-*/
 .column-wrap{
 	align-content: center;
 	width: 100%;
