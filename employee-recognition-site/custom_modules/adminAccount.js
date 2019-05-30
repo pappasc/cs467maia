@@ -16,7 +16,7 @@ module.exports = function(){
     
     function getAdminPwd(id){
         var options = {
-            uri: 'https://maia-backend.appspot.com/admins/' + id + '/login',
+            uri: 'https://cs467maia-backend.appspot.com/admins/' + id + '/login',
             json: true,
             resolveWithFullResponse: true
         };
@@ -87,7 +87,7 @@ module.exports = function(){
             
             var options ={
                 method: "POST",
-                uri: "https://maia-backend.appspot.com/admins",
+                uri: "https://cs467maia-backend.appspot.com/admins",
                 body: adminBody,
                 json: true,
                 resolveWithFullResponse: true                
@@ -134,7 +134,7 @@ module.exports = function(){
             
             var options = {
                 method: "PUT",
-                uri: "https://maia-backend.appspot.com/admins/" + req.body.adminId,
+                uri: "https://cs467maia-backend.appspot.com/admins/" + req.body.adminId,
                 body: adminBody,
                 json: true,
                 resolveWithFullResponse: true
@@ -163,7 +163,7 @@ module.exports = function(){
         if (req.isAuthenticated()){
             var options = {
                 method: "DELETE",
-                uri: "https://maia-backend.appspot.com/admins/" + req.body.adminId,
+                uri: "https://cs467maia-backend.appspot.com/admins/" + req.body.adminId,
                 body: "",
                 json: true,
                 resolveWithFullResponse: true

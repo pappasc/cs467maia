@@ -90,6 +90,7 @@ app.use('/employees', require('./custom_modules/employees.js'));
 app.use('/admin', require('./custom_modules/adminAccount.js'));
 app.use('/admins', require('./custom_modules/administrators.js'));
 app.use('/newaccount', require('./custom_modules/newaccount.js'));
+app.use('/stats', require('./custom_modules/statistics.js'));
 
 //If the user tries navigating to a non-supplied page
 app.use(function(req,res){
