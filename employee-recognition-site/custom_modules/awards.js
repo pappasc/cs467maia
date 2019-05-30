@@ -93,7 +93,26 @@ module.exports = function(){
 		 d.getMinutes(),
 		 d.getSeconds()].join(':');*/
 
-	var timestamp = awarddate + " " + timepicker;
+	var timeHolder = timepicker;
+
+	if (meridianpicker == "PM" && parseInt(timepicker, 10) < 12) {
+	    timeHolder = parseInt(timepicker, 10) + 12;
+	}
+	else if (meridianpicker == "AM" && parseInt(timepicker, 10) == 12) {
+	    timeHolder = 0;
+	}
+	else {
+	    timeHolder = parseInt(timepicker, 10);
+	}
+
+	if (timeHolder < 10) {
+	    timeHolder = "0" + timeHolder + ":00:00";
+	}
+	else {
+	    timeHolder = timeHolder + ":00:00";
+	}
+	
+	var timestamp = awarddate + " " + timeHolder;
 	
 	var newAward = {
 	    authorizing_user_id: authorizingUser,
@@ -110,17 +129,24 @@ module.exports = function(){
 	    resolveWithFullResponse: true
 	}
 
+	var contextReturn = {};
+	
 	return rp(options)
 	    .then(function (saveReturn) {
 		if (saveReturn.statusCode == 200) {
-		    return true;
+		    contextReturn.success = true;
+		    return contextReturn;
 		}
 		else {
-		    return false;
+		    contextReturn.success = false;
+		    contextReturn.errorMessage = saveReturn.response.body.errors[0].message;
+		    return contextReturn;
 		}
 	    })
 	    .catch(function (saveReturn) {
-		return false;
+		contextReturn.errorMessage = saveReturn.response.body.errors[0].message;
+		contextReturn.success = false;
+		return contextReturn;
 	    });
     }
 
@@ -236,7 +262,7 @@ module.exports = function(){
 	    if (req.user.type == 'user') {
 		router.createAward(req.body.typepicker, req.body.employee, req.user.user_id, req.body.awarddate, req.body.timepicker, req.body.meridianpicker)
 		    .then(function (createReturn) {
-			if (createReturn) {
+			if (createReturn.success) {
 			    res.redirect(303, '/awards');
 			}
 			else {
@@ -255,12 +281,14 @@ module.exports = function(){
 					context.create = true;
 					context.createError = true;
 					context.error = false;
+					context.errorMessage = createReturn.errorMessage;
 					res.status(200).render('awardspage', context);
 				    }
 				    else {
 					context.create = true;
 					context.error = true;
 					context.createError = true;
+					context.errorMessage = createReturn.errorMessage;
 					res.status(200).render('awardspage', context);
 				    }
 				})
