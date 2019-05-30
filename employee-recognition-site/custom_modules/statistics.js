@@ -162,7 +162,7 @@ module.exports = function(){
     //No Stat Types selected
     router.get('/', function(req,res){
         var context = {};
-        context.jsscripts = ["gotohome.js", "statsOverview.js", "statsAssignBy.js", "statsRecvBy.js"];
+        context.jsscripts = ["gotoHome.js", "statsOverview.js", "statsAssignBy.js", "statsRecvBy.js"];
         context.needQuery = true;
         res.status(200).render('statspage',context);        
     });
