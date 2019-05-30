@@ -13,78 +13,81 @@ module.exports = function(){
             var type = [];
             var vals = [];
             var ret  = [];
+            var awardby = 0;
                             
-            users.user_ids.forEach(function(user){
-                type.push(user.first_name + ' ' + user.last_name);
+            //users.user_ids.forEach(function(user){
+            //    type.push(user.first_name + ' ' + user.last_name);
                 
-                var options = {
-                    uri: 'https://cs467maia-backend.appspot.com/awards/authorize/'+ user.user_id,
-                    json: true
-                }; 
-                console.log(options);
-                return rp(options).then(function(awards){
-                    var byaward = awards.award_ids.length;
-                    //console.log("in awards:" + awards.award_ids);
-                    //awards.award_ids.forEach(function(award){
-                    //    Console.log("award: " + award);
-                    //    byaward++;   
-                    //});
-                    console.log(byaward);
-                    vals.push(byaward);
-                    return vals;
-                })
-                .catch(function (err){
-                    vals.push(0);  
+            var options = {
+                uri: 'https://cs467maia-backend.appspot.com/awards',
+                json: true
+            }; 
+            console.log(options);
+            return rp(options).then(function(awards){
+                users.user_ids.forEach(function(user){
+                    
+                    type.push(user.first_name + ' ' + user.last_name)
+
+                    awardby = 0;
+                    awards.award_ids.forEach(function(award){
+                        if (award.authorizing_user_id == user.user_id){
+                           awardby++;
+                        }
+                    });
+                    console.log(awardby);
+                    vals.push(awardby);
                 });
                 
+                ret  = [type,vals];
+                console.log(ret);
+
+                return ret;
+
+            })
+            .catch(function (err){
+                vals.push(0);  
             }); 
-            
-            ret  = [type,vals];
-            
-            console.log(ret);
-            
-            return type;
-        });        
+        });         
     }
     
     function getRecvBy(){
-        console.log("in recvd");
         var optUsers = {
             uri: 'https://cs467maia-backend.appspot.com/users',
             json: true
         };
         
-        return rp(optUsers).then(function (tousers) {
+        return rp(optUsers).then(function (users) {
             var type = [];
             var vals = [];
             var ret  = [];
+            var awardtocnt = 0;
                             
-            tousers.user_ids.forEach(function(touser){
-                type.push(touser.first_name + ' ' + touser.last_name);
-                
-                var optRecvby = {
-                    uri: 'https://cs467maia-backend.appspot.com/awards/receive/'+ touser.user_id,
-                    json: true
-                }; 
-                
-                return rp(optRecvby).then(function(awardsto){
-                    var awardtocnt = 0;
-                    awardsto.award_ids.forEach(function(award){
-                        awardtocnt++;   
+            var optRecvby = {
+                uri: 'https://cs467maia-backend.appspot.com/awards',
+                json: true
+            }; 
+
+            return rp(optRecvby).then(function(awards){
+                users.user_ids.forEach(function(user){
+                    type.push(user.first_name + ' ' + user.last_name);
+                    
+                    awardtocnt = 0;
+                    awards.award_ids.forEach(function(award){
+                        if (award.receiving_user_id == user.user_id){
+                            awardtocnt++;
+                        }
                     });
                     vals.push(awardtocnt);
-                    return vals;
-                })
-                .catch(function(err){
-                    vals.push(0);
                 });
-            }); 
-            
-            ret  = [type,vals];
-            
-            console.log(ret);
-            
-            return ret;
+                
+                ret = [type,vals];
+                console.log(ret);
+                
+                return ret;
+            })
+            .catch(function(err){
+                vals.push(0);
+            });
         });        
     }
     

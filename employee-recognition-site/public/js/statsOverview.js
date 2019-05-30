@@ -17,9 +17,10 @@ function statsOverview(){
         
         // Set chart options
         var options = {'title':'Number of awards by Type',
-                       'is3D':true,
-                       'width':400,
-                       'height':300};
+                       //'is3D':true,
+                       'pieHole': 0.3,
+                       'width': 500,
+                       'height': 500};
 
         // Instantiate and draw our chart, passing in some options.
         var chart = new google.visualization.PieChart(document.getElementById('chart_div'));

@@ -18,8 +18,8 @@ function statsAssignedBy(){
         // Set chart options
         var options = {'title':'Number of awards Awarded By',
                        'is3D':true,
-                       'width':400,
-                       'height':300};
+                       'width':600,
+                       'height':600};
 
         // Instantiate and draw our chart, passing in some options.
         var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
