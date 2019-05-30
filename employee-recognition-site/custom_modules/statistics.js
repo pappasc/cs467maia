@@ -10,6 +10,7 @@ module.exports = function(){
             json: true
         };
         
+        //Get All users
         return rp(optUsers).then(function (users) {
             var type = [];
             var vals = [];
@@ -20,22 +21,21 @@ module.exports = function(){
             var month = 0;
             var awardby = 0;
                             
-            //users.user_ids.forEach(function(user){
-            //    type.push(user.first_name + ' ' + user.last_name);
-                
             var options = {
                 uri: 'https://cs467maia-backend.appspot.com/awards',
                 json: true
             }; 
-            console.log(options);
+            //console.log(options);
+            
+            //Get all awards
             return rp(options).then(function(awards){
                 users.user_ids.forEach(function(user){
-                    
                     type.push(user.first_name + ' ' + user.last_name)
 
                     awardby = 0;
                     week    = 0;
                     month   = 0;
+                    //Find all awards a specific user gave
                     awards.award_ids.forEach(function(award){
                         if (award.authorizing_user_id == user.user_id){
                            awardby++;
@@ -47,17 +47,16 @@ module.exports = function(){
                             }
                         }
                     });
+                    //Push counts
                     //console.log(awardby);
                     vals.push(awardby);
                     wks.push(week);
                     mos.push(month);
                 });
-                
+                //Package arrays
                 ret  = [type,vals,wks,mos];
-                console.log(ret);
-
+                //console.log(ret);
                 return ret;
-
             })
             .catch(function (err){
                 vals.push(0);  
@@ -65,12 +64,13 @@ module.exports = function(){
         });         
     }
     
+    //Determine the number of awards by Receiver
     function getRecvBy(){
         var optUsers = {
             uri: 'https://cs467maia-backend.appspot.com/users',
             json: true
         };
-        
+        //Get All users
         return rp(optUsers).then(function (users) {
             var type = [];
             var vals = [];
@@ -85,7 +85,8 @@ module.exports = function(){
                 uri: 'https://cs467maia-backend.appspot.com/awards',
                 json: true
             }; 
-
+            
+            //Get all awards
             return rp(optRecvby).then(function(awards){
                 users.user_ids.forEach(function(user){
                     type.push(user.first_name + ' ' + user.last_name);
@@ -94,6 +95,7 @@ module.exports = function(){
                     awardtocnt  = 0;
                     week        = 0;
                     month       = 0;
+                    //Find all awards a specific user received
                     awards.award_ids.forEach(function(award){
                         if (award.receiving_user_id == user.user_id){
                             awardtocnt++;
@@ -105,13 +107,14 @@ module.exports = function(){
                             }
                         }
                     });
+                    //Push counts
                     vals.push(awardtocnt);
                     wks.push(week);
                     mos.push(month);
                 });
-                
+                //Package arrays
                 ret  = [type,vals,wks,mos];
-                console.log(ret);
+                //console.log(ret);
                 
                 return ret;
             })
@@ -121,12 +124,13 @@ module.exports = function(){
         });        
     }
     
+    //Retrieve all Awards and sort by type
     function getAwardsBytype(){
         var options = {
             uri: 'https://cs467maia-backend.appspot.com/awards',
             json: true
         };
-        console.log(options);
+        //console.log(options);
         return rp(options).then(function (awards) {
             var type = [];
             var vals = [];
@@ -149,13 +153,13 @@ module.exports = function(){
             vals = [week,month];
             ret  = [type,vals];
             
-            console.log("Week:" + week + " Month: " + month);
-            console.log(ret);
+            //console.log(ret);
             
             return ret;
         });        
     }
     
+    //No Stat Types selected
     router.get('/', function(req,res){
         var context = {};
         context.jsscripts = ["gotohome.js", "statsOverview.js", "statsAssignBy.js", "statsRecvBy.js"];
@@ -163,27 +167,26 @@ module.exports = function(){
         res.status(200).render('statspage',context);        
     });
     
+    //General award data by Type
     router.post('/Overview', function(req,res){
-        console.log(req.body);
-        
         getAwardsBytype(req).then(function(typeStat){
-            console.log('overview: ' + typeStat);
+            //console.log('overview: ' + typeStat);
             res.send(typeStat);
         });
     });
     
+    //Data by person giving awards
     router.post('/AwardedBy', function(req,res){
-        console.log(req.body);
-        
         getAwardsBy(req).then(function (byStat){
             //console.log('Overview1: ' + byStat);
             res.send(byStat);
         });
     });
     
+    //Data by person recieving awards
     router.post('/RecvBy', function(req,res){
         getRecvBy(req).then(function (toStat){
-            console.log('TO: ' + toStat);
+            //console.log('TO: ' + toStat);
             res.send(toStat);
         });
     });

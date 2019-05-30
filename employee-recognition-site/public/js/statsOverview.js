@@ -6,6 +6,7 @@ function statsOverview(){
         var data = new google.visualization.DataTable();
         var awards = req;
         
+        //Populate Data attributes
         data.addColumn('string', 'type');
         data.addColumn('number', 'value');
         
@@ -16,7 +17,7 @@ function statsOverview(){
         }
         
         // Set chart options
-        var options = {'title':'Number of awards by Type',
+        var options = {'title':'Percentage of awards by type',
                        //'is3D':true,
                        'pieHole': 0.3,
                        'width': 500,
@@ -27,6 +28,7 @@ function statsOverview(){
         chart.draw(data,options);
     }
         
+    //Ajax Call to get data from middleware
     $.ajax({
         url:'/stats/Overview',
         type: 'POST',

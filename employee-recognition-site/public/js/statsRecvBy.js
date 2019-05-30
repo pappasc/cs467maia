@@ -6,6 +6,7 @@ function statsRecvBy(){
         var data = new google.visualization.DataTable();
         var awards = req;
         
+        //Populate Data attributes
         data.addColumn('string', 'type');
         data.addColumn('number', 'value');
         
@@ -15,12 +16,13 @@ function statsRecvBy(){
         }
         
         // Set chart options
-        var options = {'title':'Number of awards Received By',
-                       'is3D': true,
+        var options = {'title':'Percentage of awards "Received By"',
+                       //'is3D':true,
+                       'pieHole': 0.3,
                        'width':500,
                        'height':500};
 
-        // Instantiate and draw our chart, passing in some options.
+        // Instantiate and draw our chart, passing in data and options.
         var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
         chart.draw(data,options);
     }
@@ -29,6 +31,7 @@ function statsRecvBy(){
         var data = new google.visualization.DataTable();
         var awards = req;
         
+        //Populate Data attributes
         data.addColumn('string', 'Employee');
         data.addColumn('number', 'Week');
         data.addColumn('number', 'Month');
@@ -38,8 +41,9 @@ function statsRecvBy(){
             data.addRow([awards[0][i],awards[2][i],awards[3][i]]);
         }
         
+        // Set chart options
         var options = {
-            chart: { 'title': 'Number of awards received by Type'},
+            chart: { 'title': 'Number of awards "Received By" by type'},
             hAxis: { 'title': 'Total awards by type', minValue:0,},
             vAxis: {'title': 'Employee'},
             legend: { position: 'bottom'},
@@ -48,11 +52,13 @@ function statsRecvBy(){
             height: 500
         };
         
+        // Instantiate and draw our chart, passing in data and options.
         var typeChart = new google.charts.Bar(document.getElementById('bar_div'));
         typeChart.draw(data, options);
         
     };
     
+    //Ajax Call to get data from middleware
     $.ajax({
         url:'/stats/RecvBy',
         type: 'POST',

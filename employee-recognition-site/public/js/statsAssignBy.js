@@ -6,6 +6,7 @@ function statsAssignedBy(){
         var data = new google.visualization.DataTable();
         var awards = req;
         
+        //Populate Data attributes
         data.addColumn('string', 'type');
         data.addColumn('number', 'value');
         
@@ -16,8 +17,9 @@ function statsAssignedBy(){
         }
         
         // Set chart options
-        var options = {'title':'Number of awards Awarded By',
-                       'is3D':true,
+        var options = {'title':'Percentage of awards "Awarded By"',
+                       //'is3D':true,
+                       'pieHole': 0.3,
                        'width':500,
                        'height':500};
 
@@ -30,6 +32,7 @@ function statsAssignedBy(){
         var data = new google.visualization.DataTable();
         var awards = req;
         
+        //Populate Data attributes
         data.addColumn('string', 'Employee');
         data.addColumn('number', 'Week');
         data.addColumn('number', 'Month');
@@ -39,8 +42,9 @@ function statsAssignedBy(){
             data.addRow([awards[0][i],awards[2][i],awards[3][i]]);
         }
         
+        // Set chart options
         var options = {
-            chart: { 'title': 'Number of awards Awarded by Type', bold:2},
+            chart: { 'title': 'Number of awards "Awarded By" by type', bold:2},
             hAxis: { 'title': 'Total awards by type', minValue:0,},
             vAxis: { 'title': 'Employee'},
             legend: { position: 'bottom'},
@@ -49,11 +53,12 @@ function statsAssignedBy(){
             height: 500
         };
         
+        // Instantiate and draw our chart, passing in data and options.
         var typeChart = new google.charts.Bar(document.getElementById('bar_div'));
-        typeChart.draw(data, options);
-        
+        typeChart.draw(data, options);        
     };
         
+    //Ajax Call to get data from middleware
     $.ajax({
         url:'/stats/AwardedBy',
         type: 'POST',
