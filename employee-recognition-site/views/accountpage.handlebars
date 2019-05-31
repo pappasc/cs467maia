@@ -15,11 +15,7 @@
                 </ul>
             </nav>
             <article>
-	    {{#if isView}}
-		{{#each errorMessage}}
-                    <div>{{field}} is {{message}}</div>
-		    {{/each}}
-                {{/if}}
+                    <div id="errorHolder"></div>
                 <table>
                     <tr>
                         <td>
@@ -72,4 +68,3 @@
         </section>
     </div>
 </div>
-	

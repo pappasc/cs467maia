@@ -7,12 +7,30 @@ function updateUser(userID){
     //rest of user's info for the full PUT request
     $.ajax({
         url: '/account',
-        type: 'PUT',
+        type: 'POST',
 	data: updatedUserInfo,
-        success: redirectHandle
+        success: redirectHandle,
+	error: errorHandle
     });
 };
 
 function redirectHandle () {
     location.reload(true);
+}
+
+function errorHandle (err) {
+    console.log(err);
+    
+    var errorHandle = document.getElementById("errorHolder");
+    while (errorHandle.firstChild) {
+	errorHandle.removeChild(errorHandle.firstChild);
+    }
+    var errorHolder = "Following errors occured: ";
+    var i;
+    for (i = 0; i < err.responseJSON.errorMessage.length; i++) {
+	errorHolder += err.responseJSON.errorMessage[i].field + " is " + err.responseJSON.errorMessage[i].message;
+	if ((i+1) < err.responseJSON.errorMessage.length) errorHolder += " and ";
+    }
+    var errorString = document.createTextNode(errorHolder);
+    errorHandle.appendChild(errorString);
 }

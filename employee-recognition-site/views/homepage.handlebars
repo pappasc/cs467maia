@@ -39,6 +39,10 @@
 						  Password:<br>
 						  <input type="password" name="password"><br><br>
 						  <input type="submit" value="Login">
+						  {{#if loginError}}
+						  <br>
+						  <div>Login error: One or more fields incorrect</div>
+						  {{/if}}
 						</form>
 					{{else}}
 						<ul>

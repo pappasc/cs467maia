@@ -18,13 +18,25 @@ module.exports = function(){
 	    json: true,
 	    resolveWithFullResponse: true
 	};
+
+	var contextReturn = {};
 	
 	return rp(options)
 	    .then(function (updateReturn) {
-		return updateReturn.statusCode;
+		if (updateReturn.statusCode == 200) {
+		    contextReturn.success = true;
+		    return contextReturn;
+		}
+		else {
+		    contextReturn.success = false;
+		    contextReturn.errorMessage = updateReturn.response.body.errors;
+		    return contextReturn;
+		}
 	    })
-	    .catch(function (err) {
-		return 500;
+	    .catch(function (updateReturn) {
+		contextReturn.success = false;
+		contextReturn.errorMessage = updateReturn.response.body.errors;
+		return contextReturn;
 	    });
     }
 
@@ -37,26 +49,12 @@ module.exports = function(){
 		context.firstName = req.user.first_name;
 		context.lastName = req.user.last_name;
 		context.signature = req.user.signature_path;
-		context.isView = true;
+		context.isView = false;
 		context.jsscripts = ["logoutUser.js", "gotoAwards.js", "updateUser.js", "gotoHome.js"];
-		res.status(200).render('userpage', context);
+		res.status(200).render('accountpage', context);
 	    }
 	    else if (req.user.type == 'admin'){
-		console.log(req.body);
-		getUser(req.body.user_id)
-		    .then(function (userProfile) {
-			context.userId = userProfile.user_id;
-			context.email = userProfile.email_address;
-			context.firstName = userProfile.first_name;
-			context.lastName = userProfile.last_name;
-			context.signature = userProfile.signature_path;
-			context.isView = false;
-			context.jsscripts = ["gotoEmployees.js", "saveUserInfo.js"];
-			res.status(200).render('userpage', context);
-		    })
-		    .catch(function (err) {
-			res.status(500).render('500');
-		    });
+		res.status(403).send("Error 403, not allowed to update user from this endpoint");
 	    }
 	    else {
 		res.status(500).render('500');
@@ -67,26 +65,40 @@ module.exports = function(){
 	}
     });
 
-    router.put('/', function (req, res) {
+    router.post('/', function (req, res) {
 	if (req.isAuthenticated ()){
-	    router.updateUser(req.body.first_name, req.body.last_name, req.user.signature_path, req.user.email_address, req.user.user_id)
-		.then(function (updateReturn) {
-		    if (updateReturn == 200) {
-			//Send a 303 status code so the browser handles the reload
-			//after the Ajax request with a GET request
-			res.redirect(303, '/account');
-		    }
-		    else if (updateReturn == 400) {
-			//Send the same error code received from the API
-			res.status(400).send("Malformed request. Contact administrator");
-		    }
-		    else {
-			res.status(500).send("API Error");
-		    }
-		})
-		.catch(function (err) {
-		    res.status(500).render('500');
-		});
+	    if (req.user.type == 'user') {
+		router.updateUser(req.body.first_name, req.body.last_name, req.user.signature_path, req.user.email_address, req.user.user_id)
+		    .then(function (updateReturn) {
+			if (updateReturn.success) {
+			    //Send a 303 status code so the browser handles the reload
+			    //after the Ajax request with a GET request
+			    res.redirect(303, '/account');
+			}
+			else {
+			    var context = {};
+			    //context.isView = true;
+			    //context.userId = req.user.user_id;
+			    //context.email = req.user.email_address;
+			    //context.firstName = req.user.first_name;
+			    //context.lastName = req.user.last_name;
+			    //context.signature = req.user.signature_path;
+			    context.errorMessage = updateReturn.errorMessage;
+			    //context.jsscripts = ["logoutUser.js", "gotoAwards.js", "updateUser.js", "gotoHome.js"];
+			    //console.log(context);
+			    res.status(400).send(context);
+			}
+		    })
+		    .catch(function (err) {
+			res.status(500).render('500');
+		    });
+	    }
+	    else if (req.user.type == 'admin') {
+		res.status(403).send("Error 403, not allowed to update user from this endpoint");
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
 	}
 	else {
 	    res.status(401).send("Error 401, need to be authenticated");

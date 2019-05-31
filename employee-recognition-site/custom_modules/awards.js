@@ -84,14 +84,7 @@ module.exports = function(){
 	    });
     }
 
-    router.createAward = function createAward (awardType, receivingUser, authorizingUser, awarddate, timepicker, meridianpicker) {
-	/*var d = new Date,
-		timestamp = [d.getFullYear(),
-			     d.getMonth()+1,
-			     d.getDate()].join('-')+' '+
-		[d.getHours(),
-		 d.getMinutes(),
-		 d.getSeconds()].join(':');*/
+    router.createAward = function createAward (awardType, receivingUser, authorizingUser, awarddate, timepicker, meridianpicker, sendEmail) {
 
 	var timeHolder = timepicker;
 
@@ -120,10 +113,18 @@ module.exports = function(){
 	    type: awardType,
 	    awarded_datetime: timestamp
 	};
+
+	var targetURI;
+	if (sendEmail) {
+	    targetURI = 'https://cs467maia-backend.appspot.com/awards';
+	}
+	else {
+	    targetURI = 'https://cs467maia-backend.appspot.com/awards/no-email';
+	}
 	
 	var options = {
 	    method: 'POST',
-	    uri: 'https://cs467maia-backend.appspot.com/awards/no-email',
+	    uri: targetURI,
 	    json: true,
 	    body: newAward,
 	    resolveWithFullResponse: true
@@ -260,7 +261,14 @@ module.exports = function(){
     router.post('/', function (req,res) {
 	if (req.isAuthenticated()) {
 	    if (req.user.type == 'user') {
-		router.createAward(req.body.typepicker, req.body.employee, req.user.user_id, req.body.awarddate, req.body.timepicker, req.body.meridianpicker)
+		var sendEmail;
+		if (req.body.sendemail == 'send') {
+		    sendEmail = true;
+		}
+		else {
+		    sendEmail = false;
+		}
+		router.createAward(req.body.typepicker, req.body.employee, req.user.user_id, req.body.awarddate, req.body.timepicker, req.body.meridianpicker, sendEmail)
 		    .then(function (createReturn) {
 			if (createReturn.success) {
 			    res.redirect(303, '/awards');

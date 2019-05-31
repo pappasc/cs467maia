@@ -51,11 +51,6 @@ require('./custom_modules/authentication.js');
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Dummy backend for now. Will port to different module later
-app.use('/users', require('./testCode/userProxyBackend.js'));
-//app.use('/admins', require('./testCode/adminProxyBackend.js'));
-app.use('/awardProxy', require('./testCode/awardProxyBackend.js'));
-
 app.get('/', function (req, res) {
     //Redirect straight to home
     res.redirect('/home');
@@ -64,7 +59,16 @@ app.get('/', function (req, res) {
 app.post('/login', function(req, res) {
     passport.authenticate('local', (err, user, info) => {
 	req.login(user, (err) => {
-	    return res.redirect('/home');
+	    //if login fails, user comes back as false, then we render the homepage with an error
+	    if (user == false) {
+		var context = {};
+		context.login = true;
+		context.loginError = true;
+		return res.status(200).render('homepage', context);
+	    }
+	    else {
+		return res.redirect('/home');
+	    }
 	})
     })(req, res);
 });
