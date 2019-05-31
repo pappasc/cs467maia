@@ -365,7 +365,7 @@ class TestInputValidatorTool(unittest.TestCase):
         for tc in sad_path: 
             logging.debug('SAD TC: {}'.format(tc))
             response = self.input_validator.check_award_does_not_exist(tc['type'], tc['datetime'])
-            self.assertEquals(response, {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}, msg='Response was not the correct error: {}'.format(response))
+            self.assertEquals(response['errors'][0]['field'], 'type', msg='Response was not the correct error: {}'.format(response))
 
 if __name__ == '__main__': 
     unittest.main()
