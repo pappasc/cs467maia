@@ -76,6 +76,8 @@ def users(user_id=None):
             try: 
                 if result['user_id']:
                     status_code = 200 
+
+                    # TODO: Implement PUT to update signature path with user_id
             except KeyError:
                 status_code = 400
         else:
