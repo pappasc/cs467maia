@@ -399,7 +399,7 @@ class InputValidatorTool:
             # If awards found, return an error dictionary. Otherwise continue.
             if len(existing_awards['award_ids']) != 0:
                 logging.info('InputValidatorTool.check_award_does_not_exist(): Awards found during time period')
-                result = {'errors': [{'field': 'type', 'message': 'too many awards of month type in time period'}]}
+                result = {'errors': [{'field': 'type', 'message': 'there is already an award of type \'month\' between {} and {}'.format(greater, lesser)}]}
             else: 
                 logging.debug('InputValidatorTool.check_award_does_not_exist(): No awards found during time period')
 
@@ -439,7 +439,7 @@ class InputValidatorTool:
             # If awards found, return error dictionary. Otherwise continue.
             if len(existing_awards['award_ids']) != 0:
                 logging.info('InputValidatorTool.check_award_does_not_exist(): Awards found during time period')
-                result = {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}
+                result = {'errors': [{'field': 'type', 'message': 'there is already an award of type \'week\' between {} and {}'.format(greater, lesser)}]}
             else: 
                 logging.debug('InputValidatorTool.check_award_does_not_exist(): No awards found during time period')
 
