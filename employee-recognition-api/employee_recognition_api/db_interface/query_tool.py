@@ -104,8 +104,8 @@ class QueryTool:
                 # Iterate through each column of result to parse the data
                 for column in row.keys():
                     # Ensure returning int for any *_id column
-                    if 'id' in str(column): 
-                        result_sub_dict[column] = int(row[column])     
+                    if 'id' in str(column) and row[column] is not None: 
+                        result_sub_dict[column] = int(row[column])   
                     # Ensure returning a bool for 'distributed' column
                     elif 'distributed' == str(column):
                         result_sub_dict[column] = bool(row[column])
