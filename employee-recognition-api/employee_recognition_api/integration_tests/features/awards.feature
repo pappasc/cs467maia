@@ -22,11 +22,11 @@ Scenario Outline: POST & DELETE /awards, 200
     When I make a POST <endpoint> request with body <body>
     Then I get a status code of <status_code>
     Then the result has keys <keys>
-    Then I clean up my POST to <endpoint>
-
+    Then I clean up my POST to awards
+    
     Examples: 
-        | endpoint      | status_code | keys       | body  |
-        | awards        | 200         | award_id   | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2021-05-01 12:00:00" } |
+        | endpoint          | status_code | keys       | body  |
+        | awards/no-email   | 200         | award_id   | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2021-05-01 12:00:00" } |
 
 
 Scenario Outline: GET /awards, 200 but empty
@@ -59,9 +59,9 @@ Scenario Outline: POST /awards; malformed request (single)
     Then the result message is <message>
 
     Examples: 
-        | endpoint      | status_code | keys      | field           | message       | body  |  
-        | awards        | 400         | errors    | awarded_datetime | invalid value | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2020-05-12:00:00" } |
-        | awards        | 400         | errors    | type        | invalid value | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "asdf", "awarded_datetime": "2020-05-01 12:00:00" } |
+        | endpoint              | status_code | keys      | field           | message       | body  |  
+        | awards/no-email       | 400         | errors    | awarded_datetime | invalid value | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2020-05-12:00:00" } |
+        | awards/no-email       | 400         | errors    | type        | invalid value | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "asdf", "awarded_datetime": "2020-05-01 12:00:00" } |
         
 Scenario Outline: POST /awards; malformed request (many)
     When I make a POST <endpoint> request with body <body>
@@ -70,8 +70,8 @@ Scenario Outline: POST /awards; malformed request (many)
     Then the result has <number> errors 
 
     Examples: 
-        | endpoint      | status_code | keys      | number      | body  |  
-        | awards        | 400         | errors    | 2           | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "asdf", "awarded_datetime": "2020-05-12:00:00" }  |
+        | endpoint          | status_code | keys      | number      | body  |  
+        | awards/no-email   | 400         | errors    | 2           | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "asdf", "awarded_datetime": "2020-05-12:00:00" }  |
 
 Scenario Outline: POST /awards; Too Many Awards
     When I make a POST <endpoint> request with body <body>
@@ -80,12 +80,12 @@ Scenario Outline: POST /awards; Too Many Awards
     Then the result has keys <keys>
     Then the result field is <field>
     Then the result message is <message>
-    Then I clean up my POST to <endpoint>
+    Then I clean up my POST to awards
 
     Examples: 
-        | endpoint      | status_code | keys      | field       | message | body  |  
-        | awards        | 400         | errors    | type        | too many awards of week type in time period | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2022-05-12 00:00:00" }  |
-        | awards        | 400         | errors    | type        | too many awards of month type in time period | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "month", "awarded_datetime": "2022-05-12 00:00:00" }  |
+        | endpoint           | status_code | keys      | field       | message | body  |  
+        | awards/no-email    | 400         | errors    | type        | there is already an award of type 'week' between 2022-05-09 00:00:00 and 2022-05-16 00:00:00 | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "week", "awarded_datetime": "2022-05-12 00:00:00" }  |
+        | awards/no-email    | 400         | errors    | type        | there is already an award of type 'month' between 2022-05-01 00:00:00 and 2022-06-01 00:00:00 | { "authorizing_user_id": 2, "receiving_user_id": 1, "type": "month", "awarded_datetime": "2022-05-12 00:00:00" }  |
 
 Scenario Outline: DELETE /awards
     When I make a DELETE <endpoint> request
