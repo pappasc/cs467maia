@@ -45,7 +45,7 @@ class Builder:
         result = query_tool.get_by_id('users', {'user_id': int(data['authorizing_user_id'])})
         authorizing_first_name = result['first_name']
         authorizing_last_name = result['last_name']
-        signature_path = result['signature_path']
+        signature_path = '{}_{}'format(data['authorizing_user_id'], result['signature_path'])
 
         # Retrieve receiving user id's information
         logging.debug('Builder.query_database_for_data(): retrieving receiving user info')
