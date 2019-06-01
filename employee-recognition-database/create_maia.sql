@@ -23,8 +23,8 @@ create table if not exists awards (award_id int not null primary key auto_increm
 
 -- Insert test data into tables 
 
-insert into users (first_name, last_name, email_address, password, created_timestamp, signature_path ) values ('Natasha', 'Kvavle', 'kvavlen@oregonstate.edu', 'encryptme', '2019-05-27 06:36:55', 'kvavlen_sig.jpg');
-insert into users (first_name, last_name, email_address, password, created_timestamp, signature_path ) values ('Patrick', 'DeLeon', 'deleonp@oregonstate.edu', 'encryptme', '2019-04-15 08:52:00', 'deleonp_sig.jpg');
+insert into users (first_name, last_name, email_address, password, created_timestamp, signature_path ) values ('Natasha', 'Kvavle', 'kvavlen@oregonstate.edu', 'encryptme', '2019-05-27 06:36:55', '1_kvavlen_sig.jpg');
+insert into users (first_name, last_name, email_address, password, created_timestamp, signature_path ) values ('Patrick', 'DeLeon', 'deleonp@oregonstate.edu', 'encryptme', '2019-04-15 08:52:00', '2_deleonp_sig.jpg');
 insert into admins (first_name, last_name, email_address, password, created_timestamp ) values ('Conner', 'Pappas', 'pappasc@oregonstate.edu', 'encryptme', '2019-04-15 08:52:00'); 
 insert into awards (authorizing_user_id, receiving_user_id, type, distributed, awarded_datetime) values (1, 2, 'week', false, '2019-04-27 10:00:00');
 insert into awards (authorizing_user_id, receiving_user_id, type, distributed, awarded_datetime) values (2, 1, 'month', false, '2019-04-30 00:00:00');

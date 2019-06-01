@@ -44,11 +44,13 @@ def users(user_id=None):
         # Determine success based on presence of 'user_ids' key
         try: 
             if type(result['user_ids']) == list: 
-                status_code = 200
-                # TODO: Iterate through list & remove the preceding user_id from signature_path
-                # for user in result['user_ids']: 
-                #   user['signature_path'] = user['signature_path'].replace('{}_'.format(user['user_id'], '')
-
+                try: 
+                    # Iterate through list & remove the preceding user_id from signature_path
+                    for user in result['user_ids']: 
+                        user['signature_path'] = user['signature_path'].replace('{}_'.format(user['user_id']), '', 1)
+                        status_code = 200
+                except Exception as e:
+                    logging.exception(e)
         except KeyError:
             status_code = 400
 
@@ -62,8 +64,8 @@ def users(user_id=None):
         try: 
             if result['user_id']:
                 status_code = 200
-                # TODO: Remove the preceding user_id from signature_path
-                # result['signature_path'] = result['signature_path'].replace('{}_'.format(result['user_id'], '') 
+                # Remove the preceding user_id from signature_path
+                result['signature_path'] = result['signature_path'].replace('{}_'.format(result['user_id']), '', 1) 
         except KeyError:
             status_code = 400
 
@@ -83,17 +85,17 @@ def users(user_id=None):
                 if result['user_id']:
                     status_code = 200 
 
-                    # TODO: Implement second PUT request to update signature path with user_id
-                    # put_data = data
-                    # put_data['signature_path'] = '{}_{}'.format(result['user_id'], data['signature_path'])
-                    # put_data['user_id'] = result['user_id']
-                    # put_result = query.put_by_id('users', put_data)
-                    # try: 
-                    #   if put_result['user_id'] == result['user_id']:
-                    #       status_code = 200
-                    # except KeyError:
-                    #   result = put_result
-                    #   status = 400
+                    # Implement second PUT request to update signature path with user_id
+                    put_data = data
+                    put_data['signature_path'] = '{}_{}'.format(result['user_id'], data['signature_path'])
+                    put_data['user_id'] = result['user_id']
+                    put_result = query.put_by_id('users', put_data)
+                    try: 
+                        if put_result['user_id'] == result['user_id']:
+                            status_code = 200
+                    except KeyError:
+                        result = put_result
+                        status = 400
 
             except KeyError:
                 status_code = 400
@@ -114,6 +116,18 @@ def users(user_id=None):
             data['user_id'] = int(user_id)
             result = query.put_by_id('users', data)
 
+            # Implement second PUT request to update signature path with user_id
+            put_data = data
+            put_data['signature_path'] = '{}_{}'.format(result['user_id'], data['signature_path'])
+            put_data['user_id'] = result['user_id']
+            put_result = query.put_by_id('users', put_data)
+            try: 
+                if put_result['user_id'] == result['user_id']:
+                    status_code = 200
+            except KeyError:
+                result = put_result
+                status = 400
+            
             # Determine success based on presence of 'user_id' key
             try: 
                 if result['user_id']:
@@ -194,3 +208,6 @@ def users_login(user_id):
     logging.info('users_api (users_login()): returning result {}'.format(result))
     logging.info('users_api (users_login()): returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
+
+# References: 
+# [1] https://stackoverflow.com/questions/10648490/removing-first-appearance-of-word-from-a-string  re: replacing first instance of substring

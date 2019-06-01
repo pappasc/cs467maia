@@ -12,7 +12,7 @@ libraries:
   version: "0.12"
 
 env_variables:
-  ENV: 'prod'
+  ENV: 'dev'
 
 # References: 
 # [1] https://cloud.google.com/appengine/docs/standard/python/config/appref        re: use of env variables
