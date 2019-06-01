@@ -1,7 +1,7 @@
 # Unit Tests
 
 ## Instructions to Run
-0. Ensure environment set up according to directions in employee-recognition-api/README.md
+0. Ensure environment set up according to directions in employee-recognition-api/README.md -- only original test data should be in the database when running unit tests, otherwise tests will fail. This is an artifact of not having a QA/DEV database environment to test with.
 1. Set ENV environmental variable to local: ```export ENV=local```
 2. Create python module so that we can import local classes: ```python -m employee_recognition_api.__init__```
 3. Run Google SQL Cloud Proxy: ```./cloud_sql_proxy --instances=cs467maia-backend:us-west1:employee-recognition-database=tcp:3306```
