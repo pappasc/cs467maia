@@ -45,6 +45,10 @@ def users(user_id=None):
         try: 
             if type(result['user_ids']) == list: 
                 status_code = 200
+                # TODO: Iterate through list & remove the preceding user_id from signature_path
+                # for user in result['user_ids']: 
+                #   user['signature_path'] = user['signature_path'].replace('{}_'.format(user['user_id'], '')
+
         except KeyError:
             status_code = 400
 
@@ -57,7 +61,9 @@ def users(user_id=None):
         # Determine success based on presence of 'user_id' key
         try: 
             if result['user_id']:
-                status_code = 200 
+                status_code = 200
+                # TODO: Remove the preceding user_id from signature_path
+                # result['signature_path'] = result['signature_path'].replace('{}_'.format(result['user_id'], '') 
         except KeyError:
             status_code = 400
 
@@ -77,7 +83,18 @@ def users(user_id=None):
                 if result['user_id']:
                     status_code = 200 
 
-                    # TODO: Implement PUT to update signature path with user_id
+                    # TODO: Implement second PUT request to update signature path with user_id
+                    # put_data = data
+                    # put_data['signature_path'] = '{}_{}'.format(result['user_id'], data['signature_path'])
+                    # put_data['user_id'] = result['user_id']
+                    # put_result = query.put_by_id('users', put_data)
+                    # try: 
+                    #   if put_result['user_id'] == result['user_id']:
+                    #       status_code = 200
+                    # except KeyError:
+                    #   result = put_result
+                    #   status = 400
+
             except KeyError:
                 status_code = 400
         else:
