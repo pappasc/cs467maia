@@ -66,8 +66,8 @@ def users_signature(user_id):
 
         # Write image to Google Cloud Storage
         query_bucket_tool = QueryBucketTool()
-        logging.info('DATA: {}'.format(request.data))
-        write_result = query_bucket_tool.post('signatures/{}'.format(filename), request.data, 'image/jpeg')
+        logging.info('DATA: {}'.format(request.form['image']))
+        write_result = query_bucket_tool.post('signatures/{}'.format(filename), request.form['image'], 'image/jpeg')
         
         # If write is successful, return user_id; otherwise return errors
         if write_result == True:
