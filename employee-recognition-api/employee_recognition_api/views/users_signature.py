@@ -44,7 +44,7 @@ def users_signature(user_id):
         
         # Set headers 
         headers = Headers()
-        headers.add('Access-Control-Allow-Origin', 'https://cs467maia-site.appspot.com')
+        headers.add('Access-Control-Allow-Origin', '*')
 
         # If user exists, continue; otherwise, return errors
         logging.info('users.py: checking if user_id {} exists'.format(user_id))
