@@ -14,6 +14,28 @@ module.exports = function(){
         });
     }
 
+    function getUsers() {
+	var options = {
+          uri: 'https://cs467maia-backend.appspot.com/users',
+          json: true
+        };
+
+        return rp(options).then(function (users){
+            return users.user_ids;
+        });
+    }
+
+    function getAdmins() {
+	var options = {
+          uri: 'https://cs467maia-backend.appspot.com/admins',
+          json: true
+        };
+
+        return rp(options).then(function (admins){
+            return admins.admin_ids;
+        });
+    }
+
     function getUserPword(user_id) {
 	var options = {
 	    uri: 'https://cs467maia-backend.appspot.com/users/' + user_id + '/login',
@@ -32,6 +54,7 @@ module.exports = function(){
     }
 
     function createUser(firstName, lastName, emailAddr, password, sigPath) {
+
 	var d = new Date,
 	    timestamp = [d.getFullYear(),
 			 d.getMonth()+1,
@@ -39,114 +62,240 @@ module.exports = function(){
 	    [d.getHours(),
 	     d.getMinutes(),
 	     d.getSeconds()].join(':');
-	
-	var userBody = {
-            first_name: firstName,
-            last_name: lastName,
-            created_timestamp: timestamp,
-            email_address: emailAddr,
-            password: password,
-            signature_path: sigPath
-        };
-	
-        var options = {
-            method: "POST",
-            uri: "https://cs467maia-backend.appspot.com/users",
-            body: userBody,
-            json: true,
-            resolveWithFullResponse: true
-        };
 
-	var contextReturn = {};
-	
-	return rp(options)
-	    .then(function (createReturn) {
-		if (createReturn.statusCode == 200) {
-		    contextReturn.success = true;
+	return getUsers()
+	    .then(users => {
+
+		if (password.length < 6 || password.length > 10) {
+		    var errors = [];
+		    var errorMessage = {};
+		    errorMessage.field = "password";
+		    errorMessage.message = "either too short or too long (6-10 characters required)";
+		    errors.push(errorMessage);
+		    
+		    var contextReturn = {};
+		    contextReturn.errorMessage = errors;
+		    contextReturn.success = false;
 		    return contextReturn;
+		}
+		
+		var i;
+		var emailUsed = false;
+		for (i = 0; i < users.length; i++) {
+		    if (emailAddr == users[i].email_address) emailUsed = true;
+		}
+
+		if (!emailUsed) {
+		    return getAdmins()
+			.then(admins => {
+			    var i;
+			    var emailUsed = false;
+			    for (i = 0; i < admins.length; i++) {
+				if (emailAddr == admins[i].email_address) emailUsed = true;
+			    }
+
+			    if (!emailUsed) {
+				var userBody = {
+				    first_name: firstName,
+				    last_name: lastName,
+				    created_timestamp: timestamp,
+				    email_address: emailAddr,
+				    password: password,
+				    signature_path: sigPath
+				};
+				
+				var options = {
+				    method: "POST",
+				    uri: "https://cs467maia-backend.appspot.com/users",
+				    body: userBody,
+				    json: true,
+				    resolveWithFullResponse: true
+				};
+				
+				var contextReturn = {};
+				
+				return rp(options)
+				    .then(function (createReturn) {
+					if (createReturn.statusCode == 200) {
+					    contextReturn.success = true;
+					    return contextReturn;
+					}
+					else {
+					    contextReturn.success = false;
+					    contextReturn.errorMessage = createReturn.response.body.errors;
+					    return contextReturn;
+					}
+				    })
+				    .catch(function (createReturn) {
+					contextReturn.success = false;
+					contextReturn.errorMessage = createReturn.response.body.errors;
+					return contextReturn;
+				    });
+			    }
+			    else {
+				var errors = [];
+				var errorMessage = {};
+				errorMessage.field = "email";
+				errorMessage.message = "used by admin";
+				errors.push(errorMessage);
+				
+				var contextReturn = {};
+				contextReturn.errorMessage = errors;
+				contextReturn.success = false;
+				return contextReturn;
+			    }
+			    
+			});
 		}
 		else {
+		    var errors = [];
+		    var errorMessage = {};
+		    errorMessage.field = "email";
+		    errorMessage.message = "used by user";
+		    errors.push(errorMessage);
+		    
+		    var contextReturn = {};
+		    contextReturn.errorMessage = errors;
 		    contextReturn.success = false;
-		    contextReturn.errorMessage = createReturn.response.body.errors;
 		    return contextReturn;
 		}
-	    })
-	    .catch(function (createReturn) {
-		contextReturn.success = false;
-		contextReturn.errorMessage = createReturn.response.body.errors;
-		return contextReturn;
 	    });
     }
 
     function updateUser(firstName, lastName, sigPath, emailAddr, userID) {
 
-	var userBody = {
-	    first_name: firstName,
-	    last_name: lastName,
-	    email_address: emailAddr,
-	    signature_path: sigPath
-        };
-	
-        var options = {
-	    method: "PUT",
-	    uri: "https://cs467maia-backend.appspot.com/users/" + userID,
-	    body: userBody,
-	    json: true,
-	    resolveWithFullResponse: true
-        };
+	return getUsers()
+	    .then(users => {
+		var i;
+		var emailUsed = false;
+		for (i = 0; i < users.length; i++) {
+		    if (emailAddr == users[i].email_address && userID != users[i].user_id) emailUsed = true;
+		}
 
-	var contextReturn = {};
-	
-	return rp(options)
-	    .then(function (updateReturn) {
-		if (updateReturn.statusCode == 200) {
-		    contextReturn.success = true;
-		    return contextReturn;
+		if (!emailUsed) {
+		    return getAdmins()
+			.then(admins => {
+			    var i;
+			    var emailUsed = false;
+			    for (i = 0; i < admins.length; i++) {
+				if (emailAddr == admins[i].email_address) emailUsed = true;
+			    }
+
+			    if (!emailUsed) {
+				var userBody = {
+				    first_name: firstName,
+				    last_name: lastName,
+				    email_address: emailAddr,
+				    signature_path: sigPath
+				};
+				
+				var options = {
+				    method: "PUT",
+				    uri: "https://cs467maia-backend.appspot.com/users/" + userID,
+				    body: userBody,
+				    json: true,
+				    resolveWithFullResponse: true
+				};
+				
+				var contextReturn = {};
+				
+				return rp(options)
+				    .then(function (updateReturn) {
+					if (updateReturn.statusCode == 200) {
+					    contextReturn.success = true;
+					    return contextReturn;
+					}
+					else {
+					    contextReturn.success = false;
+					    contextReturn.errorMessage = updateReturn.response.body.errors;
+					    return contextReturn;
+					}
+				    })
+				    .catch(function (updateReturn) {
+					contextReturn.success = false;
+					contextReturn.errorMessage = updateReturn.response.body.errors;
+					return contextReturn;
+				    });
+			    }
+			    else {
+				var errors = [];
+				var errorMessage = {};
+				errorMessage.field = "email";
+				errorMessage.message = "used by admin";
+				errors.push(errorMessage);
+				
+				var contextReturn = {};
+				contextReturn.errorMessage = errors;
+				contextReturn.success = false;
+				return contextReturn;
+			    }
+			    
+			});
 		}
 		else {
+		    var errors = [];
+		    var errorMessage = {};
+		    errorMessage.field = "email";
+		    errorMessage.message = "used by user";
+		    errors.push(errorMessage);
+		    
+		    var contextReturn = {};
+		    contextReturn.errorMessage = errors;
 		    contextReturn.success = false;
-		    contextReturn.errorMessage = updateReturn.response.body.errors;
 		    return contextReturn;
 		}
-	    })
-	    .catch(function (updateReturn) {
-		contextReturn.success = false;
-		contextReturn.errorMessage = updateReturn.response.body.errors;
-		return contextReturn;
 	    });
     }
 
     function updateUserPass(userPass, userID) {
-	var userPass = {
-	    password: userPass
-        };
 
-	var options = {
-	    method: "PUT",
-	    uri: "https://cs467maia-backend.appspot.com/users/" + userID + "/login",
-	    body: userPass,
-	    json: true,
-	    resolveWithFullResponse: true
-        };
+	return getUserPword(userID)
+	    .then(userPassword => {
 
-	var contextReturn = {};
-	
-	return rp(options)
-	    .then(function (updateReturn) {
-		if (updateReturn.statusCode == 200) {
-		    contextReturn.success = true;
-		    return contextReturn;
-		}
-		else {
+		if (userPass.length < 6 || userPass.length > 10) {
+		    var errors = [];
+		    var errorMessage = {};
+		    errorMessage.field = "password";
+		    errorMessage.message = "either too short or too long (6-10 characters required). Other fields may have updated";
+		    errors.push(errorMessage);
+		    
+		    var contextReturn = {};
+		    contextReturn.errorMessage = errors;
 		    contextReturn.success = false;
-		    contextReturn.errorMessage = updateReturn.response.body.errors;
 		    return contextReturn;
 		}
-	    })
-	    .catch(function (updateReturn) {
-		contextReturn.success = false;
-		contextReturn.errorMessage = updateReturn.response.body.errors;
-		return contextReturn;
+		
+		var userPassUpdate = {
+		    password: userPass
+		};
+		
+		var options = {
+		    method: "PUT",
+		    uri: "https://cs467maia-backend.appspot.com/users/" + userID + "/login",
+		    body: userPassUpdate,
+		    json: true,
+		    resolveWithFullResponse: true
+		};
+		
+		var contextReturn = {};
+		
+		return rp(options)
+		    .then(function (updateReturn) {
+			if (updateReturn.statusCode == 200) {
+			    contextReturn.success = true;
+			    return contextReturn;
+			}
+			else {
+			    contextReturn.success = false;
+			    contextReturn.errorMessage = updateReturn.response.body.errors;
+			    return contextReturn;
+			}
+		    })
+		    .catch(function (updateReturn) {
+			contextReturn.success = false;
+			contextReturn.errorMessage = updateReturn.response.body.errors;
+			return contextReturn;
+		    });
 	    });
     }
 
