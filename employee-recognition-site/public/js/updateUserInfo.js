@@ -27,6 +27,7 @@ function sigHandler (res) {
 
 	var sigReq = new XMLHttpRequest();
 	sigReq.open("PUT", sigURL, true);
+	sigReq.setRequestHeader("Content-Type", "image/jpeg");
 	sigReq.onload = function(oEvent) {
 	    if (sigReq.status == 200) {
 		console.log("Uploaded!");
@@ -35,7 +36,7 @@ function sigHandler (res) {
 		console.log("Error " + sigReq.status + " occurred when trying to upload your file");
 	    }
 	};
-	
+
 	sigReq.send(sigData);
     }
     else {

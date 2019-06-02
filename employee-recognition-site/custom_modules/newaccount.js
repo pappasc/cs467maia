@@ -31,6 +31,53 @@ module.exports = function(){
 	});
     }
 
+    function createUser(firstName, lastName, emailAddr, password, sigPath) {
+	var d = new Date,
+	    timestamp = [d.getFullYear(),
+			 d.getMonth()+1,
+			 d.getDate()].join('-')+' '+
+	    [d.getHours(),
+	     d.getMinutes(),
+	     d.getSeconds()].join(':');
+	
+	var userBody = {
+            first_name: firstName,
+            last_name: lastName,
+            created_timestamp: timestamp,
+            email_address: emailAddr,
+            password: password,
+            signature_path: sigPath
+        };
+	
+        var options = {
+            method: "POST",
+            uri: "https://cs467maia-backend.appspot.com/users",
+            body: userBody,
+            json: true,
+            resolveWithFullResponse: true
+        };
+
+	var contextReturn = {};
+	
+	return rp(options)
+	    .then(function (createReturn) {
+		if (createReturn.statusCode == 200) {
+		    contextReturn.success = true;
+		    return contextReturn;
+		}
+		else {
+		    contextReturn.success = false;
+		    contextReturn.errorMessage = createReturn.response.body.errors;
+		    return contextReturn;
+		}
+	    })
+	    .catch(function (createReturn) {
+		contextReturn.success = false;
+		contextReturn.errorMessage = createReturn.response.body.errors;
+		return contextReturn;
+	    });
+    }
+
     function updateUser(firstName, lastName, sigPath, emailAddr, userID) {
 
 	var userBody = {
@@ -103,20 +150,45 @@ module.exports = function(){
 	    });
     }
 
+    function deleteUser (userID) {
+	var options = {
+            method: "DELETE",
+            uri: "https://cs467maia-backend.appspot.com/users/" + userID,
+            json: true,
+            resolveWithFullResponse: true
+	};
+	
+	return rp(options)
+	    .then(function (deleteReturn){
+		return deleteReturn.statusCode;
+	    })
+	    .catch(function (err) {
+                return 500;
+	    });
+    }
+
     router.get('/', function (req, res) {
         var context = {};
         if (req.isAuthenticated()) {
-            
-            if (req.body.employee && req.body.employee != ''){
-                getuser(req.body.employee).then(function(user){
-                    context.email = user.email_address;
-                });
-            }
-            context.isView = false;
-            context.update = false;
-            context.jsscripts = ["saveUserInfo.js", "gotoEmployees.js"];
-            res.status(200).render('newuserpage', context);
-            
+            if (req.user.type == 'admin') {
+		//Don't think this bit of code is needed. Adding an email attribute to the context in a promise
+		//The page is likely already rendered before that happens
+		/*if (req.body.employee && req.body.employee != ''){
+                    getuser(req.body.employee).then(function(user){
+			context.email = user.email_address;
+                    });
+		}*/
+		context.isView = false;
+		context.update = false;
+		context.jsscripts = ["saveUserInfo.js", "gotoEmployees.js"];
+		res.status(200).render('newuserpage', context);
+	    }
+	    else if (req.user.type == 'user') {
+		res.status(403).send("Error 403 - Not authorized to view this page");
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
         }
         else {
             res.status(401).send("Error 401, need to be authenticated");
@@ -136,7 +208,7 @@ module.exports = function(){
 			context.email = userProfile.email_address;
 			context.firstName = userProfile.first_name;
 			context.lastName = userProfile.last_name;
-			context.signature = "test.jpg";
+			context.signature = userProfile.signature_path;
 			context.update = true;
 			getUserPword(req.params.id).then(function (pword){
 			    context.password = pword;
@@ -160,54 +232,37 @@ module.exports = function(){
 
     router.post('/', function(req,res){
 	if (req.isAuthenticated()){
+	    if (req.user.type == 'admin') {
+		createUser(req.body.first_name, req.body.last_name, req.body.email_address, req.body.password, "temp.jpg")
+		    .then(function (createReturn) {
+			if (createReturn.success) {
+			    res.status(303).redirect('/employees');
+			}
+			else {
+			    var context = {};
+			    context.errorMessage = createReturn.errorMessage;
+			    res.status(400).send(context);
+			}
+		    })
+		    .catch(function (err) {
+			res.status(500).render('500');
+		    });
+	    }
+	    else if (req.user.type == 'user') {
+		res.status(403).send("Error 403, not allowed to update user from this endpoint");
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
 	    
-	    var d = new Date,
-		timestamp = [d.getFullYear(),
-			     d.getMonth()+1,
-			     d.getDate()].join('-')+' '+
-		[d.getHours(),
-		 d.getMinutes(),
-		 d.getSeconds()].join(':');
-
-	        var userBody = {
-                first_name: req.body.first_name,
-                last_name: req.body.last_name,
-                created_timestamp: timestamp,
-                email_address: req.body.email_address,
-                password: req.body.password,
-                signature_path: "turtle.jpg"
-            };
-	
-            var options = {
-                method: "POST",
-                uri: "https://cs467maia-backend.appspot.com/users",
-                body: userBody,
-                json: true,
-                resolveWithFullResponse: true
-            };
-	    
-            rp(options)
-            .then(function (saveReturn){
-                if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
-                res.redirect(303, '/employees');
-                }
-                else if (saveReturn.statusCode >= 400){
-                res.status(500).send("Malformed request. Contact your administrator.");
-                }
-            })
-            .catch(function (err) {
-                console.log("Something broke");
-                        res.status(500).send("API Error.");
-            });
         }
         else
         {
-            res.status(500).render('500');
+            res.status(401).send("Error 401, need to be authenticated");
         }
     });
 
     router.put('/', function(req,res){
-
 	if (req.isAuthenticated ()){
 	    if (req.user.type == 'admin') {
 		updateUser(req.body.first_name, req.body.last_name, req.body.signature_path, req.body.email_address, req.body.user_id)
@@ -250,73 +305,34 @@ module.exports = function(){
 	else {
 	    res.status(401).send("Error 401, need to be authenticated");
 	}
-	/*if (req.isAuthenticated()){
-	    
-            var userBody = {
-		first_name: req.body.first_name,
-		last_name: req.body.last_name,
-		created_timestamp: req.body.created_timestamp,
-		email_address: req.body.email_address,
-		password: req.body.password,
-		signature_path: "turtle.jpg",
-		user_id: req.body.user_id
-            };
-	    
-            var options = {
-		method: "PUT",
-		uri: "https://cs467maia-backend.appspot.com/users/" + req.body.user_id,
-		body: userBody,
-		json: true,
-		resolveWithFullResponse: true
-            };
-	    
-            rp(options)
-		.then(function (saveReturn){
-                    if (saveReturn.statusCode == 200) {
-			res.redirect(303, '/employees');
-                    }
-                    else if (saveReturn.statusCode >= 400){
-			res.status(500).send("Malformed request. Contact your administrator.");
-                    }
-		})
-		.catch(function (err) {
-                    console.log("Something broke");
-                    res.status(500).send("API Error.");
-		});
-        }
-        else
-        {
-            res.status(500).render('500');
-        }*/
     });
     
     router.delete("/", function(req,res){
         if (req.isAuthenticated()){
-	        var options = {
-                method: "DELETE",
-                uri: "https://cs467maia-backend.appspot.com/users/" + req.body.userId,
-                body: "",
-                json: true,
-                resolveWithFullResponse: true
-            };
-	    
-            rp(options)
-            .then(function (saveReturn){
-                if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
-                res.redirect(303, '/employees');
-                }
-                else if (saveReturn.statusCode >= 400){
-                res.status(500).send("Malformed request. Contact your administrator.");
-                }
-            })
-            .catch(function (err) {
-                console.log("Something broke");
+	    if (req.user.type == 'admin') {
+		deleteUser(req.body.userId)
+		    .then(function (deleteReturn) {
+			if (deleteReturn == 200){
+			    res.redirect(303, '/employees');
+			}
+			else if (deleteReturn >= 400){
+			    res.status(500).send("Malformed request. Contact your administrator.");
+			}
+		    })
+		    .catch(function (err) {
                         res.status(500).send("API Error.");
-            });
+		    });
+	    }
+	    else if (req.user.type == 'user') {
+		res.status(403).send("Error 403, not allowed to update user from this endpoint");
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
         }
         else
         {
-            res.status(500).render('500');
+            res.status(401).send("Error 401, need to be authenticated");
         }
     });
     return router;
