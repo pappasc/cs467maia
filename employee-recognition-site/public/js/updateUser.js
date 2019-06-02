@@ -19,8 +19,6 @@ function redirectHandle () {
 }
 
 function errorHandle (err) {
-    console.log(err);
-    
     var errorHandle = document.getElementById("errorHolder");
     while (errorHandle.firstChild) {
 	errorHandle.removeChild(errorHandle.firstChild);

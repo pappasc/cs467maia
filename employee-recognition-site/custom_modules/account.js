@@ -77,15 +77,7 @@ module.exports = function(){
 			}
 			else {
 			    var context = {};
-			    //context.isView = true;
-			    //context.userId = req.user.user_id;
-			    //context.email = req.user.email_address;
-			    //context.firstName = req.user.first_name;
-			    //context.lastName = req.user.last_name;
-			    //context.signature = req.user.signature_path;
 			    context.errorMessage = updateReturn.errorMessage;
-			    //context.jsscripts = ["logoutUser.js", "gotoAwards.js", "updateUser.js", "gotoHome.js"];
-			    //console.log(context);
 			    res.status(400).send(context);
 			}
 		    })

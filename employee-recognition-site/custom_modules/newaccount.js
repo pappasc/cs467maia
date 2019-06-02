@@ -31,6 +31,78 @@ module.exports = function(){
 	});
     }
 
+    function updateUser(firstName, lastName, sigPath, emailAddr, userID) {
+
+	var userBody = {
+	    first_name: firstName,
+	    last_name: lastName,
+	    email_address: emailAddr,
+	    signature_path: sigPath
+        };
+	
+        var options = {
+	    method: "PUT",
+	    uri: "https://cs467maia-backend.appspot.com/users/" + userID,
+	    body: userBody,
+	    json: true,
+	    resolveWithFullResponse: true
+        };
+
+	var contextReturn = {};
+	
+	return rp(options)
+	    .then(function (updateReturn) {
+		if (updateReturn.statusCode == 200) {
+		    contextReturn.success = true;
+		    return contextReturn;
+		}
+		else {
+		    contextReturn.success = false;
+		    contextReturn.errorMessage = updateReturn.response.body.errors;
+		    return contextReturn;
+		}
+	    })
+	    .catch(function (updateReturn) {
+		contextReturn.success = false;
+		contextReturn.errorMessage = updateReturn.response.body.errors;
+		return contextReturn;
+	    });
+    }
+
+    function updateUserPass(userPass, userID) {
+	var userPass = {
+	    password: userPass
+        };
+
+	var options = {
+	    method: "PUT",
+	    uri: "https://cs467maia-backend.appspot.com/users/" + userID + "/login",
+	    body: userPass,
+	    json: true,
+	    resolveWithFullResponse: true
+        };
+
+	var contextReturn = {};
+	
+	return rp(options)
+	    .then(function (updateReturn) {
+		if (updateReturn.statusCode == 200) {
+		    contextReturn.success = true;
+		    return contextReturn;
+		}
+		else {
+		    contextReturn.success = false;
+		    contextReturn.errorMessage = updateReturn.response.body.errors;
+		    return contextReturn;
+		}
+	    })
+	    .catch(function (updateReturn) {
+		contextReturn.success = false;
+		contextReturn.errorMessage = updateReturn.response.body.errors;
+		return contextReturn;
+	    });
+    }
+
     router.get('/', function (req, res) {
         var context = {};
         if (req.isAuthenticated()) {
@@ -135,7 +207,50 @@ module.exports = function(){
     });
 
     router.put('/', function(req,res){
-	if (req.isAuthenticated()){
+
+	if (req.isAuthenticated ()){
+	    if (req.user.type == 'admin') {
+		updateUser(req.body.first_name, req.body.last_name, req.body.signature_path, req.body.email_address, req.body.user_id)
+		    .then(function (updateReturn) {
+			if (updateReturn.success) {
+			    //Send a 303 status code so the browser handles the reload
+			    //after the Ajax request with a GET request
+			    //res.redirect(303, '/account');
+
+			    //Update password now
+			    updateUserPass(req.body.password, req.body.user_id)
+				.then(function (updatePassReturn) {
+				    if (updatePassReturn.success) {
+					res.redirect(303, '/employees');
+				    }
+				    else {
+					var context = {};
+					context.errorMessage = updatePassReturn.errorMessage;
+					res.status(400).send(context);
+				    }
+				});
+			}
+			else {
+			    var context = {};
+			    context.errorMessage = updateReturn.errorMessage;
+			    res.status(400).send(context);
+			}
+		    })
+		    .catch(function (err) {
+			res.status(500).render('500');
+		    });
+	    }
+	    else if (req.user.type == 'user') {
+		res.status(403).send("Error 403, not allowed to update user from this endpoint");
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
+	}
+	else {
+	    res.status(401).send("Error 401, need to be authenticated");
+	}
+	/*if (req.isAuthenticated()){
 	    
             var userBody = {
 		first_name: req.body.first_name,
@@ -144,10 +259,9 @@ module.exports = function(){
 		email_address: req.body.email_address,
 		password: req.body.password,
 		signature_path: "turtle.jpg",
-        user_id: req.body.user_id
+		user_id: req.body.user_id
             };
 	    
-        console.log(userBody);
             var options = {
 		method: "PUT",
 		uri: "https://cs467maia-backend.appspot.com/users/" + req.body.user_id,
@@ -173,7 +287,7 @@ module.exports = function(){
         else
         {
             res.status(500).render('500');
-        }
+        }*/
     });
     
     router.delete("/", function(req,res){
