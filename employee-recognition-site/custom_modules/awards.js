@@ -50,7 +50,6 @@ module.exports = function(){
 		}
 	    })
 	    .catch(function (err) {
-		console.log(err);
 		return null;
 	    });
     }

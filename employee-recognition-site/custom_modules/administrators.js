@@ -3,32 +3,59 @@ module.exports = function(){
     var     router  = express.Router();
     const   rp      = require('request-promise');
     
-    function getAdmins(req){
+    function getAdmins(){
         var options = {
-          uri: 'https://cs467maia-backend.appspot.com/admins', 
-          json: true,
-        };
+	    uri: 'https://cs467maia-backend.appspot.com/admins',
+	    json: true, // Automatically parses the JSON string in the response
+	    resolveWithFullResponse: true
+	};
 
-        return rp(options).then(function (admins){
-            return admins.admin_ids;
-        });
+	return rp(options)
+	    .then(function (admins) {
+		if (admins.statusCode == 200) {
+		    return admins.body.admin_ids;
+		}
+		else {
+		    return null;
+		}
+	    })
+	    .catch(function (err) {
+		return null;
+	    });
     }
     
-    
-    //Admin page to select users or 
     router.get('/', function (req, res) {
-		var context = {};
-        if (req.user.type == 'admin')
-        {
-            getAdmins(req).then(function(admins){
-                context.jsscripts = ["logoutUser.js", "gotoAdmin.js", "gotoAdminAccount.js", "gotoHome.js", "deleteAdminInfo.js"];
-                context.admins = admins;
-                res.status(200).render('admins',context);
-            });
-        }
-        else
-        {
-		    res.status(401).send("Error 401, admins only");
+	if(req.isAuthenticated()) {
+	    var context = {};
+            if (req.user.type == 'admin')
+            {
+		context.jsscripts = ["logoutUser.js", "gotoAdmin.js", "gotoAdminAccount.js", "gotoHome.js", "deleteAdminInfo.js"];
+		getAdmins().then(function(admins){
+                    if (admins != null) {
+			if (admins.length != 0) {
+			    context.someAdmins = true;
+			    context.admins = admins;
+			}
+			else {
+			    context.someAdmins = false;
+			}
+			res.status(200).render('admins', context);
+		    }
+		    else {
+			context.someAdmins = false;
+			res.status(200).render('admins', context);
+		    }
+		});
+            }
+	    else if (req.user.type == 'user') {
+		res.status(403).send("Error 403 - Not authorized to view this page");
+	    }
+	    else {
+		res.status(500).render('500');
+	    }
+	}
+        else {
+	    res.status(401).send("Error 401, need to be authenticated");
         }
     });
     
