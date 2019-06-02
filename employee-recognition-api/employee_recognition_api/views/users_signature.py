@@ -55,7 +55,7 @@ def users_signature(user_id):
                 status_code = 400 
                 logging.info('users.py: returning result {}'.format(result))
                 logging.info('users.py: returning status code {}'.format(status_code))
-                return Response(json.dumps(result), status=status_code, mimetype='application/json')
+                return Response(json.dumps(result), headers='Access-Control-Allow-Origin: https://cs467maia-site.appspot.com', status=status_code, mimetype='application/json')
 
         # Write image to Google Cloud Storage
         query_bucket_tool = QueryBucketTool()
@@ -65,8 +65,8 @@ def users_signature(user_id):
         if write_result == True:
             logging.info('users.py: returning result {}'.format(result))
             logging.info('users.py: returning status code {}'.format(status_code))
-            return Response(json.dumps({'user_id': '{}'.format(user_id)}), status=200, mimetype='application/json')
+            return Response(json.dumps({'user_id': '{}'.format(user_id)}), headers='Access-Control-Allow-Origin: https://cs467maia-site.appspot.com', status=200, mimetype='application/json')
         else: 
             logging.info('users.py: returning result {}'.format(result))
             logging.info('users.py: returning status code {}'.format(status_code))
-            return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error: {}'.format(e)}]}), status=400, mimetype='application/json')
+            return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error: {}'.format(e)}]}), headers='Access-Control-Allow-Origin: https://cs467maia-site.appspot.com', status=400, mimetype='application/json')
