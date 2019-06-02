@@ -29,8 +29,8 @@ connection_data = {
     'connection_name': '{}'.format(connection_name) 
 }
 
-# PUT /users/<user_id>/signature
-@users_sig_api.route('/users/<int:user_id>/signature', methods=['PUT'])
+# POST /users/<user_id>/signature
+@users_sig_api.route('/users/<int:user_id>/signature', methods=['POST'])
 def users_signature(user_id): 
     """ Handle PUT /users/<user_id>/signature
     
@@ -39,12 +39,14 @@ def users_signature(user_id):
     
     Returns: see README for results expected for each endpoint 
     """
-    if request.method == 'PUT' and user_id is not None: 
-        logging.info('users.py: PUT endpoint /users/<int:user_id>/signature')
+    if request.method == 'POST' and user_id is not None: 
+        logging.info('users.py: POST endpoint /users/<int:user_id>/signature')
         
         # Set headers 
         headers = Headers()
-        headers.add('Access-Control-Allow-Origin', '*')
+        headers.add('Access-Control-Allow-Origin', 'https://cs467maia-site.appspot.com')
+        headers.add('Access-Control-Allow-Methods', 'POST')
+        headers.add('Access-Control-Allow-Headers', 'Content-Type')
 
         # If user exists, continue; otherwise, return errors
         logging.info('users.py: checking if user_id {} exists'.format(user_id))
@@ -64,6 +66,7 @@ def users_signature(user_id):
 
         # Write image to Google Cloud Storage
         query_bucket_tool = QueryBucketTool()
+        logging.info('DATA: {}'.format(request.data))
         write_result = query_bucket_tool.post('signatures/{}'.format(filename), request.data, 'image/jpeg')
         
         # If write is successful, return user_id; otherwise return errors
@@ -78,6 +81,10 @@ def users_signature(user_id):
             logging.info('users.py: returning status code {}'.format(status_code))
             return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error: {}'.format(e)}]}), headers=headers, status=status_code, mimetype='application/json')
 
-# References
+# References re: dealing with CORS
 # [1] https://werkzeug.palletsprojects.com/en/0.15.x/datastructures/#werkzeug.datastructures.Headers re: headers
 # [2] https://stackoverflow.com/questions/31212992/how-to-enable-cors-on-google-app-engine-python-server/31213095 re: need for headers
+# [3] https://flask-cors.corydolphin.com/en/latest/api.html#extension                                             re: headers to use
+# [4] https://stackoverflow.com/questions/11933626/access-control-allow-origin-header-not-working-what-am-i-doing-wrong
+# [5] https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS                                                      re: use of POST, multipart/form-data
+# [6] https://stackoverflow.com/questions/40414526/how-to-read-multipart-form-data-in-flask                       re: to_dict()
