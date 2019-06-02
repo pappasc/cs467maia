@@ -5,6 +5,7 @@
 #       from other /users endpoints (since cloudstorage dependencies were moved elsewhere)
 
 from flask import Blueprint, request, Response
+from werkzeug.datastructures import Headers
 import os 
 from ..db_interface.query_bucket_tool import QueryBucketTool 
 
@@ -41,6 +42,10 @@ def users_signature(user_id):
     if request.method == 'PUT' and user_id is not None: 
         logging.info('users.py: PUT endpoint /users/<int:user_id>/signature')
         
+        # Set headers 
+        headers = Headers()
+        headers.add('Access-Control-Allow-Origin', 'https://cs467maia-site.appspot.com')
+
         # If user exists, continue; otherwise, return errors
         logging.info('users.py: checking if user_id {} exists'.format(user_id))
         query = QueryTool(connection_data)
@@ -55,7 +60,7 @@ def users_signature(user_id):
                 status_code = 400 
                 logging.info('users.py: returning result {}'.format(result))
                 logging.info('users.py: returning status code {}'.format(status_code))
-                return Response(json.dumps(result), headers='Access-Control-Allow-Origin: https://cs467maia-site.appspot.com', status=status_code, mimetype='application/json')
+                return Response(json.dumps(result), headers=headers, status=status_code, mimetype='application/json')
 
         # Write image to Google Cloud Storage
         query_bucket_tool = QueryBucketTool()
@@ -63,10 +68,16 @@ def users_signature(user_id):
         
         # If write is successful, return user_id; otherwise return errors
         if write_result == True:
+            status_code = 200
             logging.info('users.py: returning result {}'.format(result))
             logging.info('users.py: returning status code {}'.format(status_code))
-            return Response(json.dumps({'user_id': '{}'.format(user_id)}), headers='Access-Control-Allow-Origin: https://cs467maia-site.appspot.com', status=200, mimetype='application/json')
+            return Response(json.dumps({'user_id': '{}'.format(user_id)}), headers=headers, status=status_code, mimetype='application/json')
         else: 
+            status_code = 400
             logging.info('users.py: returning result {}'.format(result))
             logging.info('users.py: returning status code {}'.format(status_code))
-            return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error: {}'.format(e)}]}), headers='Access-Control-Allow-Origin: https://cs467maia-site.appspot.com', status=400, mimetype='application/json')
+            return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error: {}'.format(e)}]}), headers=headers, status=status_code, mimetype='application/json')
+
+# References
+# [1] https://werkzeug.palletsprojects.com/en/0.15.x/datastructures/#werkzeug.datastructures.Headers re: headers
+# [2] https://stackoverflow.com/questions/31212992/how-to-enable-cors-on-google-app-engine-python-server/31213095 re: need for headers
