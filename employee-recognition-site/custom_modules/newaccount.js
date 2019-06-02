@@ -6,7 +6,7 @@ module.exports = function(){
     function getUser(id){
         var options = {
           uri: 'https://cs467maia-backend.appspot.com/users/'+ id,
-          json: true,
+          json: true
         };
 
         return rp(options).then(function (user){
@@ -320,13 +320,6 @@ module.exports = function(){
         var context = {};
         if (req.isAuthenticated()) {
             if (req.user.type == 'admin') {
-		//Don't think this bit of code is needed. Adding an email attribute to the context in a promise
-		//The page is likely already rendered before that happens
-		/*if (req.body.employee && req.body.employee != ''){
-                    getuser(req.body.employee).then(function(user){
-			context.email = user.email_address;
-                    });
-		}*/
 		context.isView = false;
 		context.update = false;
 		context.jsscripts = ["saveUserInfo.js", "gotoEmployees.js"];
@@ -359,12 +352,16 @@ module.exports = function(){
 			context.lastName = userProfile.last_name;
 			context.signature = userProfile.signature_path;
 			context.update = true;
-			getUserPword(req.params.id).then(function (pword){
-			    context.password = pword;
-			    context.isView = false;
-			    context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
-			    res.status(200).render('newuserpage', context);
-			});
+			getUserPword(req.params.id)
+			    .then(function (pword){
+				context.password = pword;
+				context.isView = false;
+				context.jsscripts = ["gotoEmployees.js", "updateUserInfo.js"];
+				res.status(200).render('newuserpage', context);
+			    })
+			    .catch(function(err){
+				res.status(500).render('500');
+			    });
 		    })
 		    .catch(function (err) {
 			res.status(500).render('500');
@@ -465,7 +462,10 @@ module.exports = function(){
 			    res.redirect(303, '/employees');
 			}
 			else if (deleteReturn >= 400){
-			    res.status(500).send("Malformed request. Contact your administrator.");
+			    res.status(400).send("Malformed request. Contact your administrator.");
+			}
+			else {
+			    res.status(500).render('500');
 			}
 		    })
 		    .catch(function (err) {

@@ -24,14 +24,13 @@ function sigHandler (res) {
     if (checkSig != "") {
 	var form = document.forms.namedItem("sigUpload");
 	var sigData = new FormData(form);
-
+	sigData.set('image', 'image');
 	var sigReq = new XMLHttpRequest();
-	sigReq.open("PUT", sigURL, true);
-	sigReq.setRequestHeader("Content-Type", "image/jpeg");
+	sigReq.open("POST", sigURL, true);
 	sigReq.onload = function(oEvent) {
 	    if (sigReq.status == 200) {
 		console.log("Uploaded!");
-		//redirectHandler();
+		redirectHandler();
 	    } else {
 		console.log("Error " + sigReq.status + " occurred when trying to upload your file");
 	    }
