@@ -6,6 +6,8 @@ threadsafe: true
 handlers:
 - url: /.*
   script: employee_recognition_api.views.main.app
+  http_headers:
+    Access-Control-Allow-Origin: https://cs467maia-site.appspot.com
 
 libraries: 
 - name: flask
@@ -15,4 +17,5 @@ env_variables:
   ENV: 'prod'
 
 # References: 
-# [1] https://cloud.google.com/appengine/docs/standard/python/config/appref        re: use of env variables
+# [1] https://cloud.google.com/appengine/docs/standard/python/config/appref                               re: use of env variables
+# [2] https://stackoverflow.com/questions/31212992/how-to-enable-cors-on-google-app-engine-python-server   

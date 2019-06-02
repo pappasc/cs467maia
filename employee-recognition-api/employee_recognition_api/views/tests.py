@@ -92,7 +92,7 @@ def test_awards_create_pdf():
 
                 # Check: No image in AWS instance
                 logging.debug('tests_api: Checking signature file deleted from Amazon AWS instance')
-                url = 'http://54.203.128.106:80/image/kvavlen_sig.jpg'
+                url = 'http://54.203.128.106:80/image/1_kvavlen_sig.jpg'
                 result = urlfetch.fetch(
                     url=url,
                     method=urlfetch.GET
