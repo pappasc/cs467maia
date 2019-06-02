@@ -221,7 +221,7 @@ module.exports = function(){
 			    updateUserPass(req.body.password, req.body.user_id)
 				.then(function (updatePassReturn) {
 				    if (updatePassReturn.success) {
-					res.redirect(303, '/employees');
+					res.status(200).send({"user_id": req.body.user_id});
 				    }
 				    else {
 					var context = {};

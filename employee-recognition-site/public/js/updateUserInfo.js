@@ -12,10 +12,36 @@ function updateUserInfo(userId){
         url: '/newaccount',
         type: 'PUT',
         data: userInfo,
-        success: redirectHandler,
+        success: sigHandler,
 	error: errorHandle
     });
 };
+
+function sigHandler (res) {
+    var checkSig = document.getElementById("SigPath").value;
+    var sigURL = "https://cs467maia-backend.appspot.com/users/" + res.user_id + "/signature";
+
+    if (checkSig != "") {
+	var form = document.forms.namedItem("sigUpload");
+	var sigData = new FormData(form);
+
+	var sigReq = new XMLHttpRequest();
+	sigReq.open("PUT", sigURL, true);
+	sigReq.onload = function(oEvent) {
+	    if (sigReq.status == 200) {
+		console.log("Uploaded!");
+		//redirectHandler();
+	    } else {
+		console.log("Error " + sigReq.status + " occurred when trying to upload your file");
+	    }
+	};
+	
+	sigReq.send(sigData);
+    }
+    else {
+	redirectHandler();
+    }
+}
 
 function redirectHandler(){
     location.assign(location.origin + "/employees");
