@@ -66,8 +66,8 @@ def users_signature(user_id):
 
         # Write image to Google Cloud Storage
         query_bucket_tool = QueryBucketTool()
-        logging.info('DATA: {}'.format(request.form['image']))
-        write_result = query_bucket_tool.post('signatures/{}'.format(filename), request.form['image'], 'image/jpeg')
+        logging.info('DATA: {}'.format(request.form.to_dict()))
+        write_result = query_bucket_tool.post('signatures/{}'.format(filename), request.form.to_dict()['image'], 'image/jpeg')
         
         # If write is successful, return user_id; otherwise return errors
         if write_result == True:
@@ -79,7 +79,7 @@ def users_signature(user_id):
             status_code = 400
             logging.info('users.py: returning result {}'.format(result))
             logging.info('users.py: returning status code {}'.format(status_code))
-            return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error: {}'.format(e)}]}), headers=headers, status=status_code, mimetype='application/json')
+            return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error'}]}), headers=headers, status=status_code, mimetype='application/json')
 
 # References re: dealing with CORS
 # [1] https://werkzeug.palletsprojects.com/en/0.15.x/datastructures/#werkzeug.datastructures.Headers re: headers
