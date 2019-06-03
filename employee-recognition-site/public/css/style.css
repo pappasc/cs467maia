@@ -82,7 +82,7 @@ div.leftpane{
 
 div.midpane{
     width: 25%;
-    min-width: 100px;
+    min-width: 400px;
     height: available;
     min-height: 200px;
     float:left;
