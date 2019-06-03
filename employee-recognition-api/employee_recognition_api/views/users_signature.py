@@ -49,7 +49,8 @@ def users_signature(user_id):
         headers.add('Access-Control-Allow-Origin', 'https://cs467maia-site.appspot.com')
         headers.add('Access-Control-Allow-Methods', 'POST')
         headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        headers.add('X-Content-Type-Options', 'nosniff')
+        headers.add('Vary', 'Origin')
+        headers.add('Cache-Control', 'max-age=3600')
 
         # If user exists, continue; otherwise, return errors
         logging.info('users.py: checking if user_id {} exists'.format(user_id))
@@ -94,4 +95,4 @@ def users_signature(user_id):
 # [5] https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS                                                      re: use of POST, multipart/form-data
 # [6] https://stackoverflow.com/questions/40414526/how-to-read-multipart-form-data-in-flask                       re: to_dict()
 # [7] http://flask.pocoo.org/docs/0.12/patterns/fileuploads/                                                      re: use of request.files
-# [8] https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type                                      re: set nosniff
+# [8] https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin                       re: vary: origin
