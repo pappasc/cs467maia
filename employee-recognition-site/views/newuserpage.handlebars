@@ -56,13 +56,13 @@
                     </tr>
                     <tr>
                         <td>
-                            Signature - Current: <div id="currentSig">{{signature}}</div>
+                            Signature{{#if currUser}} - Current: <div id="currentSig">{{signature}}</div>{{/if}}
                         </td>
                     </tr>
                     <tr>
                         <td>
 			<form enctype="multipart/form-data" name="sigUpload">
-                            <input type="file" name="image" key="image" id="image" size="100" accept=".jpg"><br>
+                            <input type="file" name="sigFile" id="sigFile" size="100" accept=".jpg"><br>
 			    </form>
                         </td>
                     </tr>

@@ -5,8 +5,15 @@ function updateUserInfo(userId){
     userInfo.first_name     = document.getElementById("FName").value;
     userInfo.last_name      = document.getElementById("LName").value;
     userInfo.password       = document.getElementById("Pword").value; 
-    userInfo.signature_path = document.getElementById("currentSig").textContent;
     userInfo.user_id = userId;
+
+    var checkSig = document.getElementById('sigFile').value;
+    if (checkSig != "") {
+	userInfo.signature_path = checkSig;
+    }
+    else {
+	userInfo.signature_path = document.getElementById("currentSig").textContent;
+    }
 
     $.ajax({
         url: '/newaccount',
@@ -18,18 +25,18 @@ function updateUserInfo(userId){
 };
 
 function sigHandler (res) {
-    var checkSig = document.getElementById("SigPath").value;
+    var checkSig = document.getElementById('sigFile').value;
     var sigURL = "https://cs467maia-backend.appspot.com/users/" + res.user_id + "/signature";
 
     if (checkSig != "") {
-	var form = document.forms.namedItem("sigUpload");
-	var sigData = new FormData(form);
-	//sigData.append('image', );
+	var fileInput = document.getElementById('sigFile');
+	var file = fileInput.files[0];
+	var sigData = new FormData();
+	sigData.set('sigFile', file);
 	var sigReq = new XMLHttpRequest();
 	sigReq.open("POST", sigURL, true);
 	sigReq.onload = function(oEvent) {
 	    if (sigReq.status == 200) {
-		console.log("Uploaded!");
 		redirectHandler();
 	    } else {
 		console.log("Error " + sigReq.status + " occurred when trying to upload your file");

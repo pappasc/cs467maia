@@ -111,13 +111,14 @@ module.exports = function(){
 				    json: true,
 				    resolveWithFullResponse: true
 				};
-				
+				console.log(options);
 				var contextReturn = {};
 				
 				return rp(options)
 				    .then(function (createReturn) {
 					if (createReturn.statusCode == 200) {
 					    contextReturn.success = true;
+					    contextReturn.userID = createReturn.body.user_id;
 					    return contextReturn;
 					}
 					else {
@@ -322,6 +323,7 @@ module.exports = function(){
             if (req.user.type == 'admin') {
 		context.isView = false;
 		context.update = false;
+		context.currUser = false;
 		context.jsscripts = ["saveUserInfo.js", "gotoEmployees.js"];
 		res.status(200).render('newuserpage', context);
 	    }
@@ -352,6 +354,7 @@ module.exports = function(){
 			context.lastName = userProfile.last_name;
 			context.signature = userProfile.signature_path;
 			context.update = true;
+			context.currUser = true;
 			getUserPword(req.params.id)
 			    .then(function (pword){
 				context.password = pword;
@@ -379,10 +382,10 @@ module.exports = function(){
     router.post('/', function(req,res){
 	if (req.isAuthenticated()){
 	    if (req.user.type == 'admin') {
-		createUser(req.body.first_name, req.body.last_name, req.body.email_address, req.body.password, "temp.jpg")
+		createUser(req.body.first_name, req.body.last_name, req.body.email_address, req.body.password, req.body.signature_path)
 		    .then(function (createReturn) {
 			if (createReturn.success) {
-			    res.status(303).redirect('/employees');
+			    res.status(200).send({"userID": createReturn.userID});
 			}
 			else {
 			    var context = {};
