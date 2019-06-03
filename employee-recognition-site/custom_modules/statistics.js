@@ -161,34 +161,86 @@ module.exports = function(){
     
     //No Stat Types selected
     router.get('/', function(req,res){
-        var context = {};
-        context.jsscripts = ["gotoHome.js", "statsOverview.js", "statsAssignBy.js", "statsRecvBy.js"];
-        context.needQuery = true;
-        res.status(200).render('statspage',context);        
+        if (req.isAuthenticated()){
+            if (req.user.type == 'admin'){
+                var context = {};
+                context.jsscripts = ["gotoHome.js", "statsOverview.js", "statsAssignBy.js", "statsRecvBy.js"];
+                context.needQuery = true;
+                res.status(200).render('statspage',context);
+            }
+            else if (req.user.type == 'user'){
+                res.status(403).send("Error 403 - Not authorized to view this page");   
+            }
+            else{
+                res.status(500).render('500');  
+            }
+        }
+        else{
+            res.status(401).send("Error 401, need to be authenticated");
+        }
     });
     
     //General award data by Type
     router.post('/Overview', function(req,res){
-        getAwardsBytype(req).then(function(typeStat){
-            //console.log('overview: ' + typeStat);
-            res.send(typeStat);
-        });
+        if (req.isAuthenticated()){
+            if (req.user.type == 'admin'){
+                getAwardsBytype(req).then(function(typeStat){
+                    //console.log('overview: ' + typeStat);
+                    res.send(typeStat);
+                });
+            }
+            else if (req.user.type == 'user'){
+                res.status(403).send("Error 403 - Not authorized to view this page");   
+            }
+            else{
+                res.status(500).render('500');  
+            }
+        }
+        else{
+            res.status(401).send("Error 401, need to be authenticated");
+        }
     });
     
     //Data by person giving awards
     router.post('/AwardedBy', function(req,res){
-        getAwardsBy(req).then(function (byStat){
-            //console.log('Overview1: ' + byStat);
-            res.send(byStat);
-        });
+        if (req.isAuthenticated()){
+            if (req.user.type == 'admin'){
+                getAwardsBy(req).then(function (byStat){
+                    //console.log('Overview1: ' + byStat);
+                    res.send(byStat);
+                });
+            }
+            else if (req.user.type == 'user'){
+                res.status(403).send("Error 403 - Not authorized to view this page");   
+            }
+            else{
+                res.status(500).render('500');  
+            }
+        }
+        else{
+            res.status(401).send("Error 401, need to be authenticated");
+        }
     });
     
     //Data by person recieving awards
     router.post('/RecvBy', function(req,res){
-        getRecvBy(req).then(function (toStat){
-            //console.log('TO: ' + toStat);
-            res.send(toStat);
-        });
+        if (req.isAuthenticated()){
+            if (req.user.type == 'admin'){
+                getRecvBy(req).then(function (toStat){
+                    //console.log('TO: ' + toStat);
+                    res.send(toStat);
+                });
+            }
+            else if (req.user.type == 'user'){
+                res.status(403).send("Error 403 - Not authorized to view this page");   
+            }
+            else{
+                res.status(500).render('500');  
+            }
+        }
+        else{
+            res.status(401).send("Error 401, need to be authenticated");
+        }
     });
     
    return router;
