@@ -6,6 +6,8 @@
 
 from flask import Blueprint, request, Response
 from werkzeug.datastructures import Headers
+from werkzeug.datastructures import FileStorage
+
 import os 
 from ..db_interface.query_bucket_tool import QueryBucketTool 
 
@@ -47,6 +49,7 @@ def users_signature(user_id):
         headers.add('Access-Control-Allow-Origin', 'https://cs467maia-site.appspot.com')
         headers.add('Access-Control-Allow-Methods', 'POST')
         headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        headers.add('X-Content-Type-Options', 'nosniff')
 
         # If user exists, continue; otherwise, return errors
         logging.info('users.py: checking if user_id {} exists'.format(user_id))
@@ -66,8 +69,10 @@ def users_signature(user_id):
 
         # Write image to Google Cloud Storage
         query_bucket_tool = QueryBucketTool()
-        logging.info('DATA: {}'.format(request.form.to_dict()))
-        write_result = query_bucket_tool.post('signatures/{}'.format(filename), request.form.to_dict()['image'], 'image/jpeg')
+        logging.info('DATA: {}'.format(request.files['sigFile']))
+        image = request.files['sigFile'].read()
+
+        write_result = query_bucket_tool.post('signatures/{}'.format(filename), image, 'image/jpeg')
         
         # If write is successful, return user_id; otherwise return errors
         if write_result == True:
@@ -82,9 +87,11 @@ def users_signature(user_id):
             return Response(json.dumps({'errors': [ {'field': 'n/a', 'message': 'upload error'}]}), headers=headers, status=status_code, mimetype='application/json')
 
 # References re: dealing with CORS
-# [1] https://werkzeug.palletsprojects.com/en/0.15.x/datastructures/#werkzeug.datastructures.Headers re: headers
+# [1] https://werkzeug.palletsprojects.com/en/0.15.x/datastructures/                                              re: headers, filestorage
 # [2] https://stackoverflow.com/questions/31212992/how-to-enable-cors-on-google-app-engine-python-server/31213095 re: need for headers
 # [3] https://flask-cors.corydolphin.com/en/latest/api.html#extension                                             re: headers to use
 # [4] https://stackoverflow.com/questions/11933626/access-control-allow-origin-header-not-working-what-am-i-doing-wrong
 # [5] https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS                                                      re: use of POST, multipart/form-data
 # [6] https://stackoverflow.com/questions/40414526/how-to-read-multipart-form-data-in-flask                       re: to_dict()
+# [7] http://flask.pocoo.org/docs/0.12/patterns/fileuploads/                                                      re: use of request.files
+# [8] https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type                                      re: set nosniff
