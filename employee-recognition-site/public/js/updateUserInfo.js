@@ -24,7 +24,7 @@ function sigHandler (res) {
     if (checkSig != "") {
 	var form = document.forms.namedItem("sigUpload");
 	var sigData = new FormData(form);
-	sigData.set('image', 'image');
+	//sigData.append('image', );
 	var sigReq = new XMLHttpRequest();
 	sigReq.open("POST", sigURL, true);
 	sigReq.onload = function(oEvent) {
