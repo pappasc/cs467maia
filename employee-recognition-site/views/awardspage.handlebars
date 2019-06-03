@@ -12,8 +12,9 @@
 	<section>
 		<nav>
 			<ul>
+				<li><button id="homeButton" onclick="gotoHome()">Home</button></li>
 				{{#if create}}
-				      <li><button id="toggleCreateManage" onclick="gotoAwards('manage')">Manage Award</button></li>
+				      <li><button id="toggleCreateManage" onclick="gotoAwards('manage')">Manage Awards</button></li>
 				{{else}}
 				      <li><button id="toggleManageCreate" onclick="gotoAwards('create')">Create Award</button></li>
 		    		{{/if}}
@@ -28,6 +29,7 @@
 			      {{#if error}}
 			      	    <div>Error getting users - contact administrator</div>
 			      {{else}}
+			      {{#if someUsers}}
 		     	      	   <form action="/awards" method="post">
 		     	  	   	 <table>
 		     	  	 	 	<thead>
@@ -44,20 +46,46 @@
 								<td align="center">{{created_timestamp}}</td>
                 					 </tr>
 						{{/each}}
+							<tr></tr>
+							<tr>
+								<td align="center">Award Type: <select class="typepicker" name="typepicker">
+								    			       <option value="week">week</option>
+											       <option value="month">month</option>
+											       </select></td>
+								<td align="center">Date: <input type="date" id="awarddate" name="awarddate" value="2019-04-01" min="2000-01-01" max="2100-12-31"></td>
+								<td align="center">Time: <select class="timepicker" name="timepicker">
+									    <option value=1>1:00</option>
+									    <option value=2>2:00</option>
+									    <option value=3>3:00</option>
+									    <option value=4>4:00</option>
+									    <option value=5>5:00</option>
+									    <option value=6>6:00</option>
+									    <option value=7>7:00</option>
+									    <option value=8>8:00</option>
+									    <option value=9>9:00</option>
+									    <option value=10>10:00</option>
+									    <option value=11>11:00</option>
+									    <option value=12>12:00</option></select>
+								<select class="meridianpicker" name="meridianpicker">
+									    <option value="AM">AM</option>
+									    <option value="PM">PM</option></select></td>
+								<td align="center"><input type="checkbox" name="sendemail" value="send"> Send email</td>
+							</tr>
 					</table>
-					<div>Award Type:
-					<select class="typepicker" name="typepicker">
-						<option value="week">week</option>
-						<option value="month">month</option>
-					</select>
-					</div>
 					<input type="submit" value="Submit">
+					{{#if createError}}
+	    <div>Error creating award: {{errorMessage}}</div>
+	    {{/if}}
 				  </form>
+				  {{else}}
+					<div>No other users to award - tell management to hire more people</div>
+				  {{/if}}
 				  {{/if}}
 				{{else}}
 				{{#if error}}
 				<div>Error getting awards - contact administrator</div>
 				{{else}}
+				{{#if someAwards}}
 					<table>
 		     	    		       <thead>
 							<th>Recipient</th>
@@ -75,13 +103,13 @@
                 				</tr>
 						{{/each}}
 						</table>
+				{{else}}
+					<div>No awards have been issued by you - create some awards</div>
+				{{/if}}
 						{{/if}}
 						{{/if}}
 		</div>
             </article>
-	    {{#if createError}}
-	    <div>Error creating award</div>
-	    {{/if}}
         </section>
     </div>
 </div>

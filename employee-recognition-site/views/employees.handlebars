@@ -20,7 +20,7 @@
 
             <article id="EmplContainer">
                 <div style="height:500px;overflow:auto;">
-                
+                {{#if someUsers}}
                     <form action="/employees" method="post">
                         <table>
                             <thead>
@@ -40,7 +40,10 @@
                                 </tr>
                             {{/each}}
                         </table>
-                    </form>                
+                    </form> 
+		    {{else}}
+		    <div>No employees - create new employee profiles</div>
+		    {{/if}}               
                 </div>
             </article>
         </section>

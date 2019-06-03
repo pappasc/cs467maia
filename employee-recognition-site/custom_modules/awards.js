@@ -4,82 +4,107 @@ module.exports = function(){
     const rp = require('request-promise');
 
     //Keep on this function, handle the null return
-    function getUsersExcept(req){
+    router.getUsersExcept = function getUsersExcept(userID){
         var options = {
 	    uri: 'https://cs467maia-backend.appspot.com/users',
 	    json: true, // Automatically parses the JSON string in the response
 	    resolveWithFullResponse: true
 	};
 
-	return rp(options).then(function (users) {
-	    if (users.statusCode == 200) {
-		var i;
-		var usersExcept = [];
-		for (i = 0; i < users.body.user_ids.length; i++) {
-		    if (users.body.user_ids[i].user_id != req.user.user_id) {
-			usersExcept.push(users.body.user_ids[i]);
+	return rp(options)
+	    .then(function (users) {
+		if (users.statusCode == 200) {
+		    var i;
+		    var usersExcept = [];
+		    for (i = 0; i < users.body.user_ids.length; i++) {
+			if (users.body.user_ids[i].user_id != userID) {
+			    usersExcept.push(users.body.user_ids[i]);
+			}
 		    }
+		    return usersExcept;
 		}
-		return usersExcept;
-	    }
-	    else {
+		else {
+		    return null;
+		}
+	    })
+	    .catch(function (err) {
 		return null;
-	    }
-	});
+	    });
     }
     
     
-    function getAwards(req){
+    router.getAwards = function getAwards(userID){
         var options = {
-	    uri: 'https://cs467maia-backend.appspot.com/awards/authorize/' + req.user.user_id,
+	    uri: 'https://cs467maia-backend.appspot.com/awards/authorize/' + userID,
 	    json: true, // Automatically parses the JSON string in the response
 	    resolveWithFullResponse: true
 	};
 
-	return rp(options).then(function (awards) {
-	    if (awards.statusCode == 200) {
-		return awards.body.award_ids;
-	    }
-	    else {
+	return rp(options)
+	    .then(function (awards) {
+		if (awards.statusCode == 200) {
+		    return awards.body.award_ids;
+		}
+		else {
+		    return null;
+		}
+	    })
+	    .catch(function (err) {
 		return null;
-	    }
-	});
+	    });
     }
 
-    //create null return instance
-    function getAwardedUsers(awards) {
+    router.getAwardedUsers = function getAwardedUsers(awards) {
 	var options = {
 	    uri: 'https://cs467maia-backend.appspot.com/users',
 	    json: true, // Automatically parses the JSON string in the response
 	    resolveWithFullResponse: true
 	};
 	
-	return rp(options).then(function (users) {
-	    if (users.statusCode == 200) {
-		var i, j;
-		for (i = 0; i < awards.length; i ++) {
-		    for (j = 0; j < users.body.user_ids.length; j++) {
-			if (users.body.user_ids[j].user_id == awards[i].receiving_user_id) {
-			    awards[i].recipient_name = users.body.user_ids[j].first_name + ' ' + users.body.user_ids[j].last_name;
+	return rp(options)
+	    .then(function (users) {
+		if (users.statusCode == 200) {
+		    var i, j;
+		    for (i = 0; i < awards.length; i ++) {
+			for (j = 0; j < users.body.user_ids.length; j++) {
+			    if (users.body.user_ids[j].user_id == awards[i].receiving_user_id) {
+				awards[i].recipient_name = users.body.user_ids[j].first_name + ' ' + users.body.user_ids[j].last_name;
+			    }
 			}
 		    }
+		    return awards;
 		}
-		return awards;
-	    }
-	    else {
+		else {
+		    return null;
+		}
+	    })
+	    .catch(function (err) {
 		return null;
-	    }
-	});
+	    });
     }
 
-    function createAward (awardType, receivingUser, authorizingUser) {
-	var d = new Date,
-		timestamp = [d.getFullYear(),
-			     d.getMonth()+1,
-			     d.getDate()].join('-')+' '+
-		[d.getHours(),
-		 d.getMinutes(),
-		 d.getSeconds()].join(':');
+    router.createAward = function createAward (awardType, receivingUser, authorizingUser, awarddate, timepicker, meridianpicker, sendEmail) {
+
+	var timeHolder = timepicker;
+
+	if (meridianpicker == "PM" && parseInt(timepicker, 10) < 12) {
+	    timeHolder = parseInt(timepicker, 10) + 12;
+	}
+	else if (meridianpicker == "AM" && parseInt(timepicker, 10) == 12) {
+	    timeHolder = 0;
+	}
+	else {
+	    timeHolder = parseInt(timepicker, 10);
+	}
+
+	if (timeHolder < 10) {
+	    timeHolder = "0" + timeHolder + ":00:00";
+	}
+	else {
+	    timeHolder = timeHolder + ":00:00";
+	}
+	
+	var timestamp = awarddate + " " + timeHolder;
 	
 	var newAward = {
 	    authorizing_user_id: authorizingUser,
@@ -87,23 +112,58 @@ module.exports = function(){
 	    type: awardType,
 	    awarded_datetime: timestamp
 	};
+
+	var targetURI;
+	if (sendEmail) {
+	    targetURI = 'https://cs467maia-backend.appspot.com/awards';
+	}
+	else {
+	    targetURI = 'https://cs467maia-backend.appspot.com/awards/no-email';
+	}
 	
 	var options = {
 	    method: 'POST',
-	    uri: 'https://cs467maia-backend.appspot.com/awards',
+	    uri: targetURI,
 	    json: true,
 	    body: newAward,
 	    resolveWithFullResponse: true
 	}
 
+	var contextReturn = {};
+	
 	return rp(options)
 	    .then(function (saveReturn) {
 		if (saveReturn.statusCode == 200) {
-		    return true;
+		    contextReturn.success = true;
+		    return contextReturn;
 		}
 		else {
-		    return false;
+		    contextReturn.success = false;
+		    contextReturn.errorMessage = saveReturn.response.body.errors[0].message;
+		    return contextReturn;
 		}
+	    })
+	    .catch(function (saveReturn) {
+		contextReturn.errorMessage = saveReturn.response.body.errors[0].message;
+		contextReturn.success = false;
+		return contextReturn;
+	    });
+    }
+
+    router.deleteAward = function deleteAward (awardID) {
+	var options = {
+            method: "DELETE",
+            uri: "https://cs467maia-backend.appspot.com/awards/" + awardID,
+            json: true,
+            resolveWithFullResponse: true
+	};
+	
+	return rp(options)
+	    .then(function (deleteReturn){
+		return deleteReturn.statusCode;
+	    })
+	    .catch(function (err) {
+                return 500;
 	    });
     }
 
@@ -116,12 +176,12 @@ module.exports = function(){
 	var context = {};
 	if (req.isAuthenticated()) {
 	    if (req.user.type == 'user') {
-		context.jsscripts = ["logoutUser.js", "gotoAccount.js", "gotoAwards.js"];
+		context.jsscripts = ["logoutUser.js", "gotoAccount.js", "gotoAwards.js", "gotoHome.js"];
 		if (req.params.pageOption == 'manage') {
-		    getAwards(req).then(function (awards) {
+		    router.getAwards(req.user.user_id).then(function (awards) {
 			//handle null return from getAwards
 			if (awards != null) {
-			    return getAwardedUsers(awards);
+			    return router.getAwardedUsers(awards);
 			}
 			else {
 			    return null;
@@ -129,6 +189,12 @@ module.exports = function(){
 		    })
 			.then(function (namedAwards) {
 			    if (namedAwards != null) {
+				if (namedAwards.length != 0) {
+				    context.someAwards = true;
+				}
+				else {
+				    context.someAwards = false;
+				}
 				context.awards = namedAwards;
 				context.authorizer = req.user.user_id;
 				context.create = false;
@@ -146,9 +212,15 @@ module.exports = function(){
 			});
 		}
 		else if (req.params.pageOption == 'create') {
-		    getUsersExcept(req)
+		    router.getUsersExcept(req.user.user_id)
 			.then(function (users) {
 			    if (users != null) {
+				if (users.length != 0) {
+				    context.someUsers = true;
+				}
+				else {
+				    context.someUsers = false;
+				}
 				context.users = users;
 				context.create = true;
 				context.error = false;
@@ -188,27 +260,42 @@ module.exports = function(){
     router.post('/', function (req,res) {
 	if (req.isAuthenticated()) {
 	    if (req.user.type == 'user') {
-		createAward(req.body.typepicker, req.body.employee, req.user.user_id)
+		var sendEmail;
+		if (req.body.sendemail == 'send') {
+		    sendEmail = true;
+		}
+		else {
+		    sendEmail = false;
+		}
+		router.createAward(req.body.typepicker, req.body.employee, req.user.user_id, req.body.awarddate, req.body.timepicker, req.body.meridianpicker, sendEmail)
 		    .then(function (createReturn) {
-			if (createReturn) {
+			if (createReturn.success) {
 			    res.redirect(303, '/awards');
 			}
 			else {
 			    var context = {};
 			    context.jsscripts = ["logoutUser.js", "gotoAccount.js", "gotoAwards.js", "deleteAwards.js"];
-			    getUsersExcept(req)
+			    router.getUsersExcept(req.user.user_id)
 				.then(function (users) {
 				    if (users != null) {
+					if (users.length != 0) {
+					    context.someUsers = true;
+					}
+					else {
+					    context.someUsers = false;
+					}
 					context.users = users;
 					context.create = true;
 					context.createError = true;
 					context.error = false;
+					context.errorMessage = createReturn.errorMessage;
 					res.status(200).render('awardspage', context);
 				    }
 				    else {
 					context.create = true;
 					context.error = true;
 					context.createError = true;
+					context.errorMessage = createReturn.errorMessage;
 					res.status(200).render('awardspage', context);
 				    }
 				})
@@ -237,24 +324,16 @@ module.exports = function(){
     router.delete('/:id', function(req, res){
         if (req.isAuthenticated()){
 	    if (req.user.type == 'user') {
-	        var options = {
-                    method: "DELETE",
-                    uri: "https://cs467maia-backend.appspot.com/awards/" + req.params.id,
-                    json: true,
-                    resolveWithFullResponse: true
-		};
-		
-		rp(options)
-		    .then(function (saveReturn){
-			if (saveReturn.statusCode == 200 || saveReturn.statusCode == 204){
+		router.deleteAward(req.params.id)
+		    .then(function (deleteReturn) {
+			if (deleteReturn == 200 || deleteReturn == 204){
 			    res.redirect(303, '/awards');
 			}
-			else if (saveReturn.statusCode >= 400){
+			else if (deleteReturn >= 400){
 			    res.status(500).send("Malformed request. Contact your administrator.");
 			}
 		    })
 		    .catch(function (err) {
-			console.log("Something broke");
                         res.status(500).send("API Error.");
 		    });
 	    }

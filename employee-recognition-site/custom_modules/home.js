@@ -11,19 +11,20 @@ module.exports = function(){
 	    if (req.user.type == 'user') {
 		context.isUser = true;
 		context.isAdmin = false;
-        context.jsscripts.push("gotoAccount.js");
+		context.jsscripts.push("gotoAccount.js");
 		context.jsscripts.push("gotoAwards.js");
         }
 	    else {
 		context.isUser = false;
 		context.isAdmin = true;
-        context.jsscripts.push("gotoEmployees.js");
-        context.jsscripts.push("gotoAdmins.js");
-        context.jsscripts.push("gotoStats.js");
+		context.jsscripts.push("gotoEmployees.js");
+		context.jsscripts.push("gotoAdmins.js");
+		context.jsscripts.push("gotoStats.js");
 	    }
 	}
 	else {
 	    context.login = true;
+	    context.loginError = false;
 	}
 	res.status(200).render('homepage', context);
     });
