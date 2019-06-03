@@ -389,17 +389,17 @@ module.exports = function(){
     router.put('/', function(req,res){
         if (req.isAuthenticated ()){
 	    if (req.user.type == 'admin') {
-		updateAdmin(req.body.first_name, req.body.last_name, req.body.email_address, req.body.admin_id)
+		updateAdmin(req.body.first_name, req.body.last_name, req.body.email_address, req.body.adminId)
 		    .then(function (updateReturn) {
 			if (updateReturn.success) {
 			    //Send a 303 status code so the browser handles the reload
 			    //after the Ajax request with a GET request
 
 			    //Update password now
-			    updateUserPass(req.body.password, req.body.admin_id)
+			    updateAdminPass(req.body.password, req.body.adminId)
 				.then(function (updatePassReturn) {
 				    if (updatePassReturn.success) {
-					res.status(303).redirect('/admins');
+					res.status(200).send();
 				    }
 				    else {
 					var context = {};
