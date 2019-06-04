@@ -82,7 +82,7 @@ POST /users
 PUT /users/{user_id}/signature 
 - **note:** I'm the least confident about this endpoint, and may make changes to make more secure
 - **function:** update user's information (signature) based on user_id
-- **example request:** ```curl -i -X POST https://cs467maia-backend.appspot.com/users/2/signature -H 'Content-Type: multipart/form-data' -F image=@kvavlen_sig.jpg```
+- **example request:** ```curl -i -X POST https://cs467maia-backend.appspot.com/users/2/signature -H 'Content-Type: multipart/form-data' -F sigFile=@kvavlen_sig.jpg```
 - **example response:**
 
 | status | content-type     | example body                                                                                                                                    |
