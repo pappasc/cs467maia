@@ -14,26 +14,48 @@ module.exports = function(){
         });
     }
 
-    function getUsers() {
-	var options = {
-          uri: 'https://cs467maia-backend.appspot.com/users',
-          json: true
-        };
+    function getUsers(){
+        var options = {
+	    uri: 'https://cs467maia-backend.appspot.com/users',
+	    json: true, // Automatically parses the JSON string in the response
+	    resolveWithFullResponse: true
+	};
 
-        return rp(options).then(function (users){
-            return users.user_ids;
-        });
+	return rp(options)
+	    .then(function (users) {
+		if (users.statusCode == 200) {
+		    return users.body.user_ids;
+		}
+		else {
+		    return null;
+		}
+	    })
+	    .catch(function (err) {
+		var retArry = [];
+		return retArry;
+	    });
     }
 
-    function getAdmins() {
-	var options = {
-          uri: 'https://cs467maia-backend.appspot.com/admins',
-          json: true
-        };
+    function getAdmins(){
+        var options = {
+	    uri: 'https://cs467maia-backend.appspot.com/admins',
+	    json: true, // Automatically parses the JSON string in the response
+	    resolveWithFullResponse: true
+	};
 
-        return rp(options).then(function (admins){
-            return admins.admin_ids;
-        });
+	return rp(options)
+	    .then(function (admins) {
+		if (admins.statusCode == 200) {
+		    return admins.body.admin_ids;
+		}
+		else {
+		    return null;
+		}
+	    })
+	    .catch(function (err) {
+		var retArry = [];
+		return retArry;
+	    });
     }
     
     function getAdminPwd(id){

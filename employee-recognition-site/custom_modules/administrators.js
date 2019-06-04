@@ -34,6 +34,7 @@ module.exports = function(){
                     if (admins != null) {
 			if (admins.length != 0) {
 			    context.someAdmins = true;
+			    context.adminID = req.user.admin_id;
 			    context.admins = admins;
 			}
 			else {

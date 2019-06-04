@@ -10,7 +10,7 @@
                 <ul>
                     <li><button id="userbutton" onclick="gotoAdmin()">Add Admin</button></li>
                     <li><button id="userbutton" onclick="gotoAdminAccount()">Update</button></li>
-                    <li><button id="userbutton" onclick="deleteAdminInfo()">Remove</button></li>
+                    <li><button id="userbutton" onclick="deleteAdminInfo({{adminID}})">Remove</button></li>
                     <li></li>
                     <li></li>
                     <li><button id="home" onclick="gotoHome()">Home</button></li>
@@ -20,6 +20,7 @@
 
             <article id="EmplContainer">
                 <div style="height:500px;overflow:auto;">
+		<div id="errorHolder"></div>
                 {{#if someAdmins}}
                     <form action="/admins" method="post">
                         <table>
@@ -28,7 +29,7 @@
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Created on</th>
+                                <th>Updated on</th>
                             </thead>
                             {{#each admins}}
                                 <tr>

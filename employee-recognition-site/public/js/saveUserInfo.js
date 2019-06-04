@@ -74,3 +74,6 @@ function errorHandler (err) {
     var errorString = document.createTextNode(errorHolder);
     errorHandle.appendChild(errorString);
 }
+
+//https://thoughtbot.com/blog/ridiculously-simple-ajax-uploads-with-formdata
+//https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
