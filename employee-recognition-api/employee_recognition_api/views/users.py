@@ -44,6 +44,7 @@ def users(user_id=None):
         # Determine success based on presence of 'user_ids' key
         try: 
             if type(result['user_ids']) == list: 
+                status_code = 200
                 try: 
                     # Iterate through list & remove the preceding user_id from signature_path
                     for user in result['user_ids']: 
@@ -51,6 +52,7 @@ def users(user_id=None):
                         status_code = 200
                 except Exception as e:
                     logging.exception(e)
+                    status_code = 400
         except KeyError:
             status_code = 400
 
