@@ -1,0 +1,308 @@
+DEBUG:root:setUpClass
+DEBUG:root:InputValidatorTool.__init__(): creating InputValidatorTool instance
+DEBUG:root:Test: check_award_does_not_exist()
+DEBUG:root:HAPPY TC: {'type': 'week', 'datetime': '2019-04-29 00:00:00'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during week of this award
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): weekday_number is 1
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of week: 2019-04-29 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of week: 2019-05-06 00:00:00
+INFO:root:blob: {'awarded_datetime': {'lesser': '2019-05-06 00:00:00', 'greater': '2019-04-29 00:00:00'}, 'type': 'week'}
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': []}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards: {'award_ids': []}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): No awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:HAPPY TC: {'type': 'week', 'datetime': '2019-04-21 11:59:59'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during week of this award
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): weekday_number is 7
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of week: 2019-04-15 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of week: 2019-04-22 00:00:00
+INFO:root:blob: {'awarded_datetime': {'lesser': '2019-04-22 00:00:00', 'greater': '2019-04-15 00:00:00'}, 'type': 'week'}
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': []}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards: {'award_ids': []}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): No awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:HAPPY TC: {'type': 'month', 'datetime': '2019-05-01 0:00:00'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during month of this award
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': []}
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of month: 2019-05-01 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of month: 2019-06-01 00:00:00
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards found: {'award_ids': []}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): No awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:HAPPY TC: {'type': 'month', 'datetime': '2019-04-27 10:00:00'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during month of this award
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': []}
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of month: 2019-04-01 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of month: 2019-05-01 00:00:00
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards found: {'award_ids': []}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): No awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:HAPPY TC: {'type': 'month', 'datetime': '2019-03-31 11:59:59'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during month of this award
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': []}
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of month: 2019-03-01 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of month: 2019-04-01 00:00:00
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards found: {'award_ids': []}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): No awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:SAD TC: {'type': 'week', 'datetime': '2019-04-27 08:00:00'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during week of this award
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): weekday_number is 6
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of week: 2019-04-22 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of week: 2019-04-29 00:00:00
+INFO:root:blob: {'awarded_datetime': {'lesser': '2019-04-29 00:00:00', 'greater': '2019-04-22 00:00:00'}, 'type': 'week'}
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': [{u'authorizing_user_id': 1, u'distributed': True, u'awarded_datetime': '2019-04-27 10:00:00', u'receiving_user_id': 2, u'award_id': 1, u'type': 'week'}]}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards: {'award_ids': [{u'authorizing_user_id': 1, u'distributed': True, u'awarded_datetime': '2019-04-27 10:00:00', u'receiving_user_id': 2, u'award_id': 1, u'type': 'week'}]}
+INFO:root:InputValidatorTool.check_award_does_not_exist(): Awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:SAD TC: {'type': 'week', 'datetime': '2019-04-28 11:59:59'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during week of this award
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): weekday_number is 7
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of week: 2019-04-22 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of week: 2019-04-29 00:00:00
+INFO:root:blob: {'awarded_datetime': {'lesser': '2019-04-29 00:00:00', 'greater': '2019-04-22 00:00:00'}, 'type': 'week'}
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': [{u'authorizing_user_id': 1, u'distributed': True, u'awarded_datetime': '2019-04-27 10:00:00', u'receiving_user_id': 2, u'award_id': 1, u'type': 'week'}]}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards: {'award_ids': [{u'authorizing_user_id': 1, u'distributed': True, u'awarded_datetime': '2019-04-27 10:00:00', u'receiving_user_id': 2, u'award_id': 1, u'type': 'week'}]}
+INFO:root:InputValidatorTool.check_award_does_not_exist(): Awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:SAD TC: {'type': 'week', 'datetime': '2019-04-22 00:00:00'}
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during week of this award
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): weekday_number is 1
+INFO:root:InputValidatorTool.check_award_does_not_exist(): beginning of week: 2019-04-22 00:00:00
+INFO:root:InputValidatorTool.check_award_does_not_exist(): end of week: 2019-04-29 00:00:00
+INFO:root:blob: {'awarded_datetime': {'lesser': '2019-04-29 00:00:00', 'greater': '2019-04-22 00:00:00'}, 'type': 'week'}
+DEBUG:root:QueryTool.get_awards_by_filter(): query is select * from awards where type = :key3 and awarded_datetime >= :key1 and awarded_datetime < :key2;
+DEBUG:root:QueryTool.build_json_select(): returning {'award_ids': [{u'authorizing_user_id': 1, u'distributed': True, u'awarded_datetime': '2019-04-27 10:00:00', u'receiving_user_id': 2, u'award_id': 1, u'type': 'week'}]}
+DEBUG:root:InputValidatorTool.check_award_does_not_exist(): existing_awards: {'award_ids': [{u'authorizing_user_id': 1, u'distributed': True, u'awarded_datetime': '2019-04-27 10:00:00', u'receiving_user_id': 2, u'award_id': 1, u'type': 'week'}]}
+INFO:root:InputValidatorTool.check_award_does_not_exist(): Awards found during time period
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:Test: check_users_exist()
+DEBUG:root:HAPPY TC: [1, 2]
+DEBUG:root:InputValidatorTool.check_users_exist(): checking if user_ids 2 and 1 exist
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {u'first_name': 'Natasha', u'last_name': 'Kvavle', u'user_id': 1, u'signature_path': '1_kvavlen_sig.jpg', u'created_timestamp': '2019-06-04 05:04:39', u'email_address': 'kvavlen@oregonstate.edu'}
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {u'first_name': 'Patrick', u'last_name': 'DeLeon', u'user_id': 2, u'signature_path': '2_deleonp_sig.jpg', u'created_timestamp': '2019-06-01 19:19:10', u'email_address': 'deleonp@oregonstate.edu'}
+DEBUG:root:InputValidatorTool.check_users_exist(): user_ids found
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:HAPPY TC: [2, 1]
+DEBUG:root:InputValidatorTool.check_users_exist(): checking if user_ids 1 and 2 exist
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {u'first_name': 'Patrick', u'last_name': 'DeLeon', u'user_id': 2, u'signature_path': '2_deleonp_sig.jpg', u'created_timestamp': '2019-06-01 19:19:10', u'email_address': 'deleonp@oregonstate.edu'}
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {u'first_name': 'Natasha', u'last_name': 'Kvavle', u'user_id': 1, u'signature_path': '1_kvavlen_sig.jpg', u'created_timestamp': '2019-06-04 05:04:39', u'email_address': 'kvavlen@oregonstate.edu'}
+DEBUG:root:InputValidatorTool.check_users_exist(): user_ids found
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:SAD TC: [1, 10000000]
+DEBUG:root:InputValidatorTool.check_users_exist(): checking if user_ids 10000000 and 1 exist
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {u'first_name': 'Natasha', u'last_name': 'Kvavle', u'user_id': 1, u'signature_path': '1_kvavlen_sig.jpg', u'created_timestamp': '2019-06-04 05:04:39', u'email_address': 'kvavlen@oregonstate.edu'}
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {'errors': [{'field': 'user_id', 'message': 'user_id does not exist'}]}
+INFO:root:InputValidatorTool.check_users_exist(): user_id not found, returning {'errors': [{'field': 'user_id', 'message': 'user_id does not exist'}]}
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:SAD TC: [1000000, 1]
+DEBUG:root:InputValidatorTool.check_users_exist(): checking if user_ids 1 and 1000000 exist
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {'errors': [{'field': 'user_id', 'message': 'user_id does not exist'}]}
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {u'first_name': 'Natasha', u'last_name': 'Kvavle', u'user_id': 1, u'signature_path': '1_kvavlen_sig.jpg', u'created_timestamp': '2019-06-04 05:04:39', u'email_address': 'kvavlen@oregonstate.edu'}
+INFO:root:InputValidatorTool.check_users_exist(): user_id not found, returning {'errors': [{'field': 'user_id', 'message': 'user_id does not exist'}]}
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:SAD TC: [100000, 100000]
+DEBUG:root:InputValidatorTool.check_users_exist(): checking if user_ids 100000 and 100000 exist
+DEBUG:root:QueryTool.__init__(): creating engine in dev
+DEBUG:root:QueryTool.__init__(): connecting to db
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {'errors': [{'field': 'user_id', 'message': 'user_id does not exist'}]}
+DEBUG:root:QueryTool.get_by_id(): query is select user_id, first_name, last_name, email_address, created_timestamp, signature_path from users where user_id = :id;
+DEBUG:root:QueryTool.build_json_select(): returning {'errors': [{'field': 'user_id', 'message': 'user_id does not exist'}]}
+INFO:root:InputValidatorTool.check_users_exist(): user_id not found, returning {'errors': [{'field': 'user_id', 'message': 'user_id does not exist'}]}
+DEBUG:root:QueryTool.disconnect(): closing connection to db
+DEBUG:root:Test: template_response()
+DEBUG:root:Checking: Response includes field specified
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for first_name
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for last_name
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_timestamp
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for awarded_datetime
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for signature_path
+DEBUG:root:Test: valid_email()
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for email_address
+DEBUG:root:Test: valid_name()
+DEBUG:root:Checking: Happy Path for first_name yield None response
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:Checking: Sad Path for first_name yield None response
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for first_name
+DEBUG:root:Checking: Happy Path for last_name yield None response
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:Checking: Sad Path for last_name yield None response
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for last_name
+DEBUG:root:Test: template_response()
+DEBUG:root:Checking: Happy Path passwords yield None response
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:Checking: Sad Path passwords yield error response
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+DEBUG:root:Test: valid_signature_path()
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for signature_path
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for signature_path
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for signature_path
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for signature_path
+DEBUG:root:Test: valid_time()
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_datetime
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_datetime
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_datetime
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_datetime
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for awarded_timestamp
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for awarded_timestamp
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for awarded_timestamp
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for awarded_timestamp
+DEBUG:root:Test: validate_admins()
+DEBUG:root:validating request data in /admins request
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.validate_admins(): returning None
+DEBUG:root:validating request data in /admins request
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for email_address
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_timestamp
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+INFO:root:InputValidatorTool.validate_admins(): returning {'errors': [{'field': 'email_address', 'message': 'invalid value'}, {'field': 'created_timestamp', 'message': 'invalid value'}, {'field': 'password', 'message': 'invalid value'}]}
+DEBUG:root:validating request data in /admins request
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for first_name
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for last_name
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for email_address
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_timestamp
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+INFO:root:InputValidatorTool.validate_admins(): returning {'errors': [{'field': 'first_name', 'message': 'invalid value'}, {'field': 'last_name', 'message': 'invalid value'}, {'field': 'email_address', 'message': 'invalid value'}, {'field': 'created_timestamp', 'message': 'invalid value'}, {'field': 'password', 'message': 'invalid value'}]}
+DEBUG:root:validating request data in /login request
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.validate_users(): returning None
+DEBUG:root:validating request data in /login request
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+INFO:root:InputValidatorTool.validate_users(): returning {'errors': [{'field': 'password', 'message': 'invalid value'}]}
+DEBUG:root:Test: validate_users()
+DEBUG:root:InputValidatorTool.validate_users(): validating request data in /users request
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.validate_users(): returning None
+DEBUG:root:InputValidatorTool.validate_users(): validating request data in /users request
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for signature_path
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_timestamp
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+INFO:root:InputValidatorTool.validate_users(): returning {'errors': [{'field': 'signature_path', 'message': 'invalid value'}, {'field': 'created_timestamp', 'message': 'invalid value'}, {'field': 'password', 'message': 'invalid value'}]}
+INFO:root:Half sad data: {'first_name': 'Natasha', 'last_name': 'Sarah', 'signature_path': 'test.png', 'created_timestamp': '2018-5-30:00:00', 'password': 'a', 'email_address': 'helloitsme@oregonstate.edu'}
+DEBUG:root:InputValidatorTool.validate_users(): validating request data in /users request
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for first_name
+DEBUG:root:InputValidatorTool.valid_name(): validating name is between 2 and 256 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for last_name
+DEBUG:root:InputValidatorTool.valid_email(): validating email not empty
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for email_address
+DEBUG:root:InputValidatorTool.valid_signature_path(): validating signature path includes '.jpg'
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for signature_path
+DEBUG:root:InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for created_timestamp
+DEBUG:root:InputValidatorTool.valid_password(): validating password is between 6 and 10 chars
+DEBUG:root:InputValidatorTool.template_response(): creating template error response for password
+INFO:root:InputValidatorTool.validate_users(): returning {'errors': [{'field': 'first_name', 'message': 'invalid value'}, {'field': 'last_name', 'message': 'invalid value'}, {'field': 'email_address', 'message': 'invalid value'}, {'field': 'signature_path', 'message': 'invalid value'}, {'field': 'created_timestamp', 'message': 'invalid value'}, {'field': 'password', 'message': 'invalid value'}]}
+INFO:root:All sad data: {'first_name': '', 'last_name': '', 'signature_path': 'test.png', 'created_timestamp': '2018-5-30:00:00', 'password': 'a', 'email_address': ''}
+DEBUG:root:tearDownClass

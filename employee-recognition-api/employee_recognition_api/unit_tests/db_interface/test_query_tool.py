@@ -36,16 +36,16 @@ class TestQueryTool(unittest.TestCase):
             'first_name': 'Natasha', 
             'last_name': 'Kvavle', 
             'email_address': 'kvavlen@oregonstate.edu', 
-            'created_timestamp': '2019-05-27 06:36:55', 
-            'signature_path': 'kvavlen_sig.jpg',
+            'created_timestamp': '2019-06-04 05:04:39', 
+            'signature_path': '1_kvavlen_sig.jpg',
             'password': 'encryptme'
         })
         cls.static_test_data['users'].append({
             'first_name': 'Patrick', 
             'last_name': 'DeLeon', 
             'user_id': 2, 
-            'signature_path': 'deleonp_sig.jpg', 
-            'created_timestamp': '2019-04-15 08:52:00',  
+            'signature_path': '2_deleonp_sig.jpg', 
+            'created_timestamp': '2019-06-01 19:19:10',  
             'email_address': 'deleonp@oregonstate.edu',
             'password': 'encryptme'
         })
