@@ -1,6 +1,8 @@
 function statsOverview(){
 
     google.charts.load('current', {'packages':['corechart']});
+    
+    var barNode = document.getElementById('bar_div');
 
     function drawchart(req){
         var data = new google.visualization.DataTable();
@@ -36,7 +38,8 @@ function statsOverview(){
         data: {},
         success: function(result){
             console.log('result - ' + result);
-            drawchart(result);   
+            drawchart(result);
+            barNode.removeChild(barNode.firstChild);
         },
         error: function(){
             Error("Chart data loading error.");
