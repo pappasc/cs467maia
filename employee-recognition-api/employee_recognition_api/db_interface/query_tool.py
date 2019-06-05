@@ -1,3 +1,4 @@
+# query_tool.py
 import json 
 import logging
 from flask_sqlalchemy import sqlalchemy
@@ -7,40 +8,40 @@ class QueryTool:
 
     """
 
-    def __init__(self, connxn_data): 
+    def __init__(self, connection_data): 
         """Initialize connection (self.connxn) to Google Cloud SQL database (or proxy).
 
         Arguments: 
             self
             app: Flask application instance
-            connxn_data: dictionary containing variables for database connection 
-                connxn_data['username']: username for connection to database
-                connxn_data['password']: password for connection to database
-                connxn_data['database']: database name
-                connxn_data['connection_name']: name of cloud sql instance 
+            connection_data: dictionary containing variables for database connection 
+                connection_data['username']: username for connection to database
+                connection_data['password']: password for connection to database
+                connection_data['database']: database name
+                connection_data['connection_name']: name of cloud sql instance 
 
         Returns: void
         """
         # Setup sqlalchemy connection engine for database connection 
         try: 
             # Production environment set-up
-            if connxn_data['environment'] == 'prod': 
-                logging.info('QueryTool.__init__(): creating engine in production')
+            if connection_data['environment'] == 'prod': 
+                logging.debug('QueryTool.__init__(): creating engine in production')
                 self.db = sqlalchemy.create_engine(
                     sqlalchemy.engine.url.URL(
                         drivername='mysql+pymysql', 
-                        username=connxn_data['username'],
-                        password=connxn_data['password'],
-                        database=connxn_data['database'],
+                        username=connection_data['username'],
+                        password=connection_data['password'],
+                        database=connection_data['database'],
                         query={
-                            'unix_socket': '/cloudsql/{}'.format(connxn_data['connection_name'])
+                            'unix_socket': '/cloudsql/{}'.format(connection_data['connection_name'])
                         }
                     ))
             # Development environment set-up
-            elif connxn_data['environment'] == 'dev' or connxn_data['environment'] == 'local':
-                logging.info('QueryTool.__init__(): creating engine in dev')
+            elif connection_data['environment'] == 'dev' or connection_data['environment'] == 'local':
+                logging.debug('QueryTool.__init__(): creating engine in dev')
                 self.db = sqlalchemy.create_engine(
-                    'mysql+pymysql://{}:{}@{}/{}'.format(connxn_data['username'], connxn_data['password'], connxn_data['connection_name'], connxn_data['database'],
+                    'mysql+pymysql://{}:{}@{}/{}'.format(connection_data['username'], connection_data['password'], connection_data['connection_name'], connection_data['database'],
                 ))
   
         # Log any errors encountered for trouble-shooting
@@ -50,7 +51,7 @@ class QueryTool:
 
         # Use engine to connect to database -- either Google Cloud SQL or Google Cloud SQL Proxy
         try: 
-            logging.info('QueryTool.__init__(): connecting to db')
+            logging.debug('QueryTool.__init__(): connecting to db')
             self.connxn = self.db.connect()
         
         # Log any errors encountered for trouble-shooting
@@ -65,14 +66,14 @@ class QueryTool:
 
         Returns: void
         """
-        logging.info('QueryTool.disconnect(): closing connection to db')
+        logging.debug('QueryTool.disconnect(): closing connection to db')
         self.connxn.close()
 
 
     # Note: build_json_* functions are a bit of a misnomer. They originally returned JSON objects, but now they only 
     #       return parsed dictionaries, to later be dumped to JSON.
     
-    def build_json_select(self, result, key, expect_one=False): 
+    def build_json_select(self, result, key, expect_none=False, expect_one=False): 
         """Transforms SELECT query results into parsed dictionary
 
         Arguments:
@@ -103,8 +104,8 @@ class QueryTool:
                 # Iterate through each column of result to parse the data
                 for column in row.keys():
                     # Ensure returning int for any *_id column
-                    if 'id' in str(column): 
-                        result_sub_dict[column] = int(row[column])     
+                    if 'id' in str(column) and row[column] is not None: 
+                        result_sub_dict[column] = int(row[column])   
                     # Ensure returning a bool for 'distributed' column
                     elif 'distributed' == str(column):
                         result_sub_dict[column] = bool(row[column])
@@ -116,7 +117,7 @@ class QueryTool:
                 
             # Return the result dictionary based on the number of rows returned
             # If no rows returned, then there was an error so return an error dict  
-            if iterations == 0:
+            if iterations == 0 and expect_none is False:
                 result_dict = {
                     'errors': [{ 
                         'field': '{}'.format(key),
@@ -129,11 +130,14 @@ class QueryTool:
             elif iterations == 1 and expect_one is True:  
                 result_dict = result_sub_dict
 
+            elif iterations == 0 and expect_none is True: 
+                result_dict = { '{}s'.format(key): [] }
+
             # In all other cases, use the default dict created in the format: 
             # { 'key': [ { }, { }, { } ] }
 
         result.close() 
-        logging.info('QueryTool.build_json_select(): returning {}'.format(result_dict))
+        logging.debug('QueryTool.build_json_select(): returning {}'.format(result_dict))
         return result_dict
 
 
@@ -154,7 +158,7 @@ class QueryTool:
         result_dict = { 
             '{}'.format(key): '{}'.format(last_id)
         }
-        logging.info('QueryTool.build_json_insert(): returning {}'.format(result_dict))
+        logging.debug('QueryTool.build_json_insert(): returning {}'.format(result_dict))
         return result_dict
 
     def build_json_delete(self, key, result): 
@@ -193,7 +197,7 @@ class QueryTool:
                 } ]
             }
 
-        logging.info('QueryTool.build_json_delete(): returning: {}'.format(result_dict))
+        logging.debug('QueryTool.build_json_delete(): returning: {}'.format(result_dict))
         return result_dict
 
     def get(self, table):
@@ -216,11 +220,11 @@ class QueryTool:
         elif table == 'awards': 
             query = sqlalchemy.text('select * from awards;')
             key = 'award_id'
-        logging.info('QueryTool.get(): query is {}'.format(str(query)))
+        logging.debug('QueryTool.get(): query is {}'.format(str(query)))
 
         # Execute SELECT query & return parsed dictionary result
         result = self.connxn.execute(query)
-        return self.build_json_select(result, key, False)
+        return self.build_json_select(result, key, True, False)
 
     def get_by_id(self, table, data):
         """Select users, admins, or awards information (excluding login information) based on id 
@@ -245,11 +249,11 @@ class QueryTool:
         elif table == 'awards': 
             query = sqlalchemy.text('select * from awards where award_id = :id;')
             key = 'award_id'
-        logging.info('QueryTool.get_by_id(): query is {}'.format(str(query)))
+        logging.debug('QueryTool.get_by_id(): query is {}'.format(str(query)))
 
         # Execute query & return parsed dictionary result
         result = self.connxn.execute(query, id = data[key]) 
-        return self.build_json_select(result, key, True) 
+        return self.build_json_select(result, key, False, True) 
 
     def get_login_by_id(self, table, data): 
         """Select user or admin login information based on id 
@@ -271,11 +275,11 @@ class QueryTool:
         elif table == 'admins': 
             query = sqlalchemy.text('select password from admins where admin_id = :id;')
             key = 'admin_id'
-        logging.info('QueryTool.get_login_by_id(): query is {}'.format(str(query)))
+        logging.debug('QueryTool.get_login_by_id(): query is {}'.format(str(query)))
 
         # Execute query & return parsed dictionary result
         result = self.connxn.execute(query, id = data[key])
-        return self.build_json_select(result, key, True) 
+        return self.build_json_select(result, key, False, True) 
 
     def get_awards_by_filter(self, filter, data, between=False): 
         """Select awards information based on filter
@@ -318,8 +322,8 @@ class QueryTool:
         elif filter == 'distributed': 
             query = sqlalchemy.text('select * from awards where distributed = :key;')
             result = self.connxn.execute(query, key = bool(data[filter]))
-        logging.info('QueryTool.get_awards_by_filter(): query is {}'.format(str(query)))
-        return self.build_json_select(result, 'award_id', False) 
+        logging.debug('QueryTool.get_awards_by_filter(): query is {}'.format(str(query)))
+        return self.build_json_select(result, 'award_id', True, False) 
 
     def post(self, table, data):
         """Insert into users, admins, or awards table 
@@ -368,9 +372,45 @@ class QueryTool:
             result = self.connxn.execute(query, authorizing_user_id = data['authorizing_user_id'], receiving_user_id = data['receiving_user_id'], distributed = data['distributed'], awarded_datetime = data['awarded_datetime'], type = data['type'])
             key = 'award_id'
 
-        logging.info('QueryTool.post(): query is {}'.format(str(query)))
+        logging.debug('QueryTool.post(): query is {}'.format(str(query)))
         return self.build_json_insert(key, result) 
     
+    def put_login_by_id(self, table, data): 
+        """Update users or admins password based on id
+
+        Arguments: 
+            self
+            table: string. 'users' or 'admins'
+            data: dictionary. Containing query information based on the table: 
+
+                users
+                data['user_id']
+                data['password']
+
+                admins
+                data['admin_id']
+                data['password']
+        Returns: Parsed dictionary result of update query in format { 'key': int(id) }
+        """
+        # Create UPDATE and SELECT query based on table, execute and return parsed dictionary result
+        # SELECT query effectively verifies that the entry still exists in the table, instead of relying on 
+        # request data to make the response
+        if table == 'users': 
+            query = sqlalchemy.text('update users set password = :password where user_id = :user_id;')
+            result = self.connxn.execute(query, password=data['password'], user_id=int(data['user_id']))
+            verify_query = sqlalchemy.text('select user_id from users where user_id = :id and password = :password;')
+            key = 'user_id'
+        elif table == 'admins': 
+            query = sqlalchemy.text('update admins set password = :password where admin_id = :admin_id;')
+            result = self.connxn.execute(query, password=data['password'], admin_id=int(data['admin_id']))
+            verify_query = sqlalchemy.text('select admin_id from admins where admin_id = :id and password = :password;')
+            key = 'admin_id'
+
+        logging.debug('QueryTool.put(): update query is {}'.format(str(query)))
+        logging.debug('QueryTool.put(): select query is {}'.format(str(verify_query)))
+        result = self.connxn.execute(verify_query, id=int(data[key]), password=data['password'])
+        return self.build_json_select(result, key, False, True)
+
     def put_by_id(self, table, data):
         """Update users or admins table based on id 
 
@@ -383,39 +423,43 @@ class QueryTool:
                 data['user_id']: int
                 data['first_name']: string
                 data['last_name']: string
-                data['password']: string
                 data['email_address']: string
-                data['created_timestamp']: string
                 data['signature_path']: string
 
                 admins
                 data['admin_id']: int
                 data['first_name']: string
                 data['last_name']: string
-                data['password']: string
                 data['email_address']: string
-                data['created_timestamp']: string
 
+                awards
+                data['award_id']: int
+                
         Returns: Parsed dictionary result of update query in format { 'key': int(id) }
         """
         # Create UPDATE and SELECT query based on table, execute and return parsed dictionary result
         # SELECT query effectively verifies that the entry still exists in the table, instead of relying on 
         # request data to make the response
         if table == 'users': 
-            query = sqlalchemy.text('update users set first_name = :first_name, last_name = :last_name, email_address = :email_address, password = :password, created_timestamp = :created_timestamp, signature_path = :signature_path where user_id = :user_id;')
-            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], password=data['password'], created_timestamp=data['created_timestamp'], signature_path=data['signature_path'], user_id=int(data['user_id']))
+            query = sqlalchemy.text('update users set first_name = :first_name, last_name = :last_name, email_address = :email_address, signature_path = :signature_path where user_id = :user_id;')
+            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], signature_path=data['signature_path'], user_id=int(data['user_id']))
             verify_query = sqlalchemy.text('select user_id from users where user_id = :id;')
             key = 'user_id'
         elif table == 'admins': 
-            query = sqlalchemy.text('update admins set first_name = :first_name, last_name = :last_name, email_address = :email_address, password = :password, created_timestamp = :created_timestamp where admin_id = :admin_id;')
-            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], password=data['password'], created_timestamp=data['created_timestamp'], admin_id=int(data['admin_id']))
+            query = sqlalchemy.text('update admins set first_name = :first_name, last_name = :last_name, email_address = :email_address where admin_id = :admin_id;')
+            result = self.connxn.execute(query, first_name = data['first_name'], last_name=data['last_name'], email_address=data['email_address'], admin_id=int(data['admin_id']))
             verify_query = sqlalchemy.text('select admin_id from admins where admin_id = :id;')
             key = 'admin_id'
+        elif table == 'awards':
+            query = sqlalchemy.text('update awards set distributed = true where award_id = :award_id;')
+            result = self.connxn.execute(query, award_id=int(data['award_id']))
+            verify_query = sqlalchemy.text('select award_id from awards where award_id = :id;')
+            key = 'award_id'
 
-        logging.info('QueryTool.put(): update query is {}'.format(str(query)))
-        logging.info('QueryTool.put(): select query is {}'.format(str(verify_query)))
+        logging.debug('QueryTool.put(): update query is {}'.format(str(query)))
+        logging.debug('QueryTool.put(): select query is {}'.format(str(verify_query)))
         result = self.connxn.execute(verify_query, id=int(data[key]))
-        return self.build_json_select(result, key, True)
+        return self.build_json_select(result, key, False, True)
 
     def delete_by_id(self, table, data):
         """Delete from users, admins, or awards table based on user_id 
@@ -443,12 +487,12 @@ class QueryTool:
         elif table == 'awards': 
             query = sqlalchemy.text('delete from awards where award_id = :id;')
             key = 'award_id'
-        logging.info('QueryTool.delete_by_id(): query is {}'.format(str(query)))
+        logging.debug('QueryTool.delete_by_id(): query is {}'.format(str(query)))
 
         # Execute query and return parsed dictionary result
         result = self.connxn.execute(query, id = int(data[key]))
         return self.build_json_delete(key, result)
-        
+
 # References:
 # [1] https://cloud.google.com/sql/docs/mysql/connect-app-engine                                                                        re: create_engine()
 # [2] https://flask-sqlalchemy.palletsprojects.com/en/2.x/

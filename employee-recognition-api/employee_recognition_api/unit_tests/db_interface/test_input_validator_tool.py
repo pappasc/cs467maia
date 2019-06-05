@@ -1,3 +1,4 @@
+# test_input_validator_tool
 import datetime
 import json
 import logging
@@ -7,7 +8,9 @@ import unittest
 import os 
 
 class TestInputValidatorTool(unittest.TestCase): 
-
+    """Test InputValidatorTool class
+    """
+    
     @classmethod
     def setUpClass(cls):
         """Sets up TestInputValidatorTool class
@@ -168,6 +171,30 @@ class TestInputValidatorTool(unittest.TestCase):
             response = self.input_validator.valid_email(email)
             self.assertEquals(response, {'field': 'email_address', 'message': 'invalid value'}, msg='Response was not an error: {}'.format(response))
     
+    def test_validate_login(self): 
+        """Tests validate_login() 
+
+        Arguments: self
+        """        
+        all_happy = { 
+            'password': self.happy_path['password'][0]
+        }
+        response = self.input_validator.validate_login(all_happy)
+        self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
+       
+        # Test: Sad Path
+        all_sad = {
+            'password': self.sad_path['password'][0]
+        }
+        response = self.input_validator.validate_login(all_sad)
+        expected = {
+            'errors': [
+                {'field': 'password', 'message': 'invalid value'},
+            ]
+        }
+        self.assertEquals(response, expected, msg='This Response was not correct errors: {}'.format(response))
+
+
     def test_validate_users(self):
         """Tests validate_users() 
 
@@ -175,7 +202,7 @@ class TestInputValidatorTool(unittest.TestCase):
         """
         logging.debug('Test: validate_users()')
 
-        # Test: Happy Path 
+        # Test: POST Happy Path 
         all_happy = {
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -184,10 +211,10 @@ class TestInputValidatorTool(unittest.TestCase):
             'signature_path': self.happy_path['signature_path'][0],
             'email_address': self.happy_path['email_address'][0]
         }
-        response = self.input_validator.validate_users(all_happy)
+        response = self.input_validator.validate_users('POST', all_happy)
         self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
 
-        # Test: Half Sad Path
+        # Test: POST Half Sad Path
         half_sad = { 
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -197,17 +224,17 @@ class TestInputValidatorTool(unittest.TestCase):
             'email_address': self.happy_path['email_address'][0]
         }
 
-        response = self.input_validator.validate_users(half_sad)
-        expected = {
-            'errors': [
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'signature_path', 'message': 'invalid value'},
-            ]
-        }
+        response = self.input_validator.validate_users('POST', half_sad)
+        logging.info('Half sad data: {}'.format(half_sad))
+        expected = {'errors': [
+            {'field': 'signature_path', 'message': 'invalid value'}, 
+            {'field': 'created_timestamp', 'message': 'invalid value'}, 
+            {'field': 'password', 'message': 'invalid value'}
+        ]}
+
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
 
-        # Test: Sad Path
+        # Test: POST Sad Path
         all_sad = {
             'first_name': self.sad_path['name'][0],
             'last_name': self.sad_path['name'][0],
@@ -216,18 +243,17 @@ class TestInputValidatorTool(unittest.TestCase):
             'signature_path': self.sad_path['signature_path'][0], 
             'email_address': self.sad_path['email_address'][0]
         }
-        response = self.input_validator.validate_users(all_sad)
-        expected = {
-            'errors': [
-                {'field': 'first_name', 'message': 'invalid value'},
-                {'field': 'last_name', 'message': 'invalid value'},
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'email_address', 'message': 'invalid value'},
-                {'field': 'signature_path', 'message': 'invalid value'}
-            ]
-        }
-        self.assertEquals(response, expected, msg='THIS Response was not correct errors: {}'.format(response))
+        response = self.input_validator.validate_users('POST', all_sad)
+        logging.info('All sad data: {}'.format(all_sad))
+        expected = {'errors': [
+            {'field': 'first_name', 'message': 'invalid value'}, 
+            {'field': 'last_name', 'message': 'invalid value'}, 
+            {'field': 'email_address', 'message': 'invalid value'}, 
+            {'field': 'signature_path', 'message': 'invalid value'}, 
+            {'field': 'created_timestamp', 'message': 'invalid value'}, 
+            {'field': 'password', 'message': 'invalid value'}
+        ]}
+        self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
     
     def test_validate_admins(self):
         """Tests validate_admins() 
@@ -236,7 +262,7 @@ class TestInputValidatorTool(unittest.TestCase):
         """
         logging.debug('Test: validate_admins()')
 
-        # Test: Happy Path 
+        # Test: POST Happy Path 
         all_happy = {
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -244,10 +270,10 @@ class TestInputValidatorTool(unittest.TestCase):
             'password': self.happy_path['password'][0],
             'email_address': self.happy_path['email_address'][0]
         }
-        response = self.input_validator.validate_admins(all_happy)
+        response = self.input_validator.validate_admins('POST', all_happy)
         self.assertEquals(response, None, msg='Response was not None: {}'.format(response))
 
-        # Test: Half Sad Path
+        # Test: POST Half Sad Path
         half_sad = { 
             'first_name': self.happy_path['name'][0],
             'last_name': self.happy_path['name'][1],
@@ -256,17 +282,16 @@ class TestInputValidatorTool(unittest.TestCase):
             'email_address': self.sad_path['email_address'][0]
         }
 
-        response = self.input_validator.validate_admins(half_sad)
+        response = self.input_validator.validate_admins('POST', half_sad)
         expected = {
             'errors': [
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'email_address', 'message': 'invalid value'}
-            ]
-        }
+                {'field': 'email_address', 'message': 'invalid value'}, 
+                {'field': 'created_timestamp', 'message': 'invalid value'}, 
+                {'field': 'password', 'message': 'invalid value'}
+            ]}
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
 
-        # Test: Sad Path
+        # Test: POST Sad Path
         all_sad = {
             'first_name': self.sad_path['name'][0],
             'last_name': self.sad_path['name'][0],
@@ -274,17 +299,73 @@ class TestInputValidatorTool(unittest.TestCase):
             'password': self.sad_path['password'][0],
             'email_address': self.sad_path['email_address'][0]
         }
-        response = self.input_validator.validate_admins(all_sad)
+        response = self.input_validator.validate_admins('POST', all_sad)
         expected = {
             'errors': [
-                {'field': 'first_name', 'message': 'invalid value'},
-                {'field': 'last_name', 'message': 'invalid value'},
-                {'field': 'created_timestamp', 'message': 'invalid value'},
-                {'field': 'password', 'message': 'invalid value'},
-                {'field': 'email_address', 'message': 'invalid value'}
-            ]
-        }
+                {'field': 'first_name', 'message': 'invalid value'}, 
+                {'field': 'last_name', 'message': 'invalid value'}, 
+                {'field': 'email_address', 'message': 'invalid value'}, 
+                {'field': 'created_timestamp', 'message': 'invalid value'}, 
+                {'field': 'password', 'message': 'invalid value'}
+            ]}
+
         self.assertEquals(response, expected, msg='Response was not correct errors: {}'.format(response))
     
+    def test_check_users_exist(self):
+        """Tests check_users_exist() 
+
+        Arguments: self
+        """
+        logging.debug('Test: check_users_exist()')
+
+        happy_path = [[1, 2], [2, 1]]
+        sad_path = [[1, 10000000], [1000000, 1], [100000, 100000]]
+
+        # Check each happy path TC returns True
+        for tc in happy_path:
+            logging.debug('HAPPY TC: {}'.format(tc))
+            response = self.input_validator.check_users_exist(tc[0], tc[1])
+            self.assertEquals(response, True, msg='Response was not True: {}'.format(response))
+
+        # Check each sad path TC returns an error dict
+        for tc in sad_path: 
+            logging.debug('SAD TC: {}'.format(tc))
+            response = self.input_validator.check_users_exist(tc[0], tc[1])
+            self.assertEquals(len(response['errors']), 1, msg='Response was did not have 1 error: {}'.format(response))
+
+    def test_check_award_does_not_exist(self):
+        """Tests check_award_does_not_exist()
+
+        Arguments: self
+        """
+        logging.debug('Test: check_award_does_not_exist()')
+
+        happy_path = [ 
+            {'type': 'week', 'datetime': '2019-04-29 00:00:00'}, 
+            {'type': 'week', 'datetime': '2019-04-21 11:59:59'}, 
+            {'type': 'month', 'datetime': '2019-05-01 0:00:00'}, 
+            {'type': 'month', 'datetime': '2019-04-27 10:00:00'},
+            {'type': 'month', 'datetime': '2019-03-31 11:59:59'}
+        ]
+
+        sad_path = [ 
+            {'type': 'week', 'datetime': '2019-04-27 08:00:00'}, 
+            {'type': 'week', 'datetime': '2019-04-28 11:59:59'},
+            {'type': 'week', 'datetime': '2019-04-22 00:00:00'},
+        ]
+        # Based on the fact that award 1 will be in the DB with weekly award / awarded_datetime 2019-04-07 10:00:00
+        
+        # Check each happy path TC returns True
+        for tc in happy_path: 
+            logging.debug('HAPPY TC: {}'.format(tc))
+            response = self.input_validator.check_award_does_not_exist(tc['type'], tc['datetime'])
+            self.assertEquals(response, True, msg='Response was not True: {}'.format(response))
+
+        # Check each sad path TC returns an error dict
+        for tc in sad_path: 
+            logging.debug('SAD TC: {}'.format(tc))
+            response = self.input_validator.check_award_does_not_exist(tc['type'], tc['datetime'])
+            self.assertEquals(response['errors'][0]['field'], 'type', msg='Response was not the correct error: {}'.format(response))
+
 if __name__ == '__main__': 
     unittest.main()

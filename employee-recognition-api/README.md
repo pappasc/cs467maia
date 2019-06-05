@@ -1,6 +1,8 @@
 # employee-recognition-api
-## Main Contributor
-Natasha Kvavle
+- Service: employee-recognition-api
+- Course: CS 467
+- Contributor: Natasha Kvavle
+- Date: June 4, 2019
 
 ### Instructions for Set-Up
  + Install Google Cloud SDK & app-engine-python gcloud component
@@ -9,7 +11,7 @@ Natasha Kvavle
  
 ### Instructions to Run 
  + Run proxy: 
- ```./cloud_sql_proxy -instances=maia-backend:us-west1:employee-recognition-db -dir=/cloudsql &```
+ ```./cloud_sql_proxy -instances=cs467maia-backend:us-west1:employee-recognition-database -dir=/cloudsql &```
  + Change app.yaml environment to 'dev'
  + Install requirements 
  ```pip install -t lib -r requirements.txt --system --upgrade```
@@ -19,8 +21,8 @@ Natasha Kvavle
 employee-recognition-api will send the following status codes in these situations:
 - 200: successful api request & response
 - 400: malformed api request, or api request can't be performed (i.e. trying to select, update, or delete something that doesn't exist)
-- 401: stretch goal, implemented if api keys are implemented 
-- 403: stretch goal, user / admin attempts to access api they don't have access to 
+- 401: stretch goal, implemented if api keys are implemented [ not implemented ]
+- 403: stretch goal, user / admin attempts to access api they don't have access to [ not implemented ] 
 - 500: internal service error (service isn't up)
 
 ## Endpoints
@@ -82,7 +84,7 @@ POST /users
 PUT /users/{user_id}/signature 
 - **note:** I'm the least confident about this endpoint, and may make changes to make more secure
 - **function:** update user's information (signature) based on user_id
-- **example request:** ```curl -H 'Content-Type: image/jpeg' -X PUT <url>/users/3/signature --upload-file "greens_sig.jpg"```
+- **example request:** ```curl -i -X POST https://cs467maia-backend.appspot.com/users/2/signature -H 'Content-Type: multipart/form-data' -F sigFile=@kvavlen_sig.jpg```
 - **example response:**
 
 | status | content-type     | example body                                                                                                                                    |
@@ -93,7 +95,7 @@ PUT /users/{user_id}/signature
 PUT /users/{user_id}
 - **function:** update user's information based on user_id
 - **note:** leaving in the unchanged values as this will be pre-populated in form
-- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"first_name": "Natasha", "last_name": "Kvavle", "signature_path": "kvavlen_sig.jpg", "created_timestamp": "2019-04-15 00:00:00", "password": "EncryptMe", "email_address": "greens@oregonstate.edu"}'```
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"first_name": "Natasha", "last_name": "Kvavle", "signature_path": "kvavlen_sig.jpg", "email_address": "greens@oregonstate.edu"}'```
 - **response:**
 
 | status | content-type     | example body                                                                                                                                    |
@@ -101,6 +103,16 @@ PUT /users/{user_id}
 | 200    | application/json | ```{ "user_id": 3 }```                                                                                                                          |
 | 400    | application/json | ```{ "errors": [ { "field": "user_id", "message": "user_id does not exist" } ] }```                                                             |
 
+PUT /users/{user_id}/login
+- **function:** update user's password based on user_id
+- **note:** leaving in the unchanged values as this will be pre-populated in form
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"password": "encrytme2"}'```
+- **response:**
+
+| status | content-type     | example body                                                                                                                                    |
+| -------| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200    | application/json | ```{ "user_id": 3 }```                                                                                                                          |
+| 400    | application/json | ```{ "errors": [ { "field": "user_id", "message": "user_id does not exist" } ] }```                                                        
 DELETE /users/{user_id}
 - **function:** delete user based on user_id, but delete is not cascading and will not delete awards created by user
 - **example request:** ```curl -H 'Content-Type: application/json' -X DELETE <url>/users/3```
@@ -133,7 +145,7 @@ GET /admins/{admin_id}
 | 400    | application/json | ```{ "errors": [ { "field": "admin_id", "message": "admin_id does not exist" } ] }```                                                           |
 
 GET /admins/{admin_id}/login 
-- **function:** returns admin's information based on admin_id
+- **function:** returns admin's password based on admin_id
 - **example request:** ```curl -X GET <url>/admins/1/login```
 - **example response:**
 
@@ -153,8 +165,8 @@ POST /admins
 | 400    | application/json | ```{ "errors": [ { "field": "created_timestamp", "message": "invalid value" } ] }```                                                            |
 
 PUT /admins/{admin_id}
-- **function:** returns admin's information based on admin_id
-- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/2 -d '{ "first_name": "Ann", "last_name": "Nova", "email_address": "novat@oregonstate.edu", "password": "encrypteme", "created_timestamp": "2018-04-17 00:00:00" }'```
+- **function:** returns admin's password based on admin_id
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/2 -d '{ "password": "encryptme2" }'```
 - **example response:**
 
 | status | content-type     | example body                                                                                                                                    |
@@ -162,6 +174,16 @@ PUT /admins/{admin_id}
 | 200    | application/json | ```{ "admin_id": 2 }```                                                                                                                         |
 | 400    | application/json | ```{ "errors": [ { "field": "password", "message": "string length maximum exceeded" } ] }```                                                    |
 
+PUT /admins/{admin_id}/login
+- **function:** update user's information based on user_id
+- **note:** leaving in the unchanged values as this will be pre-populated in form
+- **example request:** ```curl -H 'Content-Type: application/json' -X PUT <url>/users/446 -d '{"password": "encryptme"}'```
+- **response:**
+
+| status | content-type     | example body                                                                                                                                    |
+| -------| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200    | application/json | ```{ "user_id": 3 }```                                                                                                                          |
+| 400    | application/json | ```{ "errors": [ { "field": "user_id", "message": "user_id does not exist" } ] }```                                                        
 DELETE /admins/{admin_id}
 - **function:** deletes admin based on admin_id
 - **example request:** ```curl -H 'Content-Type: application/json' -X DELETE <url>/users/2 -d '{"creds": { "employee_type": "admin", "id": 2, "password": "encryptme" } }'```
@@ -173,6 +195,14 @@ DELETE /admins/{admin_id}
 | 400    | application/json | ```{ "errors": [ { "field": "admin_id", "message": "admin_id does not exist" } ] }```                                                           |
 
 ### Awards 
+
+GET /awards
+- **function:** returns all awards' information
+- **example request:** ```curl -X GET <url>/awards```
+- **example response:**
+| status | content-type     | example body                                                                                                                                                |
+| -------| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 200    | application/json | ```{ "award_ids": [{ "award_id": 1, "authorizing_user_id": 2, "receiving_user_id": 3, "type": "week", distributed: "true", "awarded_datetime": "2019-04-18 12:00:00" } ] }```  |
 
 GET /awards/{award_id}  
 - **function:** returns award's information based on award_id
@@ -280,26 +310,35 @@ If time allows, I will be implementing some way to prevent anyone but the maia g
 11. https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api 
 - Modeled my responses off of examples provided in resource 11
 12. https://hackernoon.com/restful-api-designing-guidelines-the-best-practices-60e1d954e7c9
+13. https://ec.haxx.se/http-multipart.html re: example of curl request for multi-part forms.
 
 ### re: Setting Up Environment
-13. https://cloud.google.com/appengine/docs/standard/python/quickstart 
-14. https://console.cloud.google.com/appengine/start/deploy?language=python&environment=standard&project=maia-backend&organizationId=717626756570
-15. https://github.com/pypa/pip/issues/3826#issuecomment-232080694        re: use of --system to get pip install of third party libraries to work
+14. https://cloud.google.com/appengine/docs/standard/python/quickstart 
+15. https://console.cloud.google.com/appengine/start/deploy?language=python&environment=standard&project=maia-backend&organizationId=717626756570
+16. https://github.com/pypa/pip/issues/3826#issuecomment-232080694                                                  re: use of --system to get pip install of third party libraries to work
+17. http://www.tug.org/texlive/quickinstall.html re: downloading LaTeX binary
+18. https://groups.google.com/forum/#!topic/google-appengine/LiwVqZvlO8A                                            re: can't run storage bucket commands in dev w/o access token
+19. https://github.com/GoogleCloudPlatform/python-docs-samples/issues/853                                           re: some google tools are not expected to run locally, so cloudstorage may be one of those
 
 ### re: General References for employee-recognition-api 
-16. https://www.python.org/dev/peps/pep-0008/
-17. https://docs.python.org/3.3/tutorial/classes.html
-18. https://docs.python.org/3/tutorial/datastructures.html
-19. https://docs.python.org/2/tutorial/classes.html
-20. https://stackoverflow.com/questions/3434581/accessing-a-class-member-variables-in-python
-21. https://stackoverflow.com/questions/456481/cant-get-python-to-import-from-a-different-folder    re: \__init\__.py usage
-22. https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27             re: libraries to use
-23. https://github.com/pallets/flask-sqlalchemy                                                     re: how to use flask-sqlalchemy, source for flask-sqlalchemy lib copied into project 
-24. https://docs.python.org/2/library/logging.html                                                  re: logging
-25. https://stackoverflow.com/questions/415511/how-to-get-the-current-time-in-python                re: getting current time in python
-26. https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27         re: downloading & using third-party libraries in app engine
-27. https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project         re: removing git repo from 3rd party libraries
-28. https://stackoverflow.com/questions/3128393/google-app-engine-logging-in-dev-console            re: how to log to console
-29. http://flask.pocoo.org/docs/1.0/api/#incoming-request-data                                      re: use of request.data for getting body of POST request
-30. https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/appengine/standard/storage/appengine-client/requirements.txt re: requirements for storage client lib
-31. https://github.com/dkalpakchi/rel_import/blob/master/__init__.py  								re: \__init\__.py usage
+20. https://www.python.org/dev/peps/pep-0008/
+21. https://docs.python.org/3.3/tutorial/classes.html
+22. https://docs.python.org/3/tutorial/datastructures.html
+23. https://docs.python.org/2/tutorial/classes.html
+24. https://stackoverflow.com/questions/3434581/accessing-a-class-member-variables-in-python
+25. https://stackoverflow.com/questions/456481/cant-get-python-to-import-from-a-different-folder    re: \__init\__.py usage
+26. https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27             re: libraries to use
+27. https://github.com/pallets/flask-sqlalchemy                                                     re: how to use flask-sqlalchemy, source for flask-sqlalchemy lib copied into project 
+28. https://docs.python.org/2/library/logging.html                                                  re: logging
+29. https://stackoverflow.com/questions/415511/how-to-get-the-current-time-in-python                re: getting current time in python
+30. https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27         re: downloading & using third-party libraries in app engine
+31. https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project         re: removing git repo from 3rd party libraries
+32. https://stackoverflow.com/questions/3128393/google-app-engine-logging-in-dev-console            re: how to log to console
+33. http://flask.pocoo.org/docs/1.0/api/#incoming-request-data                                      re: use of request.data for getting body of POST request
+34. https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/appengine/standard/storage/appengine-client/requirements.txt re: requirements for storage client lib
+35. https://github.com/dkalpakchi/rel_import/blob/master/__init__.py  								re: \__init\__.py usage
+36. https://www.google.com/search?q=signature&client=ubuntu&hs=Se2&channel=fs&source=lnms&tbm=isch&sa=X&ved=0ahUKEwiW1ejUua7iAhXHilQKHRVrAuoQ_AUIDigB&biw=635&bih=385#imgrc=2OON3FzNBqcOVM: re: example signature jpg to use for tests
+37. https://docs.python.org/2/tutorial/inputoutput.html#reading-and-writing-files                   re: file I/O
+38. https://docs.python.org/2/library/datetime.html                                                 re: datetime
+39. https://www.programiz.com/python-programming/methods/built-in/bytes                             re: use of bytes()
+40. https://cloud.google.com/appengine/docs/standard/python/issue-requests                          re: code example for using urlfetch

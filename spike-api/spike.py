@@ -1,6 +1,10 @@
 from flask import Flask 
 from google.appengine.api import urlfetch
 from google.appengine.api import mail
+from latex import build_pdf
+import os
+import logging
+#import pdb; pdb.set_trace()
 
 app = Flask(__name__)
 
@@ -43,7 +47,7 @@ def file():
 
 	"""
 	
-	url = 'https://www.googleapis.com/upload/storage/v1/b/maia-backend.appspot.com/o?uploadType=media&name=signatures/test.jpg'
+	url = 'https://www.googleapis.com/upload/storage/v1/b/cs467maia-backend.appspot.com/o?uploadType=media&name=signatures/test.jpg'
 	headers = {
 		'Content-Type': 'image/jpeg',
 		'Authorization': 'Bearer ya29.Glz0BogAxpVghh5vM4fZnHYHS5pOMCA6LfB5CD-QaGmIMrfwdZu8Di7Rsq8xiTRi5vjMap7x5pk5fpcYvNf14IYUKIfVX2QK0bYAPm9795JrDbqv52EeWxX1Vn-_bw',
@@ -64,6 +68,21 @@ def file():
 	print(result.status_code)	
 
 	return 'success'
+
+# Does not work in Google App Engine Standard Environment
+@app.route('/pdf', methods=['GET'])
+def pdf():	
+	""" This does not work, but was meant to build a pdf from latex file using
+		a given texlive distribution.
+	"""
+	try: 
+		file = open('test.tex', 'r')
+		min_latex = file.read()
+		pdf = build_pdf(min_latex, texinputs='/home/nkvavle/cs467maia/texlive/bin/x86_64-linux', builder='pdflatex')
+		return bytes(pdf)
+	except Exception as e: 
+		logging.exception(e) 
+
 
 # references (based code off of these resources)
 # [1] http://flask.pocoo.org/docs/1.0/quickstart/
@@ -108,3 +127,12 @@ def file():
 # [37] https://2.python-requests.org//en/master/user/install/#install 
 # [38] https://stackoverflow.com/questions/4754152/how-do-i-remove-git-tracking-from-a-project 
 # [39] https://pypi.org/project/requests-toolbelt/#files 
+# [40] https://cloud.google.com/appengine/docs/standard/python/tools/using-local-server re: pdb
+# [41] https://guides.lib.wayne.edu/latex/compiling 														re: bypassing latex lib
+# [42] https://stackoverflow.com/questions/2559076/how-do-i-redirect-output-to-a-variable-in-shell 			re: redirecting file to var
+# [43] https://stackoverflow.com/questions/2152114/google-app-engine-to-run-executable-files 				re: can't run binary files
+# [44] https://pypi.org/project/latex/
+# [45] https://stackoverflow.com/questions/38431066/runtime-error-in-build-pdf-module-of-latex-python            re: host to get latex binaries
+# [46] https://github.com/mbr/latex/blob/master/latex/build.py                                                   re: specifying texinputs in build_pdf()
+# [47] https://tex.stackexchange.com/questions/265688/how-can-i-add-the-latex-on-python-path 					 re: adding to path
+# [48] https://stackoverflow.com/questions/5971312/how-to-set-environment-variables-in-python 					 re: effectively adding to os var

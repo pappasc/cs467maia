@@ -1,3 +1,4 @@
+# users.py
 from flask import Blueprint, request, Response
 import logging
 import os 
@@ -5,12 +6,13 @@ import pymysql
 import json
 from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
+from threading import Thread
 
 # Allow users_api to be accessible to main.py
 users_api = Blueprint('users_api', __name__)
 
 # Define connection data
-connection_name = 'maia-backend:us-west1:employee-recognition-db'
+connection_name = 'cs467maia-backend:us-west1:employee-recognition-database'
 if os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == 'local': 
     connection_name = '127.0.0.1'
 connection_data = { 
@@ -41,8 +43,16 @@ def users(user_id=None):
         result = query.get('users')
         # Determine success based on presence of 'user_ids' key
         try: 
-            if result['user_ids']: 
+            if type(result['user_ids']) == list: 
                 status_code = 200
+                try: 
+                    # Iterate through list & remove the preceding user_id from signature_path
+                    for user in result['user_ids']: 
+                        user['signature_path'] = user['signature_path'].replace('{}_'.format(user['user_id']), '', 1)
+                        status_code = 200
+                except Exception as e:
+                    logging.exception(e)
+                    status_code = 400
         except KeyError:
             status_code = 400
 
@@ -55,7 +65,9 @@ def users(user_id=None):
         # Determine success based on presence of 'user_id' key
         try: 
             if result['user_id']:
-                status_code = 200 
+                status_code = 200
+                # Remove the preceding user_id from signature_path
+                result['signature_path'] = result['signature_path'].replace('{}_'.format(result['user_id']), '', 1) 
         except KeyError:
             status_code = 400
 
@@ -64,7 +76,7 @@ def users(user_id=None):
         # Parse JSON request data
         data = json.loads(request.data)
         # Validate parsed request data
-        result = ivt.validate_users(data)
+        result = ivt.validate_users(request.method, data)
 
         # If result is None, continue
         if result is None: 
@@ -74,6 +86,19 @@ def users(user_id=None):
             try: 
                 if result['user_id']:
                     status_code = 200 
+
+                    # Implement second PUT request to update signature path with user_id
+                    put_data = data
+                    put_data['signature_path'] = '{}_{}'.format(result['user_id'], data['signature_path'])
+                    put_data['user_id'] = result['user_id']
+                    put_result = query.put_by_id('users', put_data)
+                    try: 
+                        if put_result['user_id'] == result['user_id']:
+                            status_code = 200
+                    except KeyError:
+                        result = put_result
+                        status = 400
+
             except KeyError:
                 status_code = 400
         else:
@@ -85,7 +110,7 @@ def users(user_id=None):
         data = json.loads(request.data)
 
         # Validate parsed request data
-        result = ivt.validate_users(data)
+        result = ivt.validate_users(request.method, data)
 
         # If valid data, continue
         if result is None:
@@ -93,6 +118,18 @@ def users(user_id=None):
             data['user_id'] = int(user_id)
             result = query.put_by_id('users', data)
 
+            # Implement second PUT request to update signature path with user_id
+            put_data = data
+            put_data['signature_path'] = '{}_{}'.format(result['user_id'], data['signature_path'])
+            put_data['user_id'] = result['user_id']
+            put_result = query.put_by_id('users', put_data)
+            try: 
+                if put_result['user_id'] == result['user_id']:
+                    status_code = 200
+            except KeyError:
+                result = put_result
+                status = 400
+            
             # Determine success based on presence of 'user_id' key
             try: 
                 if result['user_id']:
@@ -121,7 +158,7 @@ def users(user_id=None):
     logging.info('users_api: returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
-@users_api.route('/users/<int:user_id>/login', methods=['GET'])
+@users_api.route('/users/<int:user_id>/login', methods=['GET', 'PUT'])
 def users_login(user_id): 
     """ Handle GET /users/<user_id>/login request
     
@@ -132,6 +169,7 @@ def users_login(user_id):
     """
     # Initial tool classes
     query = QueryTool(connection_data)
+    ivt = InputValidatorTool()
     
     # GET /users/<user_id>/login
     if request.method == 'GET' and user_id is not None: 
@@ -146,7 +184,32 @@ def users_login(user_id):
         except KeyError:
             status_code = 400
 
+    # PUT /users/<user_id>/login
+    elif request.method == 'PUT' and user_id is not None: 
+        # Parse JSON data into dictionary
+        data = json.loads(request.data)
+
+        # Validate request data
+        result = ivt.validate_login(data)
+
+        # Add user_id to request body
+        data['user_id'] = int(user_id)
+
+        # Query database
+        result = query.put_login_by_id('users', data)
+
+        # Error if result doesn't have the key 'user_id'
+        try: 
+            if result['user_id']: 
+                status_code = 200
+        except KeyError:
+            status_code = 400
+
+
     query.disconnect()
     logging.info('users_api (users_login()): returning result {}'.format(result))
     logging.info('users_api (users_login()): returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
+
+# References: 
+# [1] https://stackoverflow.com/questions/10648490/removing-first-appearance-of-word-from-a-string  re: replacing first instance of substring

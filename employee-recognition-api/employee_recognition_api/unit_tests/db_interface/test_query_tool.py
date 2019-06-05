@@ -7,7 +7,8 @@ import unittest
 import os 
 
 class TestQueryTool(unittest.TestCase): 
-
+    """Test QueryTool class
+    """
     @classmethod
     def setUpClass(cls): 
         """Sets up class for unit tests, creating query variable & 
@@ -36,14 +37,14 @@ class TestQueryTool(unittest.TestCase):
             'last_name': 'Kvavle', 
             'email_address': 'kvavlen@oregonstate.edu', 
             'created_timestamp': '2019-04-15 08:52:00', 
-            'signature_path': 'kvavlen_sig.jpg',
+            'signature_path': '1_kvavlen_sig.jpg',
             'password': 'encryptme'
         })
         cls.static_test_data['users'].append({
             'first_name': 'Patrick', 
             'last_name': 'DeLeon', 
             'user_id': 2, 
-            'signature_path': 'deleonp_sig.jpg', 
+            'signature_path': '2_deleonp_sig.jpg', 
             'created_timestamp': '2019-04-15 08:52:00',  
             'email_address': 'deleonp@oregonstate.edu',
             'password': 'encryptme'
@@ -62,7 +63,7 @@ class TestQueryTool(unittest.TestCase):
             'authorizing_user_id': 1,
             'receiving_user_id': 2, 
             'type': 'week', 
-            'distributed': False, 
+            'distributed': True, 
             'awarded_datetime': '2019-04-27 10:00:00'
         })
 
@@ -193,7 +194,7 @@ class TestQueryTool(unittest.TestCase):
             'receiving_user_id': 2, 
             'type': 'week',
             'awarded_datetime': '2018-04-01 00:00:00', 
-            'distributed': False
+            'distributed': True
         }
 
         for column in filters:
@@ -246,12 +247,12 @@ class TestQueryTool(unittest.TestCase):
             # Clean up test
             self.query.delete_by_id('{}s'.format(entity), {'{}_id'.format(entity): int(result['{}_id'.format(entity)]) })
 
-    def test_put_by_id(self):
-        """Tests put_by_id() function
+    def test_put_login_by_id(self): 
+        """Tests put_login_by_id() function
 
         Arguments: self
-        """
-        logging.debug('Test: put_by_id()')
+        """       
+        logging.debug('Test: put_login_by_id()')
         entities = ['user', 'admin']
 
         for entity in entities: 
@@ -265,7 +266,7 @@ class TestQueryTool(unittest.TestCase):
             self.dyn_test_data['{}s'.format(entity)][1]['{}_id'.format(entity)] = id
 
             # Make UPDATE query
-            result = self.query.put_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][1])
+            result = self.query.put_login_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][1])
             logging.debug('Function Result: {}'.format(result))
 
             # Test: Result is an id 
@@ -274,7 +275,46 @@ class TestQueryTool(unittest.TestCase):
 
             # Test: Result is the correct id
             logging.debug('Checking: Result is correct {}_id'.format(entity))
-            self.assertEquals(int(result['{}_id'.format(entity)]), id, msg='Result is not the correct user_id: {}'.format(result))
+            self.assertEquals(int(result['{}_id'.format(entity)]), id, msg='Result is not the correct {}_id: {}'.format(entity, result))
+
+            # Clean up
+            self.query.delete_by_id('{}s'.format(entity), {'{}_id'.format(entity): int(result['{}_id'.format(entity)])})
+
+    def test_put_by_id(self):
+        """Tests put_by_id() function
+
+        Arguments: self
+        """
+        logging.debug('Test: put_by_id()')
+        entities = ['user', 'admin', 'award']
+
+        for entity in entities: 
+            logging.debug('Table: {}s'.format(entity))
+            # Set up test
+            # INSERT dynamic test data and capture user_id
+            result = self.query.post('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][0])
+            id = int(result['{}_id'.format(entity)])
+
+            # award doesn't have as many test cases
+            if entity == 'award':
+                tc = 0 
+            else:
+                tc = 1
+
+            # Add id to dynamic test data for UPDATE command
+            self.dyn_test_data['{}s'.format(entity)][tc]['{}_id'.format(entity)] = id
+
+            # Make UPDATE query
+            result = self.query.put_by_id('{}s'.format(entity), self.dyn_test_data['{}s'.format(entity)][tc])
+            logging.debug('Function Result: {}'.format(result))
+
+            # Test: Result is an id 
+            logging.debug('Checking: Result is a {}_id'.format(entity))
+            self.assertEquals(result.keys(), ['{}_id'.format(entity)], msg='Result is not a {}_id: {}'.format(entity, result))
+
+            # Test: Result is the correct id
+            logging.debug('Checking: Result is correct {}_id'.format(entity))
+            self.assertEquals(int(result['{}_id'.format(entity)]), id, msg='Result is not the correct {}_id: {}'.format(entity, result))
 
             # Clean up
             self.query.delete_by_id('{}s'.format(entity), {'{}_id'.format(entity): int(result['{}_id'.format(entity)])})

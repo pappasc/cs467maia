@@ -1,3 +1,4 @@
+# app.yaml
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -14,7 +15,4 @@ env_variables:
   ENV: 'prod'
 
 # References: 
-# [1] https://cloud.google.com/appengine/docs/standard/python/quickstart 
-# [2] https://cloud.google.com/appengine/docs/standard/python/tools/using-libraries-python-27
-# [3] https://cloud.google.com/appengine/docs/standard/python/tools/built-in-libraries-27
-# [4] https://cloud.google.com/appengine/docs/standard/python/config/appref                   re: use of env variables
+# [1] https://cloud.google.com/appengine/docs/standard/python/config/appref                               re: use of env variables

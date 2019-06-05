@@ -1,3 +1,4 @@
+# awards.py
 from flask import Blueprint, request, Response
 import datetime 
 import logging
@@ -6,12 +7,13 @@ import pymysql
 import json
 from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
+from ..award_interface.award_driver import AwardDriver
 
 # Allow awards_api to be accessible from main.py 
 awards_api = Blueprint('awards_api', __name__)
 
 # Define connection data
-connection_name = 'maia-backend:us-west1:employee-recognition-db'
+connection_name = 'cs467maia-backend:us-west1:employee-recognition-database'
 if os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == 'local': 
     connection_name = '127.0.0.1'
 connection_data = { 
@@ -22,10 +24,10 @@ connection_data = {
     'connection_name': '{}'.format(connection_name) 
 }
 
-@awards_api.route('/awards', methods=['POST'])
+@awards_api.route('/awards', methods=['GET'])
 @awards_api.route('/awards/<int:award_id>', methods=['GET', 'DELETE'])
 def awards(award_id=None):
-    """ Handle POST /awards, GET, DELETE /awards/<award_id> 
+    """ Handle  GET, DELETE /awards/<award_id> & GET /awards
     
     Arguments: 
         award_id: int. Default is None. URL Parameter. 
@@ -50,138 +52,17 @@ def awards(award_id=None):
         except KeyError:
             status_code = 400
 
-    # POST /awards
-    elif request.method == 'POST' and award_id is None: 
-        
-        # Parse JSON request.data
-        data = json.loads(request.data)
-        skip = False
+    # GET /awards
+    elif request.method == 'GET' and award_id is None: 
+        # Query database for award based on ID
+        result = query.get('awards')
 
-        # Query database to determine if user ids exist, and continue if so; otherwise, return errors
-        logging.info('awards_api: checking if user_ids {} and {} exist'.format(data['receiving_user_id'], data['authorizing_user_id']))
-        query = QueryTool(connection_data)
-        result1 = query.get_by_id('users', {
-            'user_id': data['authorizing_user_id'] 
-        })    
-        result2 = query.get_by_id('users', {
-            'user_id': data['receiving_user_id']
-        })
-        
+        # Determine success on presence of award_id
         try: 
-            if result1['errors'] is not None:
-                status_code = 400
-                logging.info('awards.py: returning {}'.format(result1))
-                logging.info('awards.py: status code {}'.format(status_code))
-                result = result1 
-                skip = True 
+            if type(result['award_ids']) == list:  
+                status_code = 200
         except KeyError:
-            try: 
-                if result2['errors'] is not None: 
-                    status_code = 400 
-                    logging.info('awards.py: returning {}'.format(result2))
-                    logging.info('awards.py: status code {}'.format(status_code))
-                    result = result2 
-                    skip = True 
-            except KeyError:
-                logging.info('awards_api: user_ids found')
-
-        # Check if more awards are acceptable during time period 
-        if data['type'] == 'month': 
-            try: 
-                # Identify date range for month to compare against
-                month = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').month
-                year = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').year
-
-                # Find existing awards during month range identified. If found, return errors and do not continue
-                greater = str(datetime.datetime(year, month, 1, 0, 0, 0, 0))
-                lesser = str(datetime.datetime(year, month + 1, 1, 0, 0, 0))
-                blob = { 
-                    'awarded_datetime': {
-                        'greater': greater, 
-                        'lesser': lesser 
-                    }, 
-                    'type': 'month'
-                }
-                existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
-
-                # Determine success based on lack of 'errors' key
-                try: 
-                    if len(existing_awards['errors']) != 0:
-                        logging.info('No awards found during time period')
-                except KeyError: 
-                    status_code = 400 
-                    result = {'errors': [{'field': 'type', 'message': 'too many awards of month type in time period'}]}
-                    skip = True
-            except Exception as e: 
-                logging.exception(e) 
-    
-        elif data['type'] == 'week':
-            try: 
-                # Identify date range for week
-                # Get the week number that the awarded_datetime belongs to & save the year
-                week_number = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').isocalendar()[1]
-                year = datetime.datetime.strptime(data['awarded_datetime'], '%Y-%m-%d %H:%M:%S').year
-
-                # Determine what day was the "beginning" of the week at the start of the year
-                jan1_weekday_number = datetime.datetime(year, 1, 1, 0, 0, 0, 0).isocalendar()[2]
-                logging.info('weekday number jan 1: {}'.format(jan1_weekday_number))
-                beg_of_year = datetime.datetime(year, 1, 1, 0, 0, 0, 0) - datetime.timedelta(days=jan1_weekday_number)
-                logging.info('beginning of year: {}'.format(beg_of_year))
-
-                # Calculate beginning of week by adding the week_number to the first day of the first week of the year
-                # Then add 7 days to get end of week
-                beg_of_week = beg_of_year + datetime.timedelta(weeks=week_number - 1)
-                end_of_week = beg_of_year + datetime.timedelta(weeks=week_number - 1) + datetime.timedelta(days=7)
-
-                logging.info('beginning of week: {}'.format(beg_of_week))
-                logging.info('end of week: {}'.format(end_of_week))
-
-                # Query database for awards that exist in this week time period
-                greater = str(beg_of_week)
-                lesser = str(end_of_week)
-                blob = { 
-                    'awarded_datetime': {
-                        'greater': greater, 
-                        'lesser': lesser 
-                    }, 
-                    'type': 'week'
-                }
-                existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
-
-                # Determine success based on lack of 'errors' key
-                try: 
-                    if len(existing_awards['errors']) != 0:
-                        logging.info('No awards found during time period')
-                except KeyError: 
-                    status_code = 400 
-                    result = {'errors': [{'field': 'type', 'message': 'too many awards of week type in time period'}]}
-                    skip = True
-            except Exception as e:
-                logging.exception(e) 
-
-        # Continue with award POST 
-        if skip == False: 
-            # Validate the data provided
-            result = ivt.validate_awards(data)
-            # Continue if validation was successful
-            if result is None: 
-                # Add distributed = false to the body of request
-                data['distributed'] = False
-                # Insert query against database based on request data
-                result = query.post('awards', data)
-                
-                # Determine success based on presence of 'award_id' key
-                try: 
-                    if result['award_id']:
-                        status_code = 200 
-                except KeyError:
-                    status_code = 400
-            else:
-                status_code = 400         
-
-        logging.info('awards_api: returning {}'.format(result))
-        logging.info('awards_api: status code {}'.format(status_code))
-        return Response(json.dumps(result), status=status_code, mimetype='application/json')
+            status_code = 400
 
     # DELETE /awards/<award_id>
     elif request.method == 'DELETE' and award_id is not None:
@@ -201,6 +82,112 @@ def awards(award_id=None):
     logging.info('awards_api: returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
+# POST /awards
+@awards_api.route('/awards', methods=['POST'])
+def awards_post():
+    """ Handle POST /awards
+    
+    Returns: see README for results expected for each endpoint 
+    """
+    # Parse JSON request.data
+    data = json.loads(request.data)
+    ivt = InputValidatorTool()
+    query = QueryTool(connection_data)
+    driver = AwardDriver(connection_data, True)
+
+    # Validate the data provided
+    result = ivt.validate_awards(data)
+    if result is not None:
+        query.disconnect() 
+        return Response(json.dumps(result), status=400, mimetype='application/json')
+    
+    # Check both users exist
+    users_exists = ivt.check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
+    if users_exists is not True: 
+        return Response(json.dumps(users_exists), status=400, mimetype='application/json')
+
+    # Check the award is the first of it's kind in it's respective time range
+    award_dne = ivt.check_award_does_not_exist(data['type'], data['awarded_datetime'])
+    if award_dne is not True:
+        query.disconnect() 
+        return Response(json.dumps(award_dne), status=400, mimetype='application/json')
+    
+    # Continue with award POST 
+    # Insert query against database based on request data
+    data['distributed'] = False
+    post_result = query.post('awards', data)
+    
+    # If the post was successful and we have an award_id, save pdf to google storage bucket
+    try: 
+        if post_result['award_id']: 
+            data['award_id'] = post_result['award_id']
+            if driver.create_pdf(data) is not True: 
+                logging.info('awards_api: Failed to make and email PDF')
+                status_code = 200 # status code should be 200 regardless of the result of create_pdf, only based on POST to DB result
+            else: 
+                status_code = 200 
+    except KeyError as e:
+        logging.exception(e)
+        status_code = 400
+
+    query.disconnect()
+    logging.info('awards_api: returning result {}'.format(post_result))
+    logging.info('awards_api: returning status code {}'.format(status_code))
+    return Response(json.dumps(post_result), status=status_code, mimetype='application/json')
+
+# POST /awards
+@awards_api.route('/awards/no-email', methods=['POST'])
+def awards_post_no_email():
+    """ Handle POST /awards
+    
+    Returns: see README for results expected for each endpoint 
+    """
+    # Parse JSON request.data
+    data = json.loads(request.data)
+    ivt = InputValidatorTool()
+    query = QueryTool(connection_data)
+    driver = AwardDriver(connection_data, False)
+
+    # Validate the data provided
+    result = ivt.validate_awards(data)
+    if result is not None:
+        return Response(json.dumps(result), status=400, mimetype='application/json')
+    
+    # Check both users exist
+    users_exists = ivt.check_users_exist(data['authorizing_user_id'], data['receiving_user_id'])
+    if users_exists is not True: 
+        return Response(json.dumps(users_exists), status=400, mimetype='application/json')
+
+    # Check the award is the first of it's kind in it's respective time range
+    award_dne = ivt.check_award_does_not_exist(data['type'], data['awarded_datetime'])
+    if award_dne is not True:
+        query.disconnect() 
+        return Response(json.dumps(award_dne), status=400, mimetype='application/json')
+    
+    # Continue with award POST 
+    # Insert query against database based on request data
+    data['distributed'] = False
+    post_result = query.post('awards', data)
+    
+    # If the post was successful and we have an award_id, save pdf to google storage bucket
+    try: 
+        if post_result['award_id']: 
+            data['award_id'] = post_result['award_id']
+            if driver.create_pdf(data) is not True: 
+                logging.info('awards_api: Failed to make and email PDF')
+                status_code = 200 
+            else: 
+                status_code = 200 
+    except KeyError as e:
+        logging.exception(e)
+        status_code = 400
+
+    query.disconnect()
+    logging.info('awards_api: returning result {}'.format(post_result))
+    logging.info('awards_api: returning status code {}'.format(status_code))
+    return Response(json.dumps(post_result), status=status_code, mimetype='application/json')
+
+
 @awards_api.route('/awards/authorize/<int:authorizing_user_id>', methods=['GET'])
 def awards_authorize(authorizing_user_id): 
     """ Handle GET /awards/authorize/<authorizing_user_id>
@@ -219,7 +206,7 @@ def awards_authorize(authorizing_user_id):
 
         # Determine success based on presence of 'award_ids' key in result
         try: 
-            if result['award_ids']: 
+            if type(result['award_ids']) == list: 
                 status_code = 200
         except KeyError:
             status_code = 400
@@ -244,10 +231,9 @@ def awards_receive(receiving_user_id):
     if request.method == 'GET' and receiving_user_id is not None:
         # Query database for awards received by user_id 
         result = query.get_awards_by_filter('receiving_user_id', {'receiving_user_id': receiving_user_id})
-
         # Determine success based on presence of 'award_ids' key in result
         try: 
-            if result['award_ids']: 
+            if type(result['award_ids']) == list: 
                 status_code = 200
         except KeyError:
             status_code = 400
@@ -275,7 +261,7 @@ def awards_type(type_string):
         
         # Determine success based on presence of 'award_ids' key in result
         try: 
-            if result['award_ids']: 
+            if type(result['award_ids']) == list: 
                 status_code = 200
         except KeyError:
             status_code = 400
@@ -304,7 +290,7 @@ def awards_datetime(date):
 
         # Determine success based on presence of 'award_ids' key in result
         try: 
-            if result['award_ids']: 
+            if type(result['award_ids']) == list:  
                 status_code = 200
         except KeyError:
             status_code = 400
@@ -338,7 +324,7 @@ def awards_distributed(distributed):
         
         # Determine success based on presence of 'award_ids' key in result
         try: 
-            if result['award_ids']: 
+            if type(result['award_ids']) == list: 
                 status_code = 200
         except KeyError:
             status_code = 400
@@ -348,10 +334,3 @@ def awards_distributed(distributed):
     logging.info('awards_api: returning status code {}'.format(status_code))
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
-
-# References 
-# [1] https://www.programiz.com/python-programming/methods/string/replace                                       re: python string replace()
-# [2] https://docs.python.org/2/library/datetime.html                                                           re: datetime obj
-# [3] https://stackoverflow.com/questions/19480028/attributeerror-datetime-module-has-no-attribute-strptime     re: use of strptime
-# [4] https://stackoverflow.com/questions/2600775/how-to-get-week-number-in-python                              re: isocalendar
-# [5] https://stackoverflow.com/questions/6871016/adding-5-days-to-a-date-in-python?rq=1                        re: using timedelta

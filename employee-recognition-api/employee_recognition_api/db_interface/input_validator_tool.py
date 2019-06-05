@@ -1,6 +1,9 @@
+# input_validator_tool.py
 import logging 
 import datetime
 import json
+import os
+from query_tool import QueryTool
 
 class InputValidatorTool:
     """Validates inputs to the employee-recognition-api.
@@ -13,7 +16,20 @@ class InputValidatorTool:
         
         Returns: void
         """
-        logging.info('InputValidatorTool.__init__(): creating InputValidatorTool instance')  
+        logging.debug('InputValidatorTool.__init__(): creating InputValidatorTool instance') 
+
+        # Define connection data
+        connection_name = 'cs467maia-backend:us-west1:employee-recognition-database'
+        if os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == 'local': 
+            connection_name = '127.0.0.1'
+        self.connection_data = { 
+            'environment': os.environ.get('ENV'),
+            'username': 'api_user', 
+            'password': 'tj348$', 
+            'database': 'maia',
+            'connection_name': '{}'.format(connection_name) 
+        }
+
 
     def template_response(self, field):
         """Creates a template error response to be added to 'errors' list and 
@@ -27,7 +43,7 @@ class InputValidatorTool:
             message dict as follows:
                 { 'field': field, 'message': 'invalid value' }
         """
-        logging.info('InputValidatorTool.template_response(): creating template error response for {}'.format(field))
+        logging.debug('InputValidatorTool.template_response(): creating template error response for {}'.format(field))
         return {'field': field, 'message': 'invalid value'}
 
     def valid_password(self, password):
@@ -41,7 +57,7 @@ class InputValidatorTool:
             if valid: None
             if invalid: { 'field': 'password', 'message': 'invalid value' }
         """
-        logging.info('InputValidatorTool.valid_password(): validating password is between 6 and 10 chars')
+        logging.debug('InputValidatorTool.valid_password(): validating password is between 6 and 10 chars')
         if len(password) >= 6 and len(password) <= 10: 
             return None  
         else:
@@ -58,7 +74,7 @@ class InputValidatorTool:
             if valid: None
             if invalid: { 'field': 'email_address', 'message': 'invalid value' }
         """
-        logging.info('InputValidatorTool.valid_email(): validating email not empty')
+        logging.debug('InputValidatorTool.valid_email(): validating email not empty')
         if len(email_address) >= 1: 
             return None  
         else:
@@ -76,7 +92,7 @@ class InputValidatorTool:
             if valid: None
             if invalid: { 'field': '{name_type}', 'message': 'invalid value' }
         """
-        logging.info('InputValidatorTool.valid_name(): validating name is between 2 and 256 chars')
+        logging.debug('InputValidatorTool.valid_name(): validating name is between 2 and 256 chars')
         if len(name) >= 1 and len(name) <= 256:
             return None 
         else: 
@@ -94,7 +110,7 @@ class InputValidatorTool:
             if valid: None
             if invalid: { 'field': '{time_type}', 'message': 'invalid value' }
         """
-        logging.info('InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS')
+        logging.debug('InputValidatorTool.valid_time(): validating time is in correct format YYYY-m-dd HH:MM:SS')
         try: 
             if datetime.datetime.strptime(time_string, '%Y-%m-%d %H:%M:%S'): 
                 return None
@@ -113,7 +129,7 @@ class InputValidatorTool:
             if valid: None
             if invalid: { 'field': 'signature_path', 'message': 'invalid value' }
         """
-        logging.info('InputValidatorTool.valid_signature_path(): validating signature path includes \'.jpg\'')
+        logging.debug('InputValidatorTool.valid_signature_path(): validating signature path includes \'.jpg\'')
         if '.jpg' in signature_path:
             return None 
         else: 
@@ -130,17 +146,18 @@ class InputValidatorTool:
             if valid: None
             if invalid: { 'field': 'type', 'message': 'invalid value' }
         """
-        logging.info('InputValidatorTool.valid_type(): validating type is \'week\' or \'month\'')
+        logging.debug('InputValidatorTool.valid_type(): validating type is \'week\' or \'month\'')
         if type_string == 'week' or type_string == 'month':
             return None 
         else: 
             return self.template_response('type')
 
-    def validate_users(self, data):
+    def validate_users(self, request_type, data):
         """Validates all data for users POST/PUT requests.
 
         Arguments:
             self
+            request_type: POST or PUT
             data: dict. Data contained in POST/PUT request to /users endpoint.
                 keys: first_name, last_name, created_timestamp, password, email_address, signature_path
 
@@ -149,7 +166,7 @@ class InputValidatorTool:
             if invalid: List of errors in format {'errors': [] }
         """
         # Validate each input, appending errors (if applicable) to 'errors' dict
-        logging.info('InputValidatorTool.validate_users(): validating request data in /users request')
+        logging.debug('InputValidatorTool.validate_users(): validating request data in /users request')
         result = { 'errors': [] } 
         valid_fname_result = self.valid_name(data['first_name'], 'first_name')
         if valid_fname_result is not None:
@@ -159,14 +176,6 @@ class InputValidatorTool:
         if valid_lname_result is not None:
             result['errors'].append(valid_lname_result)
 
-        valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
-        if valid_time_result is not None:
-            result['errors'].append(valid_time_result)
-
-        valid_pass_result = self.valid_password(data['password'])
-        if valid_pass_result is not None: 
-            result['errors'].append(valid_pass_result) 
-
         valid_email_result = self.valid_email(data['email_address'])
         if valid_email_result is not None:
             result['errors'].append(valid_email_result) 
@@ -175,14 +184,52 @@ class InputValidatorTool:
         if valid_sig_result is not None:
             result['errors'].append(valid_sig_result) 
 
+        # Additional tests required only in POST requests
+        if request_type == 'POST': 
+            valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
+            if valid_time_result is not None:
+                result['errors'].append(valid_time_result)
+
+            valid_pass_result = self.valid_password(data['password'])
+            if valid_pass_result is not None: 
+                result['errors'].append(valid_pass_result) 
+
         if result == {'errors':[]}:
-            logging.info('validate_users(): returning None')
+            logging.debug('InputValidatorTool.validate_users(): returning None')
             return None 
         else:
-            logging.info('validate_users(): returning {}'.format(result))
+            logging.info('InputValidatorTool.validate_users(): returning {}'.format(result))
             return result
 
-    def validate_admins(self, data):
+    def validate_login(self, data): 
+        """Validates password for users/admins PUT requests.
+
+        Arguments:
+            self
+            data: dict. Data contained in POST/PUT request to /admins endpoint.
+                keys: password
+
+        Returns: 
+            if valid: None
+            if invalid: List of errors in format {'errors': [] }
+        """
+        logging.debug('validating request data in /login request')
+        result = { 'errors': [] } 
+
+        # Validate password input, appending errors (if applicable) to the 'errors' dict
+        valid_pass_result = self.valid_password(data['password'])
+        if valid_pass_result is not None: 
+            result['errors'].append(valid_pass_result) 
+            
+        if result == {'errors': []}:
+            logging.debug('InputValidatorTool.validate_users(): returning None')
+            return None 
+        else:
+            logging.info('InputValidatorTool.validate_users(): returning {}'.format(result))
+            return result
+
+
+    def validate_admins(self, request_type, data):
         """Validates all data for admins POST/PUT requests.
 
         Arguments:
@@ -194,7 +241,7 @@ class InputValidatorTool:
             if valid: None
             if invalid: List of errors in format {'errors': [] }
         """
-        logging.info('validating request data in /admins request')
+        logging.debug('validating request data in /admins request')
         result = { 'errors': [] } 
 
         # Validate each input, appending errors (if applicable) to 'errors' dict
@@ -205,24 +252,26 @@ class InputValidatorTool:
         valid_lname_result = self.valid_name(data['last_name'], 'last_name')
         if valid_lname_result is not None:
             result['errors'].append(valid_lname_result)
-
-        valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
-        if valid_time_result is not None:
-            result['errors'].append(valid_time_result)
-
-        valid_pass_result = self.valid_password(data['password'])
-        if valid_pass_result is not None: 
-            result['errors'].append(valid_pass_result) 
         
         valid_email_result = self.valid_email(data['email_address'])
         if valid_email_result is not None:
             result['errors'].append(valid_email_result)
         
+        # Additional validation required only for POST
+        if request_type == 'POST':
+            valid_time_result = self.valid_time(data['created_timestamp'], 'created_timestamp') 
+            if valid_time_result is not None:
+                result['errors'].append(valid_time_result)
+
+            valid_pass_result = self.valid_password(data['password'])
+            if valid_pass_result is not None: 
+                result['errors'].append(valid_pass_result) 
+
         if result == {'errors': []}:
-            logging.info('returning None')
+            logging.debug('InputValidatorTool.validate_admins(): returning None')
             return None 
         else:
-            logging.info('returning {}'.format(result))
+            logging.info('InputValidatorTool.validate_admins(): returning {}'.format(result))
             return result
 
     def validate_awards(self, data):
@@ -237,7 +286,7 @@ class InputValidatorTool:
             if valid: None
             if invalid: List of errors in format {'errors': [] }
         """
-        logging.info('InputValidatorTool.validate_awards(): validating request data in /awards request')
+        logging.debug('InputValidatorTool.validate_awards(): validating request data in /awards request')
         result = { 'errors': [] } 
 
         valid_time_result = self.valid_time(data['awarded_datetime'], 'awarded_datetime') 
@@ -249,14 +298,161 @@ class InputValidatorTool:
             result['errors'].append(valid_type_result)
 
         if result == {'errors': []}:
-            logging.info('returning None')
+            logging.debug('InputValidatorTool.validate_awards(): returning None')
             return None
         else: 
-            logging.info('returning {}'.format(result))
+            logging.info('InputValidatorTool.validate_awards(): returning {}'.format(result))
             return result
 
+    def check_users_exist(self, authorizing_user_id, receiving_user_id):
+        """Check that the users involved in award exist
 
-# [1] https://stackabuse.com/converting-strings-to-datetime-in-python/                                        re: parsing timestamp/datetime
-# [2] https://stackoverflow.com/questions/8056496/python-get-unicode-string-size                             re: len()
-# [3] https://www.afternerd.com/blog/python-string-contains/                                                re: contains string
-# [4] https://stackoverflow.com/questions/41862525/valueerror-time-data-does-not-match-format-y-m-d-hms-f     re: use of ValueError as an exception to catch for time validation
+        Arguments:
+            authorizing_user_id:    int. ID of authorizing user
+            receiving_user_id:      int. ID of receiving user
+
+        Returns:
+            True if both users exist
+            error dictionary if a user does not exist
+                will either return error re: authorizing_user_id or 
+                error re: receiving_user_id. Won't return both errors at this time.
+        """
+        # Query database to determine if user ids exist, and continue if so; otherwise, return errors
+        logging.debug('InputValidatorTool.check_users_exist(): checking if user_ids {} and {} exist'.format(receiving_user_id, authorizing_user_id))
+        query = QueryTool(self.connection_data)
+        result1 = query.get_by_id('users', {
+            'user_id': authorizing_user_id 
+        })    
+        result2 = query.get_by_id('users', {
+            'user_id': receiving_user_id
+        })
+        
+        # Check authorizing user_id, if result had errors then return those errors
+        try: 
+            if result1['errors'] is not None:
+                status_code = 400
+                logging.info('InputValidatorTool.check_users_exist(): user_id not found, returning {}'.format(result1))
+                result = result1
+        # If authorizing_user_id result did not have errors, check receiving_user_id 
+        except KeyError:
+            try: 
+                if result2['errors'] is not None: 
+                    logging.info('InputValidatorTool.check_users_exist(): user_id not found, returning {}'.format(result2))
+                    result = result2
+            except KeyError:
+                logging.debug('InputValidatorTool.check_users_exist(): user_ids found')
+                result = True
+
+        query.disconnect()
+        return result 
+
+    def check_award_does_not_exist(self, type_string, awarded_datetime):
+        """Check the employee of the month/week awards do not 
+            already exist in the time period associated with our award
+            Example: 
+                - If award of type 'month' is awarded on '2019-05-01 0:00:00'
+                    then checks that no other 'month' awards exist in May 2019.
+                - If award of type 'week' is awarded on '2019-05-01 0:00:00'
+                    then checks that no other 'week' awards exist from Monday, '2019-04-29
+                    0:00:00' to Monday, '2019-05-06 0:00:00'
+
+        Arguments: 
+            type_string:        string. 'month', 'year'
+            awarded_datetime:   string. 'YYYY-mm-DD HH:MM:SS'
+
+        Returns:
+            True if no awards are found in the time period
+
+        """
+        query = QueryTool(self.connection_data)
+        # Check if more awards are acceptable during time period 
+        result = True # default is to accept the award
+
+        # Employee of the Month
+        if type_string == 'month': 
+            logging.debug('InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during month of this award')
+            # Identify date range for month to compare against
+            month = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').month
+            year = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S').year
+
+            # Find existing awards during month range identified. If found, return errors and do not continue
+            greater = str(datetime.datetime(year, month, 1, 0, 0, 0, 0))
+            
+            # Handle December differently (can't just add 1 to 12)
+            if month == 12: 
+                lesser_month = 1
+            else: 
+                lesser_month = month + 1 
+            lesser = str(datetime.datetime(year, lesser_month, 1, 0, 0, 0))
+            
+            blob = { 
+                'awarded_datetime': {
+                    'greater': greater, 
+                    'lesser': lesser 
+                }, 
+                'type': 'month'
+            }
+            existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
+            logging.info('InputValidatorTool.check_award_does_not_exist(): beginning of month: {}'.format(greater))
+            logging.info('InputValidatorTool.check_award_does_not_exist(): end of month: {}'.format(lesser))
+            logging.debug('InputValidatorTool.check_award_does_not_exist(): existing_awards found: {}'.format(existing_awards))
+
+            # If awards found, return an error dictionary. Otherwise continue.
+            if len(existing_awards['award_ids']) != 0:
+                logging.info('InputValidatorTool.check_award_does_not_exist(): Awards found during time period')
+                result = {'errors': [{'field': 'type', 'message': 'there is already an award of type \'month\' between {} and {}'.format(greater, lesser)}]}
+            else: 
+                logging.debug('InputValidatorTool.check_award_does_not_exist(): No awards found during time period')
+
+        # Employee of the Week
+        elif type_string == 'week':
+            logging.debug('InputValidatorTool.check_award_does_not_exist(): checking no other awards exist during week of this award')
+            # Determine what day of the week our day is 
+            # 1 2 3 4 5 6 7
+            # M T W T F S S
+            parsed_datetime = datetime.datetime.strptime(awarded_datetime, '%Y-%m-%d %H:%M:%S')
+            weekday_number = parsed_datetime.isoweekday()
+            year = parsed_datetime.year
+            month = parsed_datetime.month
+            day = parsed_datetime.day 
+            logging.debug('InputValidatorTool.check_award_does_not_exist(): weekday_number is {}'.format(weekday_number))
+
+            # Get the beginning and end of week based on this
+            beg_of_week = datetime.datetime(year, month, day, 0, 0, 0) - datetime.timedelta(days=weekday_number - 1)
+            end_of_week = datetime.datetime(year, month, day, 0, 0, 0) + datetime.timedelta(days=8 - weekday_number)
+            logging.info('InputValidatorTool.check_award_does_not_exist(): beginning of week: {}'.format(beg_of_week))
+            logging.info('InputValidatorTool.check_award_does_not_exist(): end of week: {}'.format(end_of_week))
+
+            # Query database for awards that exist in this week time period
+            greater = str(beg_of_week)
+            lesser = str(end_of_week)
+            blob = { 
+                'awarded_datetime': {
+                    'greater': greater, 
+                    'lesser': lesser 
+                }, 
+                'type': 'week'
+            }
+            logging.info('blob: {}'.format(blob))
+            existing_awards = query.get_awards_by_filter('awarded_datetime', blob, True)
+            logging.debug('InputValidatorTool.check_award_does_not_exist(): existing_awards: {}'.format(existing_awards))
+            
+            # If awards found, return error dictionary. Otherwise continue.
+            if len(existing_awards['award_ids']) != 0:
+                logging.info('InputValidatorTool.check_award_does_not_exist(): Awards found during time period')
+                result = {'errors': [{'field': 'type', 'message': 'there is already an award of type \'week\' between {} and {}'.format(greater, lesser)}]}
+            else: 
+                logging.debug('InputValidatorTool.check_award_does_not_exist(): No awards found during time period')
+
+        query.disconnect()
+        return result
+
+# References
+# [1] https://stackabuse.com/converting-strings-to-datetime-in-python/                                          re: parsing timestamp/datetime
+# [2] https://stackoverflow.com/questions/8056496/python-get-unicode-string-size                                re: len()
+# [3] https://www.afternerd.com/blog/python-string-contains/                                                    re: contains string
+# [4] https://stackoverflow.com/questions/41862525/valueerror-time-data-does-not-match-format-y-m-d-hms-f       re: use of ValueError as an exception to catch for time validation
+# [5] https://stackoverflow.com/questions/19480028/attributeerror-datetime-module-has-no-attribute-strptime     re: use of strptime
+# [6] https://stackoverflow.com/questions/2600775/how-to-get-week-number-in-python                              re: isocalendar
+# [7] https://stackoverflow.com/questions/6871016/adding-5-days-to-a-date-in-python?rq=1                        re: using timedelta
+# [8] https://stackoverflow.com/questions/19216334/python-give-start-and-end-of-week-data-from-a-given-date     re: ideas on how to accomplish getting first and last day of a week

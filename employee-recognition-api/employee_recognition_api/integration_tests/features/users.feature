@@ -1,3 +1,5 @@
+# users.feature
+@users
 Feature: Integration Tests - USERS
 # Skipping PUT /users/<user_id>/signature, as this would be a highly complex automated test.
 
@@ -32,8 +34,18 @@ Scenario Outline: PUT /users, 200
     Then I clean up my POST to <endpoint>
     Examples: 
         | endpoint      | status_code | keys      | body  |
-        | users         | 200         | user_id   | { "first_name": "test1", "last_name": "test1", "email_address": "test1@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme1", "signature_path": "test1.jpg"} |
+        | users         | 200         | user_id   | { "first_name": "test1", "last_name": "test1", "email_address": "test1@oregonstate.edu", "signature_path": "test1.jpg"} |
 
+
+Scenario Outline: PUT /users/<user_id>/login, 200
+    When I make a POST <endpoint> request with body  { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"}
+    When I make a login-only PUT <endpoint> request with body <body>
+    Then I get a status code of <status_code>
+    Then the result has keys <keys>
+    Then I clean up my POST to <endpoint>
+    Examples:  
+        | endpoint      | status_code | keys      | body                        |       
+        | users         | 200         | user_id   | { "password": "encryptme2"} |
 
 # 400 BAD REQUEST
 Scenario Outline: GET /users
@@ -87,14 +99,11 @@ Scenario Outline: PUT /users, malformed request (single)
 
     Examples: 
         | endpoint      | status_code | keys      | field           | message       | body  |  
-        | users         | 400         | errors    | first_name      | invalid value | { "first_name": "", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"} |
-        | users         | 400         | errors    | last_name       | invalid value | { "first_name": "test", "last_name": "", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"} |
-        | users         | 400         | errors    | email_address   | invalid value | { "first_name": "test", "last_name": "test", "email_address": "", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"} |
-        | users         | 400         | errors    | password        | invalid value | { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "tes", "signature_path": "test.jpg"} |
-        | users         | 400         | errors    | password        | invalid value | { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "testytestytestytesty", "signature_path": "test.jpg"} |
-        | users         | 400         | errors    | signature_path  | invalid value | { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": ""} |
-        | users         | 400         | errors    | signature_path  | invalid value | { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.png"} |
-
+        | users         | 400         | errors    | first_name      | invalid value | { "first_name": "", "last_name": "test", "email_address": "test@oregonstate.edu", "signature_path": "test.jpg"} |
+        | users         | 400         | errors    | last_name       | invalid value | { "first_name": "test", "last_name": "", "email_address": "test@oregonstate.edu", "signature_path": "test.jpg"} |
+        | users         | 400         | errors    | email_address   | invalid value | { "first_name": "test", "last_name": "test", "email_address": "", "signature_path": "test.jpg"} |
+        | users         | 400         | errors    | signature_path  | invalid value | { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "signature_path": ""} |
+        | users         | 400         | errors    | signature_path  | invalid value | { "first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "signature_path": "test.png"} |
 
 Scenario Outline: PUT /users; malformed request (many)
     When I make a POST <endpoint> request with body {"first_name": "test", "last_name": "test", "email_address": "test@oregonstate.edu", "created_timestamp": "2018-05-08 00:00:00", "password": "encryptme", "signature_path": "test.jpg"} 
@@ -106,7 +115,7 @@ Scenario Outline: PUT /users; malformed request (many)
 
     Examples: 
         | endpoint      | status_code | keys      | number      | body  |  
-        | users         | 400         | errors    | 6           | { "first_name": "", "last_name": "", "email_address": "", "created_timestamp": "2018-05-00:00:00", "password": "en", "signature_path": "test.j"} |
+        | users         | 400         | errors    | 4           | { "first_name": "", "last_name": "", "email_address": "", "signature_path": "test.j"} |
         
 Scenario Outline: DELETE /users
     When I make a DELETE <endpoint> request

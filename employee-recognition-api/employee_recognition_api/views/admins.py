@@ -1,5 +1,7 @@
+# admins.py
 from flask import Blueprint, request, Response
 import os 
+import logging
 import json
 from ..db_interface.query_tool import QueryTool
 from ..db_interface.input_validator_tool import InputValidatorTool
@@ -8,7 +10,7 @@ from ..db_interface.input_validator_tool import InputValidatorTool
 admins_api = Blueprint('admins_api', __name__)
 
 # Define connection data
-connection_name = 'maia-backend:us-west1:employee-recognition-db'
+connection_name = 'cs467maia-backend:us-west1:employee-recognition-database'
 if os.environ.get('ENV') == 'dev' or os.environ.get('ENV') == 'local': 
     connection_name = '127.0.0.1'
 connection_data = { 
@@ -39,7 +41,7 @@ def admins(admin_id=None):
 
         # Define success based on presence of 'admin_ids' key in result
         try: 
-            if result['admin_ids']: 
+            if type(result['admin_ids']) == list: 
                 status_code = 200
         except KeyError:
             status_code = 400
@@ -64,7 +66,7 @@ def admins(admin_id=None):
         data = json.loads(request.data)
 
         # Validate request data
-        result = ivt.validate_admins(data)
+        result = ivt.validate_admins(request.method, data)
 
         # If request data is valid, continue
         if result is None: 
@@ -86,7 +88,7 @@ def admins(admin_id=None):
         data = json.loads(request.data)
 
         # Validate request data
-        result = ivt.validate_admins(data)
+        result = ivt.validate_admins(request.method, data)
 
         # If request data is valid, continue
         if result is None:
@@ -117,10 +119,12 @@ def admins(admin_id=None):
         except KeyError:
             status_code = 200
 
-    query.disconnect() 
+    query.disconnect()
+    logging.info('admins_api: returning result {}'.format(result))
+    logging.info('admins_api: returning status code {}'.format(status_code)) 
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
 
-@admins_api.route('/admins/<int:admin_id>/login', methods=['GET'])
+@admins_api.route('/admins/<int:admin_id>/login', methods=['GET', 'PUT'])
 def admins_login(admin_id): 
     """Handle GET /admins/<admin_id>/login
     
@@ -130,7 +134,8 @@ def admins_login(admin_id):
     Returns: see README for results expected for each endpoint 
     """
     query = QueryTool(connection_data)
-    
+    ivt = InputValidatorTool()
+
     # GET /admins/<admin_id>/login
     if request.method == 'GET' and admin_id is not None: 
         # Make a select query for particular admin_id's password information
@@ -144,5 +149,28 @@ def admins_login(admin_id):
                 status_code = 200
         except KeyError:
             status_code = 400
+
+    # PUT /admins/<admin_id>/login
+    elif request.method == 'PUT' and admin_id is not None: 
+        # Parse JSON data into dictionary
+        data = json.loads(request.data)
+
+        # Validate request data
+        result = ivt.validate_login(data)
+
+        # Add user_id to request body
+        data['admin_id'] = int(admin_id)
+        
+        # Query database
+        result = query.put_login_by_id('admins', data)
+        # Error if result doesn't have the key 'admin_id'
+        try: 
+            if result['admin_id']: 
+                status_code = 200
+        except KeyError:
+            status_code = 400
+        
     query.disconnect()
+    logging.info('admins_api: returning result {}'.format(result))
+    logging.info('admins_api: returning status code {}'.format(status_code)) 
     return Response(json.dumps(result), status=status_code, mimetype='application/json')
