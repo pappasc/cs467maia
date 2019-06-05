@@ -10,6 +10,8 @@ class TestBuilder(unittest.TestCase):
 
     @classmethod
     def setUp(cls): 
+        """Set up test
+        """
         logging.basicConfig(filename='TestBuilder-{}.log'.format(datetime.datetime.now()), level=logging.DEBUG)
         cls.connection_data = { 
             'environment': 'dev',
