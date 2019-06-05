@@ -10,7 +10,7 @@
 				<table>
 					<tr>
 						<td width="30%" height="200px">
-							<img src="images/home/EmpRecg.gif" width="100%" height="100%" alt=""/>
+							<img src="images/home/EmpRecgV2.gif" width="100%" height="100%" alt=""/>
 						</td>
 						<td>
 						Maia Group has recently completed work of their newest offering in the field of Human Resources and employee morale. The idea is to provide our client's with an intuitive interface to go quickly from action to recognition. This also includes the ability to analysis the most proactive parts of your organization using a variety of options. 
@@ -39,6 +39,10 @@
 						  Password:<br>
 						  <input type="password" name="password"><br><br>
 						  <input type="submit" value="Login">
+						  {{#if loginError}}
+						  <br>
+						  <div>Login error: One or more fields incorrect</div>
+						  {{/if}}
 						</form>
 					{{else}}
 						<ul>
@@ -47,7 +51,8 @@
                     		    <li><button id="awardsButton" onclick="gotoAwards('manage')">Manage Awards</button></li>
 							{{else if isAdmin}}
 							    <li><button id="employeesButton" onclick="gotoEmployees()">Manage Employees</button></li>
-                    			<li><button id="statsButton">Statistics</button></li>
+                                <li><button id="adminButton" onclick="gotoAdmins()">Manage Administrators</button></li>
+                    			<li><button id="statsButton" onclick="gotoStats()">View Statistics</button></li>
 							{{/if}}
 							<li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
 						</ul>

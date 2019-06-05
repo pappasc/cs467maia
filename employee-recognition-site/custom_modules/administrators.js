@@ -2,18 +2,18 @@ module.exports = function(){
     var     express = require('express');
     var     router  = express.Router();
     const   rp      = require('request-promise');
-
-    function getUsers(){
+    
+    function getAdmins(){
         var options = {
-	    uri: 'https://cs467maia-backend.appspot.com/users',
+	    uri: 'https://cs467maia-backend.appspot.com/admins',
 	    json: true, // Automatically parses the JSON string in the response
 	    resolveWithFullResponse: true
 	};
 
 	return rp(options)
-	    .then(function (users) {
-		if (users.statusCode == 200) {
-		    return users.body.user_ids;
+	    .then(function (admins) {
+		if (admins.statusCode == 200) {
+		    return admins.body.admin_ids;
 		}
 		else {
 		    return null;
@@ -24,27 +24,27 @@ module.exports = function(){
 	    });
     }
     
-    //Admin page to select users or 
     router.get('/', function (req, res) {
 	if(req.isAuthenticated()) {
 	    var context = {};
             if (req.user.type == 'admin')
             {
-		context.jsscripts = ["logoutUser.js", "gotoNewAccount.js", "gotoUserAccount.js", "gotoAdmin.js", "deleteUserInfo.js", "gotoHome.js"];
-		getUsers().then(function(users){
-                    if (users != null) {
-			if (users.length != 0) {
-			    context.someUsers = true;
-			    context.users = users;
+		context.jsscripts = ["logoutUser.js", "gotoAdmin.js", "gotoAdminAccount.js", "gotoHome.js", "deleteAdminInfo.js"];
+		getAdmins().then(function(admins){
+                    if (admins != null) {
+			if (admins.length != 0) {
+			    context.someAdmins = true;
+			    context.adminID = req.user.admin_id;
+			    context.admins = admins;
 			}
 			else {
-			    context.someUsers = false;
+			    context.someAdmins = false;
 			}
-			res.status(200).render('employees', context);
+			res.status(200).render('admins', context);
 		    }
 		    else {
-			context.someUsers = false;
-			res.status(200).render('employees', context);
+			context.someAdmins = false;
+			res.status(200).render('admins', context);
 		    }
 		});
             }

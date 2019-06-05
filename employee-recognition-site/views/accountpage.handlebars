@@ -1,24 +1,21 @@
 <div id="header">
-    <img src="./../images/MaiaGroupHeader.jpg" width="100%" height="100%" alt=""/>
+    <img src="images/MaiaGroupHeader.jpg" width="100%" height="100%" alt=""/>
 </div>
 
 <div class="column-wrap">
-    <h2 align="center">Administrator Profile</h2>
+    <h2 align="center">User Profile</h2>
     <div>
         <section>
             <nav>
                 <ul>
-                    {{#if update}}
-                        <li><button id="updateAdminButton" onclick="updateAdmin({{adminId}})">Update</button></li>
-                    {{else}}
-                        <li><button id="saveAdminButton" onclick="saveAdmin()">Save</button></li>
-                    {{/if}}
-                    <li><button id="cancelButton" onclick="gotoAdmins()">Cancel</button></li>
+		    <li><button id="homeButton" onclick="gotoHome()">Home</button></li>
+                    <li><button id="awardsButton" onclick="gotoAwards('manage')">Manage Awards</button></li>
+                    <li><button id="userUpdateButton" onclick="updateUser()">Save</button></li>
+                    <li><button id="logoutButton" onclick="logoutUser()">Logout</button></li>
                 </ul>
             </nav>
-
             <article>
-	    <div id="errorHolder"></div>
+                    <div id="errorHolder"></div>
                 <table>
                     <tr>
                         <td>
@@ -28,13 +25,13 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="email" name="username" id="Username" size="100" value={{email}}>
+                                {{email}}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Firstname                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            Lastname
+                            First name                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            Last name
                         </td>
                     </tr>
                     <tr>
@@ -44,6 +41,7 @@
                             <input type="text" name="Lname" id="LName" size="30" value={{lastName}}>
                         </td>
                     </tr>
+                    <tr/>
                     <tr>
                         <td>
                             Password
@@ -51,12 +49,22 @@
                     </tr>
                     <tr>
                         <td>
-                            <input type="password" name="password" id="Password" size="20" value="{{password}}">
+                            **********
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            Signature
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                                {{signature}}
+                        </td>
+                    </tr>
+
                 </table>
             </article>
         </section>
     </div>
 </div>
-	

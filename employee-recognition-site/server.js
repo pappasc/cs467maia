@@ -37,8 +37,8 @@ app.use(session({
     store: new DatastoreStore({
 	dataset: new Datastore({
 	    kind: 'express-sessions',
-	    projectId: 'cs467maia',
-	    keyFilename: 'cs467maia-a21a648c06b7.json'
+	    projectId: 'cs467maia-site',
+	    keyFilename: 'cs467maia-site-2c8a987d36ff.json'
 	})
     }),
     secret: 'groupmaia',
@@ -51,11 +51,6 @@ require('./custom_modules/authentication.js');
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Dummy backend for now. Will port to different module later
-app.use('/users', require('./testCode/userProxyBackend.js'));
-app.use('/admins', require('./testCode/adminProxyBackend.js'));
-app.use('/awardProxy', require('./testCode/awardProxyBackend.js'));
-
 app.get('/', function (req, res) {
     //Redirect straight to home
     res.redirect('/home');
@@ -64,7 +59,16 @@ app.get('/', function (req, res) {
 app.post('/login', function(req, res) {
     passport.authenticate('local', (err, user, info) => {
 	req.login(user, (err) => {
-	    return res.redirect('/home');
+	    //if login fails, user comes back as false, then we render the homepage with an error
+	    if (user == false) {
+		var context = {};
+		context.login = true;
+		context.loginError = true;
+		return res.status(200).render('homepage', context);
+	    }
+	    else {
+		return res.redirect('/home');
+	    }
 	})
     })(req, res);
 });
@@ -88,7 +92,9 @@ app.use('/awards', require('./custom_modules/awards.js'));
 app.use('/account', require('./custom_modules/account.js'));
 app.use('/employees', require('./custom_modules/employees.js'));
 app.use('/admin', require('./custom_modules/adminAccount.js'));
+app.use('/admins', require('./custom_modules/administrators.js'));
 app.use('/newaccount', require('./custom_modules/newaccount.js'));
+app.use('/stats', require('./custom_modules/statistics.js'));
 
 //If the user tries navigating to a non-supplied page
 app.use(function(req,res){

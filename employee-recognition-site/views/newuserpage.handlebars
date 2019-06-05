@@ -18,6 +18,7 @@
             </nav>
 
             <article>
+	    <div id="errorHolder"></div>
                 <table>
                     <tr>
                         <td>
@@ -55,19 +56,18 @@
                     </tr>
                     <tr>
                         <td>
-                            Signature
+                            Signature{{#if currUser}} - Current: <div id="currentSig">{{signature}}</div>{{/if}}
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="file" name="sigFile" id="SigPath" size="100" value={{signature}}><br>
+			<form enctype="multipart/form-data" name="sigUpload">
+                            <input type="file" name="sigFile" id="sigFile" size="100" accept=".jpg"><br>
+			    </form>
                         </td>
                     </tr>
 
                 </table>
-                {{#if err}}
-                    <h4>{{err}}</h4>
-                {{/if}}
             </article>
         </section>
     </div>
