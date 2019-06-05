@@ -353,8 +353,9 @@ class InputValidatorTool:
                 - If award of type 'month' is awarded on '2019-05-01 0:00:00'
                     then checks that no other 'month' awards exist in May 2019.
                 - If award of type 'week' is awarded on '2019-05-01 0:00:00'
-                    then checks that no other 'week' awards exist from Mon, April 29 2019
-                    to Sun, May 5, 2019.
+                    then checks that no other 'week' awards exist from Monday, '2019-04-29
+                    0:00:00' to Monday, '2019-05-06 0:00:00'
+
         Arguments: 
             type_string:        string. 'month', 'year'
             awarded_datetime:   string. 'YYYY-mm-DD HH:MM:SS'
