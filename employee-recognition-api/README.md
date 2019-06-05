@@ -1,6 +1,8 @@
 # employee-recognition-api
-## Main Contributor
-Natasha Kvavle
+- Service: employee-recognition-api
+- Course: CS 467
+- Contributor: Natasha Kvavle
+- Date: June 4, 2019
 
 ### Instructions for Set-Up
  + Install Google Cloud SDK & app-engine-python gcloud component
